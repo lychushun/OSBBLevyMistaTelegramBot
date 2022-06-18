@@ -1,5 +1,6 @@
 package com.osbblevymista.send.processors;
 
+import com.osbblevymista.OSBBLevyMista45;
 import com.osbblevymista.keyabords.KeyboardParam;
 import com.osbblevymista.keyabords.buttons.OSBBKeyboardButton;
 import com.osbblevymista.pages.BasePage;
@@ -9,6 +10,8 @@ import com.osbblevymista.send.SendMessageBuilder;
 import com.osbblevymista.send.SendMessageParams;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
@@ -26,6 +29,8 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Component
 public class ActionSendMessageProcessor {
+
+    private final Logger logger = LoggerFactory.getLogger(ActionSendMessageProcessor.class);
 
     private final SendMessageBuilder sendMessageBuilder;
 
@@ -51,6 +56,7 @@ public class ActionSendMessageProcessor {
                                           return createButtonMessage(sendMessageParams, osbbKeyboardButton);
                                       } catch (UnsupportedEncodingException | URISyntaxException e) {
                                           e.printStackTrace();
+                                          logger.error(e.getMessage(),e);
                                       }
                                       return null;
                                   }
@@ -68,6 +74,7 @@ public class ActionSendMessageProcessor {
                                               return createPageMessage(sendMessageParams, osbbKeyboardButton);
                                           } catch (UnsupportedEncodingException | URISyntaxException e) {
                                               e.printStackTrace();
+                                              logger.error(e.getMessage(),e);
                                           }
                                           return null;
                                       }
@@ -83,6 +90,7 @@ public class ActionSendMessageProcessor {
                                               return createPageExecution(sendMessageParams, osbbKeyboardButton);
                                           } catch (UnsupportedEncodingException | URISyntaxException e) {
                                               e.printStackTrace();
+                                              logger.error(e.getMessage(),e);
                                           }
                                           return null;
                                       }
@@ -98,6 +106,7 @@ public class ActionSendMessageProcessor {
                                               return createPageKeyboard(sendMessageParams, osbbKeyboardButton);
                                           } catch (UnsupportedEncodingException | URISyntaxException e) {
                                               e.printStackTrace();
+                                              logger.error(e.getMessage(),e);
                                           }
                                           return null;
                                       }
@@ -114,6 +123,7 @@ public class ActionSendMessageProcessor {
                                           return createButtonExecution(sendMessageParams, osbbKeyboardButton);
                                       } catch (URISyntaxException | IOException e) {
                                           e.printStackTrace();
+                                          logger.error(e.getMessage(),e);
                                       }
                                       return null;
                                   }

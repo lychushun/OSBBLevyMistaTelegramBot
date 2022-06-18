@@ -5,15 +5,16 @@ import com.opencsv.exceptions.CsvException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import com.opencsv.exceptions.CsvValidationException;
 import com.osbblevymista.models.UserInfo;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
 import java.io.*;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
+@Component
 public class UserInfoFileReader extends FileReader<UserInfo> {
-
-    private static UserInfoFileReader userInfoFileReader;
 
     private UserInfo userInfo;
     public List<UserInfo> userInfoList;
@@ -22,15 +23,9 @@ public class UserInfoFileReader extends FileReader<UserInfo> {
 
     private Date createDate = new Date();
 
-    public static UserInfoFileReader createInstance(){
-        if (Objects.isNull(userInfoFileReader)){
-            userInfoFileReader = new UserInfoFileReader();
-        }
-        return userInfoFileReader;
-    }
-
-    private UserInfoFileReader() {
-        super(UserInfo.class, "userInfo.csv");
+    @Override
+    public String getFileName(){
+        return "userInfo.csv";
     }
 
     public boolean add(UserInfo userInfo) throws IOException, CsvException {
@@ -54,7 +49,7 @@ public class UserInfoFileReader extends FileReader<UserInfo> {
     @Override
     public List<UserInfo> get() throws IOException {
         if (userInfoList == null || refresh()) {
-            userInfoList = readFromFile();
+            userInfoList = readFromFile(UserInfo.class);
         }
         return userInfoList;
     }

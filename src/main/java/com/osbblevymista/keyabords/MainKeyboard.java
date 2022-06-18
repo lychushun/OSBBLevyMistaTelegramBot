@@ -75,7 +75,7 @@ public class MainKeyboard extends OSBBKeyboard {
     @Getter
     public enum BUTTONS {
         CONTACT("Контакти \uD83D\uDE01"),
-        INFO("Інформація"),
+        INFO("Інформація \u2139"),
         ARREARS("Заборгованість \uD83D\uDCB0"),
         SETTINGS("Налаштування \uD83D\uDEA9"),
         CHATS("Чати \uD83D\uDCDA"),

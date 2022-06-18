@@ -3,57 +3,47 @@ package com.osbblevymista.send.processors;
 import com.opencsv.exceptions.CsvException;
 import com.osbblevymista.filereaders.AdminFileReader;
 import com.osbblevymista.models.AdminInfo;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
+@Component
 @Getter
+@RequiredArgsConstructor
 public class AdminProcessor {
 
-    private static AdminProcessor adminProcessor;
     private Date createDate = new Date();
 
-    private final List<AdminInfo> adminInfos;
+    private List<AdminInfo> adminInfos;
 
-    private final long REFRESH_TIME_OUT = 1000;
+    @Value("${adminRefreshTime}")
+    private String REFRESH_TIME_OUT;
 
-    private AdminFileReader adminFileReader;
-
-    public static AdminProcessor createInstance() throws IOException {
-        if (adminProcessor == null || adminProcessor.refresh()){
-            adminProcessor = new AdminProcessor();
-        }
-
-        return adminProcessor;
-    }
-
-    private AdminProcessor() throws IOException {
-        adminFileReader = new AdminFileReader();
-        adminInfos = adminFileReader.get();
-    }
+    private final AdminFileReader adminFileReader;
 
     public void addAdmin(String firstName, String lastName, long userId) throws IOException, CsvException {
         adminFileReader.add(firstName, lastName, userId);
     }
 
-    public boolean isAdmin(long adminId){
+    public boolean isAdmin(long adminId) throws IOException {
+        refresh();
         return adminInfos.stream().anyMatch(item -> {
             return item.getAdminId().equals(adminId) && item.isActive();
         });
     }
 
-    private boolean refresh(){
-
-        if ((createDate.getTime() + REFRESH_TIME_OUT) <= new Date().getTime()){
+    private void refresh() throws IOException {
+        if ((createDate.getTime() + Long.parseLong(REFRESH_TIME_OUT)) <= new Date().getTime()){
             createDate = new Date();
-            return true;
-        } else {
-            return false;
+            adminInfos = adminFileReader.get();
         }
-
     }
 
 }

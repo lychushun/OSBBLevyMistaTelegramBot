@@ -14,24 +14,18 @@ import com.osbblevymista.send.processors.AdminProcessor;
 import com.osbblevymista.send.processors.SessionSendMessageProcessor;
 import com.osbblevymista.system.Messages;
 import com.osbblevymista.system.SessionAttributes;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.shiro.session.Session;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Controller;
-import org.telegram.telegrambots.bots.TelegramLongPollingBot;
-import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import org.telegram.telegrambots.meta.generics.LongPollingBot;
 import org.telegram.telegrambots.session.TelegramLongPollingSessionBot;
-import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -44,15 +38,24 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 public class TelegramStarter extends TelegramLongPollingSessionBot {
 
+    private final Logger logger = LoggerFactory.getLogger(TelegramStarter.class);
+
     private final SendMessageBuilder sendMessageBuilder;
     private final ActionSendMessageProcessor actionSendMessageProcessor;
     private final SessionSendMessageProcessor sessionSendMessageProcessor;
+    private final UserInfoFileReader fileWorker;
+    private final AdminProcessor adminProcessor;
+
+    @Value("${telegram.bot.token}")
+    private String token;
+
+    @Value("${telegram.bot.name}")
+    private String name;
 
     @Override
     public void onUpdateReceived(Update update, Optional<Session> optional) {
-        try {
 
-            //todo not sesion
+        try {
             Session session = null;
 
             Message message = update.getMessage();
@@ -87,8 +90,8 @@ public class TelegramStarter extends TelegramLongPollingSessionBot {
                     session.setAttribute(SessionAttributes.IS_ADDED, true);
                 }
 
-                session.setAttribute(SessionAttributes.LOGIN, "yura.lychushun@gmail.com");
-                session.setAttribute(SessionAttributes.PASS, "31101993");
+//                session.setAttribute(SessionAttributes.LOGIN, "yura.lychushun@gmail.com");
+//                session.setAttribute(SessionAttributes.PASS, "31101993");
 
                 if (update.hasCallbackQuery()) {
                     Function<CallbackQuery, OSBBSendMessage> newMessage = processCallBack();
@@ -125,21 +128,23 @@ public class TelegramStarter extends TelegramLongPollingSessionBot {
                     execute(osbbSendMessage);
                 } catch (TelegramApiException e) {
                     e.printStackTrace();
+                    logger.error(e.getMessage(),e);
                 }
             });
         } catch (Exception e) {
             e.printStackTrace();
+            logger.error(e.getMessage(),e);
         }
     }
 
     @Override
     public String getBotUsername() {
-        return "OSBBLevyMista";
+        return name;
     }
 
     @Override
     public String getBotToken() {
-        return "5574766925:AAGt6eB9v2cZ-ZWRxtUK_NpXN4siZpCpbMw";
+        return token;
     }
 
     @Override
@@ -152,7 +157,7 @@ public class TelegramStarter extends TelegramLongPollingSessionBot {
         super.onUpdatesReceived(updates);
     }
 
-    private static UserInfo createUserInfo(String chatId, String firstName, String lastName, long userId) {
+    private UserInfo createUserInfo(String chatId, String firstName, String lastName, long userId) {
         UserInfo userInfo = new UserInfo();
 
         userInfo.setLastName(ObjectUtils.isEmpty(lastName) ? "-" : lastName);
@@ -163,14 +168,12 @@ public class TelegramStarter extends TelegramLongPollingSessionBot {
         return userInfo;
     }
 
-    private static boolean isAddedChatId(UserInfo userInfo) throws IOException, CsvException {
-        UserInfoFileReader fileWorker = UserInfoFileReader.createInstance();
+    private boolean isAddedChatId(UserInfo userInfo) throws IOException, CsvException {
         return fileWorker.isAddedUserInfo(userInfo);
     }
 
 
     private boolean addChatId(UserInfo userInfo) throws IOException, CsvException {
-        UserInfoFileReader fileWorker = UserInfoFileReader.createInstance();
         return fileWorker.add(userInfo);
     }
 
@@ -226,7 +229,7 @@ public class TelegramStarter extends TelegramLongPollingSessionBot {
     }
 
     private boolean isAdmin(long adminId) throws IOException, CsvException {
-        AdminProcessor adminProcessor = AdminProcessor.createInstance();
+//        AdminProcessor adminProcessor = AdminProcessor.createInstance();
 //        adminProcessor.addAdmin("Yura", "", 759291097);
         return adminProcessor.isAdmin(adminId);
     }

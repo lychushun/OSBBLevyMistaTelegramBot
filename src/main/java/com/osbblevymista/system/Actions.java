@@ -7,8 +7,8 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum Actions {
-    BUTTON_PASS("Пароль \uD83C\uDFB0"),
-    BUTTON_LOGIN("Логин"),
+    BUTTON_PASS("Пароль \uD83D\uDD11"),
+    BUTTON_LOGIN("Логін \uD83D\uDC7B"),
     BUTTON_HEAD_OF_OSBB("Голова ОСББ \uD83D\uDC2F"),
     BUTTON_ACCOUNTANT("Бухгалтер \uD83D\uDC25"),
     BUTTON_WORKER("Заступник з господарства \uD83D\uDC77"),

@@ -6,8 +6,13 @@ import com.opencsv.bean.*;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import com.opencsv.exceptions.CsvValidationException;
+import com.osbblevymista.OSBBLevyMista45;
 import com.osbblevymista.models.Info;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -16,16 +21,22 @@ import java.util.*;
 
 public abstract class FileReader<R extends Info> {
 
+    final Logger logger = LoggerFactory.getLogger(FileReader.class);
+
     @Getter
     private String fileName;
-    private Class<R> clazz;
 
-    private FileReader() {
-    }
+    @Getter
+    @Value("${storagefiles}")
+    protected String storageLocation;
 
-    protected FileReader(Class<R> c, String fileName) {
-        this.clazz = c;
-        this.fileName = fileName;
+    public abstract String getFileName();
+
+    public String getFullFileName(){
+        String fullFileName = storageLocation + getFileName();
+        logger.info("Running...");
+        System.out.println("Getting full file name: " + fullFileName);
+        return fullFileName;
     }
 
     protected abstract boolean add() throws IOException, CsvRequiredFieldEmptyException, CsvDataTypeMismatchException, CsvValidationException;
@@ -33,13 +44,13 @@ public abstract class FileReader<R extends Info> {
     public abstract List<R> get() throws IOException;
 
 
-    protected List<R> readFromFile() throws IOException {
-        File file = new File(fileName);
+    protected List<R> readFromFile(Class<R> c) throws IOException {
+        File file = new File(getFullFileName());
         List<R> list = new ArrayList<>();
         if (file.exists()) {
-            Reader reader = Files.newBufferedReader(Path.of(fileName));
+            Reader reader = Files.newBufferedReader(Path.of(getFullFileName()));
             CsvToBean<R> csvToBean = new CsvToBeanBuilder<R>(reader)
-                    .withType(clazz)
+                    .withType(c)
                     .withIgnoreLeadingWhiteSpace(true)
                     .build();
 
@@ -53,14 +64,14 @@ public abstract class FileReader<R extends Info> {
 
     protected void writeToFile(R info) throws IOException, CsvRequiredFieldEmptyException, CsvDataTypeMismatchException, CsvValidationException {
 
-        CSVReader reader = new CSVReader(new java.io.FileReader(fileName));
+        CSVReader reader = new CSVReader(new java.io.FileReader(getFullFileName()));
         String[] nextLine = reader.readNext();
         reader.close();
 
         List<R> list = new ArrayList<>();
         list.add(info);
 
-        Writer writer = new FileWriter(fileName, true);
+        Writer writer = new FileWriter(getFullFileName(), true);
         CSVWriter csvWriter = new CSVWriter(writer);
 
         if (nextLine != null) {

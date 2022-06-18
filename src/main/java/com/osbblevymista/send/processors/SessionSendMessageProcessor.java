@@ -3,6 +3,7 @@ package com.osbblevymista.send.processors;
 import com.osbblevymista.send.OSBBSendMessage;
 import com.osbblevymista.send.SendMessageParams;
 import com.osbblevymista.system.Actions;
+import com.osbblevymista.system.Messages;
 import com.osbblevymista.system.SessionAttributes;
 import com.osbblevymista.system.SessionProperties;
 import lombok.AllArgsConstructor;
@@ -59,13 +60,12 @@ public class SessionSendMessageProcessor {
         if (session.getAttribute("reading") == SessionProperties.INSERTING_LOGIN) {
             session.setAttribute(SessionAttributes.LOGIN, message);
             session.setAttribute("reading", null);
-            return new ArrayList<>();
+            return appealSendMessageProcessor.createSimpleAppeal(sendMessageParam, Messages.SUCCESS_INSERT_LOGIN.getMessage());
         } else if (session.getAttribute("reading") == SessionProperties.INSERTING_PASS) {
             session.setAttribute(SessionAttributes.PASS, message);
             session.setAttribute("reading", null);
-            return new ArrayList<>();
+            return appealSendMessageProcessor.createSimpleAppeal(sendMessageParam, Messages.SUCCESS_INSERT_PASS.getMessage());
         } else if (session.getAttribute("reading") == SessionProperties.CREATING_SIMPLE_APPEAL) {
-
             var res = appealSendMessageProcessor.createSimpleAppeal(sendMessageParam, message);
             session.setAttribute("reading", null);
             return res;

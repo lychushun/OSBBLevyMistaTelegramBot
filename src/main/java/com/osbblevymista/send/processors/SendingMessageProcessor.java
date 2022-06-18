@@ -22,12 +22,12 @@ import java.util.stream.Collectors;
 public class SendingMessageProcessor {
 
     private final SendMessageBuilder sendMessageBuilder;
+    private final UserInfoFileReader userInfoFileReader;
 
     public List<Function<Message, OSBBSendMessage>> sendMessage(SendMessageParams sendMessageParam, String message) throws IOException {
 
         List<Function<Message, OSBBSendMessage>> messages = new ArrayList<>();
 
-        UserInfoFileReader userInfoFileReader = UserInfoFileReader.createInstance();
         List<UserInfo> userInfoList = userInfoFileReader
                 .get()
                 .stream()

@@ -1,5 +1,6 @@
 package com.osbblevymista.send.processors;
 
+import com.osbblevymista.OSBBLevyMista45;
 import com.osbblevymista.miydim.AppealMiyDimProcessor;
 import com.osbblevymista.send.OSBBSendMessage;
 import com.osbblevymista.send.SendMessageBuilder;
@@ -7,6 +8,8 @@ import com.osbblevymista.send.SendMessageParams;
 import com.osbblevymista.system.Messages;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -20,6 +23,8 @@ import java.util.function.Function;
 @Component
 @RequiredArgsConstructor
 public class AppealSendMessageProcessor {
+
+    private final Logger logger = LoggerFactory.getLogger(AppealSendMessageProcessor.class);
 
     private final SendMessageBuilder sendMessageBuilder;
 
@@ -81,6 +86,7 @@ public class AppealSendMessageProcessor {
                     return sendMessageBuilder.createSimpleMessage(sendMessageParamsBoarNotification, stringBuilder.toString());
                 } catch (UnsupportedEncodingException | URISyntaxException e) {
                     e.printStackTrace();
+                    logger.error(e.getMessage(),e);
                 }
                 return null;
             }
@@ -97,6 +103,7 @@ public class AppealSendMessageProcessor {
                     return sendMessageBuilder.createSimpleMessage(sendMessageParam, text);
                 } catch (UnsupportedEncodingException | URISyntaxException e) {
                     e.printStackTrace();
+                    logger.error(e.getMessage(),e);
                 }
                 return null;
             }

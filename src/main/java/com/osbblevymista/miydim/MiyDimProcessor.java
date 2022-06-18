@@ -3,13 +3,18 @@ package com.osbblevymista.miydim;
 import com.gargoylesoftware.htmlunit.CookieManager;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.*;
+import com.osbblevymista.OSBBLevyMista45;
 import lombok.Getter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Objects;
 
 @Getter
 public class MiyDimProcessor {
+
+    private final Logger logger = LoggerFactory.getLogger(MiyDimProcessor.class);
 
     protected HtmlPage currentPage;
     protected HtmlPage mainPage;
@@ -64,6 +69,7 @@ public class MiyDimProcessor {
                 errorMessage = Objects.nonNull(item) ? item.getFirstChild().asNormalizedText() : "";
             } catch (Exception e) {
                 e.printStackTrace();
+                logger.error(e.getMessage(),e);
             }
         }
     }
