@@ -2,37 +2,38 @@ package com.osbblevymista.keyabords;
 
 import com.osbblevymista.keyabords.buttons.OSBBKeyboardButton;
 import com.osbblevymista.pages.*;
+import com.osbblevymista.system.Actions;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 
 public class MainKeyboard extends OSBBKeyboard {
 
-    private final OSBBKeyboardButton osbbKeyboardButtonInfo = new OSBBKeyboardButton(BUTTONS.INFO.text);
-    private final OSBBKeyboardButton osbbKeyboardButtonArrears = new OSBBKeyboardButton(BUTTONS.ARREARS.text);
-    private final OSBBKeyboardButton osbbKeyboardButtonSettings = new OSBBKeyboardButton(BUTTONS.SETTINGS.text);
-    private final OSBBKeyboardButton osbbKeyboardButtonChats = new OSBBKeyboardButton(BUTTONS.CHATS.text);
-    private final OSBBKeyboardButton osbbKeyboardButtonAdmin = new OSBBKeyboardButton(BUTTONS.ADMIN.text);
-    private final OSBBKeyboardButton osbbKeyboardButtonAppeal = new OSBBKeyboardButton(BUTTONS.APPEAL.text);
+    private final OSBBKeyboardButton osbbKeyboardButtonInfo = new OSBBKeyboardButton(Actions.BUTTON_INFO.getText());
+    private final OSBBKeyboardButton osbbKeyboardButtonArrears = new OSBBKeyboardButton(Actions.BUTTON_ARREARS.getText());
+    private final OSBBKeyboardButton osbbKeyboardButtonSettings = new OSBBKeyboardButton(Actions.BUTTON_SETTINGS.getText());
+    private final OSBBKeyboardButton osbbKeyboardButtonChats = new OSBBKeyboardButton(Actions.BUTTON_CHATS.getText());
+    private final OSBBKeyboardButton osbbKeyboardButtonAdmin = new OSBBKeyboardButton(Actions.BUTTON_ADMIN.getText());
+    private final OSBBKeyboardButton osbbKeyboardButtonAppeal = new OSBBKeyboardButton(Actions.BUTTON_APPEAL.getText());
 
     {
 
-        osbbKeyboardButtonArrears.setId(BUTTONS.ARREARS.text);
+        osbbKeyboardButtonArrears.setId(Actions.BUTTON_ARREARS.getText());
         insertIntoFirstRow(osbbKeyboardButtonArrears);
 
-        osbbKeyboardButtonAppeal.setId(BUTTONS.APPEAL.text);
+        osbbKeyboardButtonAppeal.setId(Actions.BUTTON_APPEAL.getText());
         insertIntoFirstRow(osbbKeyboardButtonAppeal);
 
-        osbbKeyboardButtonInfo.setId(BUTTONS.INFO.text);
+        osbbKeyboardButtonInfo.setId(Actions.BUTTON_INFO.getText());
         insertIntoSecondRow(osbbKeyboardButtonInfo);
 
-        osbbKeyboardButtonChats.setId(BUTTONS.CHATS.text);
+        osbbKeyboardButtonChats.setId(Actions.BUTTON_CHATS.getText());
         insertIntoSecondRow(osbbKeyboardButtonChats);
 
-        osbbKeyboardButtonSettings.setId(BUTTONS.SETTINGS.text);
+        osbbKeyboardButtonSettings.setId(Actions.BUTTON_SETTINGS.getText());
         insertIntoThirdRow(osbbKeyboardButtonSettings);
 
-        osbbKeyboardButtonAdmin.setId(BUTTONS.ADMIN.text);
+        osbbKeyboardButtonAdmin.setId(Actions.BUTTON_ADMIN.getText());
         osbbKeyboardButtonAdmin.setOnlyAdmin(true);
         insertIntoThirdRow(osbbKeyboardButtonAdmin);
 
@@ -71,19 +72,19 @@ public class MainKeyboard extends OSBBKeyboard {
         return null;
     }
 
-    @AllArgsConstructor
-    @Getter
-    public enum BUTTONS {
-        CONTACT("Контакти \uD83D\uDE01"),
-        INFO("Інформація \u2139"),
-        ARREARS("Заборгованість \uD83D\uDCB0"),
-        SETTINGS("Налаштування \uD83D\uDEA9"),
-        CHATS("Чати \uD83D\uDCDA"),
-        ADMIN("Адмін \uD83D\uDC77"),
-        APPEAL("Звернення \uD83D\uDE4B"),
-        REPORTS("Звіти та документи \uD83D\uDCC4");
-
-        String text;
-    }
+//    @AllArgsConstructor
+//    @Getter
+//    public enum BUTTONS {
+//        CONTACT("Контакти \uD83D\uDE01"),
+//        INFO("Інформація \u2139"),
+//        ARREARS("Заборгованість \uD83D\uDCB0"),
+//        SETTINGS("Налаштування \uD83D\uDEA9"),
+//        CHATS("Чати \uD83D\uDCDA"),
+//        ADMIN("Адмін \uD83D\uDC77"),
+//        APPEAL("Звернення \uD83D\uDE4B"),
+//        REPORTS("Звіти та документи \uD83D\uDCC4");
+//
+//        String text;
+//    }
 
 }

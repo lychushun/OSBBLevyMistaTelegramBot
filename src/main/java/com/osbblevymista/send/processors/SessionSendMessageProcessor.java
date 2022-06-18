@@ -24,6 +24,7 @@ public class SessionSendMessageProcessor {
 
     private final SendingMessageProcessor sendingMessageProcessor;
     private final AppealSendMessageProcessor appealSendMessageProcessor;
+    private final ActionSendMessageProcessor actionSendMessageProcessor;
 
     public List<Function<Message, OSBBSendMessage>> processSession(String message, SendMessageParams sendMessageParam, Session session) throws IOException, URISyntaxException {
 
@@ -35,7 +36,7 @@ public class SessionSendMessageProcessor {
 
     }
 
-    private List<Function<Message, OSBBSendMessage>> markingAsReading(String message, SendMessageParams sendMessageParam, Session session){
+    private List<Function<Message, OSBBSendMessage>> markingAsReading(String message, SendMessageParams sendMessageParam, Session session) throws IOException {
         if (Objects.equals(message, Actions.BUTTON_LOGIN.getText())) {
             session.setAttribute("reading", SessionProperties.INSERTING_LOGIN);
             return new ArrayList<>();
@@ -51,6 +52,8 @@ public class SessionSendMessageProcessor {
         } else if (Objects.equals(message, Actions.BUTTON_ADMIN_SEND.getText())) {
             session.setAttribute("reading", SessionProperties.SENDING_MESSAGE_TO_ALL);
             return new ArrayList<>();
+        } else if (Objects.equals(message, Actions.BUTTON_ADMIN_NEW_RECEIPT.getText())) {
+            return sendingMessageProcessor.sendMessageInfoAboutReceipt();
         }
         return null;
     }
@@ -60,11 +63,15 @@ public class SessionSendMessageProcessor {
         if (session.getAttribute("reading") == SessionProperties.INSERTING_LOGIN) {
             session.setAttribute(SessionAttributes.LOGIN, message);
             session.setAttribute("reading", null);
-            return appealSendMessageProcessor.createSimpleAppeal(sendMessageParam, Messages.SUCCESS_INSERT_LOGIN.getMessage());
+            List<Function<Message, OSBBSendMessage>> list = new ArrayList<Function<Message, OSBBSendMessage>>();
+            list.add(actionSendMessageProcessor.createSimpleMessage(sendMessageParam, Messages.SUCCESS_INSERT_LOGIN.getMessage()));
+            return list;
         } else if (session.getAttribute("reading") == SessionProperties.INSERTING_PASS) {
             session.setAttribute(SessionAttributes.PASS, message);
             session.setAttribute("reading", null);
-            return appealSendMessageProcessor.createSimpleAppeal(sendMessageParam, Messages.SUCCESS_INSERT_PASS.getMessage());
+            List<Function<Message, OSBBSendMessage>> list = new ArrayList<Function<Message, OSBBSendMessage>>();
+            list.add(actionSendMessageProcessor.createSimpleMessage(sendMessageParam, Messages.SUCCESS_INSERT_PASS.getMessage()));
+            return list;
         } else if (session.getAttribute("reading") == SessionProperties.CREATING_SIMPLE_APPEAL) {
             var res = appealSendMessageProcessor.createSimpleAppeal(sendMessageParam, message);
             session.setAttribute("reading", null);

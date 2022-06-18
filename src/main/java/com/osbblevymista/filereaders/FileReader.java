@@ -34,7 +34,6 @@ public abstract class FileReader<R extends Info> {
 
     public String getFullFileName(){
         String fullFileName = storageLocation + getFileName();
-        logger.info("Running...");
         System.out.println("Getting full file name: " + fullFileName);
         return fullFileName;
     }

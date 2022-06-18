@@ -116,7 +116,16 @@ public enum Messages {
             """),
     SUCCESS_INSERT_PASS(123, """
             Ви успішно ввели пароль. 
-            """);
+            """),
+
+    SEND_OUT_NEW_RECEIPT(124, """
+            Розсилаю інвормацію про квитанції.
+            """),
+
+    NEW_RECEIPT_INFO(125, """
+            <b>Вам нарахована нова квитанція за оплату ОСББ.</b>
+            Будь Ласка перейдіть у розділ <u>""" + Actions.BUTTON_APPEAL.getText() +
+            "</u> та оплатіть послугу\n");
 
     Integer id;
     String message;

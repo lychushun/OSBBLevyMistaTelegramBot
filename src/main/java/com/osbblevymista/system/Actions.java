@@ -38,7 +38,17 @@ public enum Actions {
     BUTTON_MEETING_RELUSLT01022022("Підсумки Загальних зборів від 1.02.2022."),
     BUTTON_TARIFFS("Тарифи."),
 
-    BUTTON_ADMIN_SEND("Розіслати повідомлення");
+    BUTTON_ADMIN_SEND("Створити та розіслати повідомлення \uD83D\uDCE8"),
+    BUTTON_ADMIN_NEW_RECEIPT("Розіслати повідомлення про нову квитанцію \uD83D\uDCC4"),
+
+    BUTTON_CONTACT("Контакти \uD83D\uDE01"),
+    BUTTON_INFO("Інформація \u2139"),
+    BUTTON_ARREARS("Заборгованість \uD83D\uDCB0"),
+    BUTTON_SETTINGS("Налаштування \uD83D\uDEA9"),
+    BUTTON_CHATS("Чати \uD83D\uDCDA"),
+    BUTTON_ADMIN("Адмін \uD83D\uDC77"),
+    BUTTON_APPEAL("Звернення \uD83D\uDE4B"),
+    BUTTON_REPORTS("Звіти та документи \uD83D\uDCC4");
 
     String text;
 }
