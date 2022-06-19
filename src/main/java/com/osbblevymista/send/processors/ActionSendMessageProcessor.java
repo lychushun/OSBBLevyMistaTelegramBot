@@ -84,12 +84,12 @@ public class ActionSendMessageProcessor {
                     );
                 }
 
-                if (page.canExecute()) {
+                if (page.isOSBBKeyboard()) {
                     arrayList.add(new BiFunction<SendMessageParams, OSBBKeyboardButton, OSBBSendMessage>() {
                                       @Override
                                       public OSBBSendMessage apply(SendMessageParams sendMessageParams, OSBBKeyboardButton osbbKeyboardButton) {
                                           try {
-                                              return createPageExecution(sendMessageParams, osbbKeyboardButton);
+                                              return createPageKeyboard(sendMessageParams, osbbKeyboardButton);
                                           } catch (UnsupportedEncodingException | URISyntaxException e) {
                                               e.printStackTrace();
                                               logger.error(e.getMessage(), e);
@@ -100,12 +100,12 @@ public class ActionSendMessageProcessor {
                     );
                 }
 
-                if (page.isOSBBKeyboard()) {
+                if (page.canExecute()) {
                     arrayList.add(new BiFunction<SendMessageParams, OSBBKeyboardButton, OSBBSendMessage>() {
                                       @Override
                                       public OSBBSendMessage apply(SendMessageParams sendMessageParams, OSBBKeyboardButton osbbKeyboardButton) {
                                           try {
-                                              return createPageKeyboard(sendMessageParams, osbbKeyboardButton);
+                                              return createPageExecution(sendMessageParams, osbbKeyboardButton);
                                           } catch (UnsupportedEncodingException | URISyntaxException e) {
                                               e.printStackTrace();
                                               logger.error(e.getMessage(), e);

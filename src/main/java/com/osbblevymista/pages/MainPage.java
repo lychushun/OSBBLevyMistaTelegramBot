@@ -1,6 +1,8 @@
 package com.osbblevymista.pages;
 
 
+import com.osbblevymista.system.Titles;
+
 public class MainPage extends BasePage{
 
     private static MainPage mainPage = null;
@@ -16,7 +18,7 @@ public class MainPage extends BasePage{
 
     private MainPage(boolean isAdmin){
         super();
-        title = "Головна";
+        title = Titles.MAIN.getTitle();
     }
 
 }

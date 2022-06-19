@@ -1,5 +1,7 @@
 package com.osbblevymista.pages;
 
+import com.osbblevymista.system.Titles;
+
 public class InfoPage extends BasePage{
 
     private static InfoPage infoPage = null;
@@ -15,7 +17,7 @@ public class InfoPage extends BasePage{
 
     private InfoPage(){
         super();
-        title = "Інформація";
+        title = Titles.INFO.getTitle();
     }
 
 }

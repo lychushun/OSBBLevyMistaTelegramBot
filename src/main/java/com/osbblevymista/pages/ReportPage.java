@@ -5,6 +5,7 @@ import com.osbblevymista.keyabords.buttons.OSBBInlineKeyboardButton;
 import com.osbblevymista.system.Actions;
 import com.osbblevymista.system.Links;
 import com.osbblevymista.system.Messages;
+import com.osbblevymista.system.Titles;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
@@ -25,7 +26,7 @@ public class ReportPage extends BasePage{
 
     private ReportPage(){
         super();
-        title = "Звіти";
+        title = Titles.REPORTS.getTitle();
     }
 
     @Override

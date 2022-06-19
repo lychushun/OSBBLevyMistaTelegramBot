@@ -6,6 +6,7 @@ import com.osbblevymista.messages.ArrearsMessages;
 import com.osbblevymista.miydim.ArrearsMiyDimProcessor;
 import com.osbblevymista.system.Actions;
 import com.osbblevymista.system.Messages;
+import com.osbblevymista.system.Titles;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.UnsupportedEncodingException;
@@ -70,7 +71,7 @@ public class ArrearsPage extends BasePage {
 
     private ArrearsPage() {
         super();
-        title = "Заборгованість";
+        title = Titles.ARREARS.getTitle();
     }
 
 }

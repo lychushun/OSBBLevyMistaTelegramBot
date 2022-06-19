@@ -124,7 +124,7 @@ public enum Messages {
 
     NEW_RECEIPT_INFO(125, """
             <b>Вам нарахована нова квитанція за оплату ОСББ.</b>
-            Будь Ласка перейдіть у розділ <u>""" + Actions.BUTTON_APPEAL.getText() +
+            Будь Ласка перейдіть у розділ <u>""" + Actions.BUTTON_ARREARS.getText() +
             "</u> та оплатіть послугу\n");
 
     Integer id;

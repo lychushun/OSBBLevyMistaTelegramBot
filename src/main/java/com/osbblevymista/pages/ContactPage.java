@@ -1,5 +1,7 @@
 package com.osbblevymista.pages;
 
+import com.osbblevymista.system.Titles;
+
 public class ContactPage extends BasePage{
 
     private static ContactPage contactPage = null;
@@ -15,7 +17,7 @@ public class ContactPage extends BasePage{
 
     private ContactPage(){
         super();
-        title = "Контакти";
+        title = Titles.CHATS.getTitle();
     }
 
 }

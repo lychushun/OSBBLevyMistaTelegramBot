@@ -1,5 +1,7 @@
 package com.osbblevymista.pages;
 
+import com.osbblevymista.system.Titles;
+
 public class SettingsPage extends BasePage{
 
     private static SettingsPage settings = null;
@@ -15,7 +17,7 @@ public class SettingsPage extends BasePage{
 
     private SettingsPage(boolean isAdmin){
         super();
-        title = "Налаштування";
+        title = Titles.SETTINGS.getTitle();
     }
 
 }

@@ -1,5 +1,7 @@
 package com.osbblevymista.pages;
 
+import com.osbblevymista.system.Titles;
+
 public class AdminPage extends BasePage{
     private static AdminPage adminPage = null;
 
@@ -14,6 +16,6 @@ public class AdminPage extends BasePage{
 
     private AdminPage(){
         super();
-        title = "Чати";
+        title = Titles.ADMIN.getTitle();
     }
 }
