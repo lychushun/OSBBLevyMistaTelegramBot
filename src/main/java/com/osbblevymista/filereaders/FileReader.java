@@ -21,7 +21,7 @@ import java.util.*;
 
 public abstract class FileReader<R extends Info> {
 
-    final Logger logger = LoggerFactory.getLogger(FileReader.class);
+    protected final Logger logger = LoggerFactory.getLogger(FileReader.class);
 
     @Getter
     private String fileName;
@@ -34,14 +34,17 @@ public abstract class FileReader<R extends Info> {
 
     public String getFullFileName(){
         String fullFileName = storageLocation + getFileName();
-        System.out.println("Getting full file name: " + fullFileName);
+        logger.info("Getting full file name: " + fullFileName);
         return fullFileName;
     }
 
     protected abstract boolean add() throws IOException, CsvRequiredFieldEmptyException, CsvDataTypeMismatchException, CsvValidationException;
 
-    public abstract List<R> get() throws IOException;
+    public abstract List<R> get(boolean force) throws IOException;
 
+    public List<R> get() throws IOException {
+        return get(false);
+    }
 
     protected List<R> readFromFile(Class<R> c) throws IOException {
         File file = new File(getFullFileName());

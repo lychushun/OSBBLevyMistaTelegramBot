@@ -47,7 +47,7 @@ public class AdminFileReader extends FileReader<AdminInfo> {
     }
 
     @Override
-    public List<AdminInfo> get() throws IOException {
+    public List<AdminInfo> get(boolean force) throws IOException {
         return readFromFile(AdminInfo.class);
     }
 }

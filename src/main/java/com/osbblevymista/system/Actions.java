@@ -48,7 +48,7 @@ public enum Actions {
     BUTTON_CHATS("Чати \uD83D\uDCDA"),
     BUTTON_ADMIN("Адмін \uD83D\uDC77"),
     BUTTON_APPEAL("Звернення \uD83D\uDE4B"),
-    BUTTON_REPORTS("Звіти та документи \uD83D\uDCC4");
+    BUTTON_REPORTS("Документи та звіти \uD83D\uDCC4");
 
     String text;
 }

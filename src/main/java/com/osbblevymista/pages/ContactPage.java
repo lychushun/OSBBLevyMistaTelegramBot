@@ -17,7 +17,7 @@ public class ContactPage extends BasePage{
 
     private ContactPage(){
         super();
-        title = Titles.CHATS.getTitle();
+        title = Titles.CONTACTS.getTitle();
     }
 
 }

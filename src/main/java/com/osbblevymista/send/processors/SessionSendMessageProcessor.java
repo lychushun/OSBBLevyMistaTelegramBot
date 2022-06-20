@@ -16,6 +16,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 
 @Component
@@ -26,14 +27,17 @@ public class SessionSendMessageProcessor {
     private final AppealSendMessageProcessor appealSendMessageProcessor;
     private final ActionSendMessageProcessor actionSendMessageProcessor;
 
-    public List<Function<Message, OSBBSendMessage>> processSession(String message, SendMessageParams sendMessageParam, Session session) throws IOException, URISyntaxException {
+    public List<Function<Message, OSBBSendMessage>> processSession(String message, SendMessageParams sendMessageParam, Optional<Session> optional) throws IOException, URISyntaxException {
 
-        if (Objects.nonNull(session.getAttribute("reading"))){
-            return reading(message, sendMessageParam, session);
-        } else {
-            return markingAsReading(message, sendMessageParam, session);
+        if (optional.isPresent()) {
+            Session session = optional.get();
+            if (Objects.nonNull(session.getAttribute("reading"))) {
+                return reading(message, sendMessageParam, session);
+            } else {
+                return markingAsReading(message, sendMessageParam, session);
+            }
         }
-
+        return null;
     }
 
     private List<Function<Message, OSBBSendMessage>> markingAsReading(String message, SendMessageParams sendMessageParam, Session session) throws IOException {

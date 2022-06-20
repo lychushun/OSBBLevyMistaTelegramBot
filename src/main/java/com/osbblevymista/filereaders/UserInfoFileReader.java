@@ -37,18 +37,23 @@ public class UserInfoFileReader extends FileReader<UserInfo> {
     protected boolean add() throws IOException, CsvRequiredFieldEmptyException, CsvDataTypeMismatchException, CsvValidationException {
         List<UserInfo> userInfoList = get();
 
+        logger.debug("INSERTING userInfo: " + userInfo.toString());
+
         if (noneMatch(userInfoList, this.userInfo)) {
             super.writeToFile(userInfo);
-            get();
+            get(true);
+            logger.debug("userInfo was INSERTED: " + userInfo.toString());
             return true;
         }
 
+        logger.debug("userInfo was not INSERTED: " + userInfo.toString());
         return false;
     }
 
     @Override
-    public List<UserInfo> get() throws IOException {
-        if (userInfoList == null || refresh()) {
+    public List<UserInfo> get(boolean force) throws IOException {
+        if (userInfoList == null || refresh() || force) {
+            logger.info("Getting info about users.");
             userInfoList = readFromFile(UserInfo.class);
         }
         return userInfoList;
@@ -56,7 +61,10 @@ public class UserInfoFileReader extends FileReader<UserInfo> {
 
     public boolean isAddedUserInfo(UserInfo uInfo) throws IOException {
         List<UserInfo> userInfoList = get();
-        return !noneMatch(userInfoList, uInfo);
+        logger.debug("isAddedUserInfo userInfoList: " + userInfoList);
+        boolean res = !noneMatch(userInfoList, uInfo);
+        logger.debug("isAddedUserInfo: " + res);
+        return res;
     }
 
     private boolean refresh(){
@@ -69,6 +77,7 @@ public class UserInfoFileReader extends FileReader<UserInfo> {
     }
 
     private boolean noneMatch(List<UserInfo> userInfoList, UserInfo uInfo){
+        logger.debug("userInfoList: " + userInfoList.toString());
         return userInfoList.stream().noneMatch(item -> item.getChatId().equals(uInfo.getChatId())
                 && item.getUserId() == uInfo.getUserId());
     }

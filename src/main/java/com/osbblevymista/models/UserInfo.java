@@ -3,6 +3,7 @@ package com.osbblevymista.models;
 
 import com.opencsv.bean.CsvBindByName;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -58,6 +59,30 @@ public class UserInfo implements Info {
         lastName = "-";
     }
 
+    public void setFirstName(String name){
+        if (StringUtils.isEmpty(name)){
+            this.firstName = "-";
+        } else {
+            this.firstName = name;
+        }
+    }
+
+    public void setLastName(String name){
+        if (StringUtils.isEmpty(name)){
+            this.lastName = "-";
+        } else {
+            this.lastName = name;
+        }
+    }
+
+    public void setUserName(String name){
+        if (StringUtils.isEmpty(name)){
+            this.userName = "-";
+        } else {
+            this.userName = name;
+        }
+    }
+
     @Override
     public String[] getHeaders(){
         return new String[]{"chatId", "firstName", "lastName", "sentNotifications", "userId", "createDate", "apartment", "house", "userName", "firstNameMD", "lastNameMD"};
@@ -65,7 +90,19 @@ public class UserInfo implements Info {
 
     @Override
     public String[] getAsArray() {
-        return new String[]{chatId, firstName, lastName, String.valueOf(sentNotifications), String.valueOf(userId)};
+        return new String[]{
+                apartment,
+                chatId,
+                createDateTs,
+                firstName,
+                firstNameMD,
+                house,
+                lastName,
+                lastNameMD,
+                String.valueOf(sentNotifications),
+                String.valueOf(userId),
+                userName
+        };
     }
 
 }

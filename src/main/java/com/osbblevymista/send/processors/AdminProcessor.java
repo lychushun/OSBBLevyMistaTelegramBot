@@ -34,9 +34,13 @@ public class AdminProcessor {
 
     public boolean isAdmin(long adminId) throws IOException {
         refresh();
-        return adminInfos.stream().anyMatch(item -> {
-            return item.getAdminId().equals(adminId) && item.isActive();
-        });
+        if (adminInfos != null) {
+            return adminInfos.stream().anyMatch(item -> {
+                return item.getAdminId().equals(adminId) && item.isActive();
+            });
+        } else {
+            return false;
+        }
     }
 
     private void refresh() throws IOException {
