@@ -46,7 +46,7 @@ public class AdminProcessor {
     private void refresh() throws IOException {
         if ((createDate.getTime() + Long.parseLong(REFRESH_TIME_OUT)) <= new Date().getTime()){
             createDate = new Date();
-            adminInfos = adminFileReader.get();
+            adminInfos = adminFileReader.getAll();
         }
     }
 

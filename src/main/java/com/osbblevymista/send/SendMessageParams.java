@@ -11,6 +11,8 @@ public class SendMessageParams {
 
     private Long chatId;
 
+    private long userId;
+
     private String login;
     private String pass;
 

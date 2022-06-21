@@ -55,6 +55,7 @@ public class TelegramStarter1 implements CommandLineRunner {
     private final SessionSendMessageProcessor sessionSendMessageProcessor;
     private final UserInfoFileReader fileWorker;
     private final AdminProcessor adminProcessor;
+    private final SessionManager sessionManager;
 
     private final Logger logger = LoggerFactory.getLogger(TelegramStarter1.class);
 
@@ -77,9 +78,9 @@ public class TelegramStarter1 implements CommandLineRunner {
                     public void onUpdateReceived(Update update, Optional<Session> optional) {
 
                         try {
-//                            Session session = null;
-
                             Message message = update.getMessage();
+                            logger.info("REQUEST FROM: " + message.getFrom().getId());
+
                             Long chatId = message.getChatId();
 
                             String strMessage = message.getText();
@@ -90,30 +91,13 @@ public class TelegramStarter1 implements CommandLineRunner {
                                     .firstName(message.getFrom().getFirstName())
                                     .lastName(message.getFrom().getLastName())
                                     .userName(message.getFrom().getUserName())
+                                    .userId(message.getFrom().getId())
                                     .chatId(chatId);
 
                             if (strMessage.equals("/start")) {
                                 newMessages = createStartPage(sendMessageParamsBuilder.build(), message.getFrom().getId());
-//                            } else if (optional.isPresent()) {
                             } else {
-//                                session = optional.get();
-
-//                                UserInfo userInfo = new UserInfo();
-//
-//                                userInfo.setLastName(message.getChat().getLastName());
-//                                userInfo.setFirstName(message.getChat().getFirstName());
-//                                userInfo.setChatId(chatId.toString());
-//                                userInfo.setUserId(message.getFrom().getId());
-//                                userInfo.setUserName(message.getFrom().getUserName());
-
-                                SessionManager.addLoginAndPassToSession(optional, message, fileWorker);
-
-//                                if (isAddedChatId(userInfo) && Objects.isNull(session.getAttribute(SessionAttributes.IS_ADDED))) {
-//                                    session.setAttribute(SessionAttributes.IS_ADDED, true);
-//                                } else if (Objects.isNull(session.getAttribute(SessionAttributes.IS_ADDED)) || !isAddedChatId(userInfo)) {
-//                                    Boolean isAdded = addChatId(userInfo);
-//                                    session.setAttribute(SessionAttributes.IS_ADDED, true);
-//                                }
+                                sessionManager.addLoginAndPassToSession(optional, message, fileWorker);
 
 //                session.setAttribute(SessionAttributes.LOGIN, "yura.lychushun@gmail.com");
 //                session.setAttribute(SessionAttributes.PASS, "31101993");
@@ -124,8 +108,11 @@ public class TelegramStarter1 implements CommandLineRunner {
                                 }
 
                                 if (update.hasMessage()) {
-                                    String login = SessionManager.getSessionLogin(optional);
-                                    String pass = SessionManager.getSessionPass(optional);
+//                                    String login = sessionManager.getSessionLogin(optional);
+//                                    String pass = sessionManager.getSessionPass(optional);
+
+                                    String login = sessionManager.getSessionLogin(message.getFrom().getId());
+                                    String pass = sessionManager.getSessionPass(message.getFrom().getId());
 
                                     sendMessageParamsBuilder
                                             .login(login)
@@ -190,15 +177,6 @@ public class TelegramStarter1 implements CommandLineRunner {
                 e.printStackTrace();
             }
     }
-//
-//    private boolean isAddedChatId(UserInfo userInfo) throws IOException, CsvException {
-//        return fileWorker.isAddedUserInfo(userInfo);
-//    }
-
-
-//    private boolean addChatId(UserInfo userInfo) throws IOException, CsvException {
-//        return fileWorker.add(userInfo);
-//    }
 
     private List<Function<Message, OSBBSendMessage>> processMessage(SendMessageParams sendMessageParam, OSBBKeyboardButton osbbKeyboardButton) throws UnsupportedEncodingException, URISyntaxException {
 

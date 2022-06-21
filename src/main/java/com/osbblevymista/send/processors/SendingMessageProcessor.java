@@ -41,7 +41,7 @@ public class SendingMessageProcessor {
         List<Function<Message, OSBBSendMessage>> messages = new ArrayList<>();
 
         List<UserInfo> userInfoList = userInfoFileReader
-                .get()
+                .getAll()
                 .stream()
                 .filter(UserInfo::isSentNotifications)
                 .collect(Collectors.toList());
@@ -80,7 +80,7 @@ public class SendingMessageProcessor {
         List<Function<Message, OSBBSendMessage>> messages = new ArrayList<>();
 
         List<UserInfo> userInfoList = userInfoFileReader
-                .get()
+                .getAll()
                 .stream()
                 .filter(UserInfo::isSentNotifications)
                 .collect(Collectors.toList());

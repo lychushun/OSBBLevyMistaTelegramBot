@@ -1,32 +1,77 @@
 package com.osbblevymista.system;
 
 import com.opencsv.exceptions.CsvException;
+import com.osbblevymista.filereaders.AuthFileReader;
 import com.osbblevymista.filereaders.UserInfoFileReader;
+import com.osbblevymista.models.AuthInfo;
 import com.osbblevymista.models.UserInfo;
+import com.osbblevymista.utils.PasswordUtil;
+import lombok.RequiredArgsConstructor;
 import org.apache.shiro.session.Session;
+import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+@Component
+@RequiredArgsConstructor
 public class SessionManager {
 
-    public static String getSessionLogin(Optional<Session> optional){
+    private final PasswordUtil passwordUtil;
+    private final AuthFileReader authFileReader;
+
+    public String getSessionLogin(long userId) throws IOException {
+        AuthInfo authInfo = new AuthInfo();
+        authInfo.setUserId(userId);
+
+        Optional<AuthInfo> optional = authFileReader.getFirstActiveUser(authInfo);
+        if (optional.isPresent()){
+            return optional.get().getLogin();
+        } else {
+            return "";
+        }
+
+        //        if (optional.isPresent()) {
+//            return (String) optional.get().getAttribute(SessionAttributes.LOGIN);
+//        }
+    }
+
+    public String getSessionPass(long userId) throws IOException {
+        AuthInfo authInfo = new AuthInfo();
+        authInfo.setUserId(userId);
+
+        Optional<AuthInfo> optional = authFileReader.getFirstActiveUser(authInfo);
+        if (optional.isPresent()){
+            return optional.get().getPass();
+        } else {
+            return "";
+        }
+
+//        if (optional.isPresent()) {
+//            return (String) optional.get().getAttribute(SessionAttributes.LOGIN);
+//        }
+    }
+
+    public String getSessionLogin(Optional<Session> optional){
         if (optional.isPresent()) {
             return (String) optional.get().getAttribute(SessionAttributes.LOGIN);
         }
         return "";
     }
 
-    public static String getSessionPass(Optional<Session> optional){
+    public String getSessionPass(Optional<Session> optional){
         if (optional.isPresent()) {
             return (String) optional.get().getAttribute(SessionAttributes.PASS);
         }
         return "";
     }
 
-    public static void addLoginAndPassToSession(Optional<Session> optional, Message message, UserInfoFileReader fileWorker) throws IOException, CsvException {
+    public void addLoginAndPassToSession(Optional<Session> optional, Message message, UserInfoFileReader fileWorker) throws IOException, CsvException {
 
         if (optional.isPresent()) {
 
@@ -49,11 +94,11 @@ public class SessionManager {
         }
     }
 
-    private static boolean isAddedChatId(UserInfo userInfo, UserInfoFileReader fileWorker) throws IOException, CsvException {
-        return fileWorker.isAddedUserInfo(userInfo);
+    private boolean isAddedChatId(UserInfo userInfo, UserInfoFileReader fileWorker) throws IOException, CsvException {
+        return fileWorker.contains(userInfo);
     }
 
-    private static boolean addChatId(UserInfo userInfo, UserInfoFileReader fileWorker) throws IOException, CsvException {
+    private boolean addChatId(UserInfo userInfo, UserInfoFileReader fileWorker) throws IOException, CsvException {
         return fileWorker.add(userInfo);
     }
 }

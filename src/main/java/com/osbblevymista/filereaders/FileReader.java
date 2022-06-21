@@ -8,6 +8,7 @@ import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import com.opencsv.exceptions.CsvValidationException;
 import com.osbblevymista.OSBBLevyMista45;
 import com.osbblevymista.models.Info;
+import com.osbblevymista.models.UserInfo;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -18,13 +19,11 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public abstract class FileReader<R extends Info> {
 
     protected final Logger logger = LoggerFactory.getLogger(FileReader.class);
-
-    @Getter
-    private String fileName;
 
     @Getter
     @Value("${storagefiles}")
@@ -40,10 +39,33 @@ public abstract class FileReader<R extends Info> {
 
     protected abstract boolean add() throws IOException, CsvRequiredFieldEmptyException, CsvDataTypeMismatchException, CsvValidationException;
 
-    public abstract List<R> get(boolean force) throws IOException;
+    public abstract List<R> getAll(boolean force) throws IOException;
 
-    public List<R> get() throws IOException {
-        return get(false);
+    public boolean contains(R el) throws IOException{
+        return contains(el, false);
+    }
+
+    public boolean contains(R el, boolean getFlash) throws IOException{
+        List<R> userInfoList = getAll(getFlash);
+        logger.debug("isAddedUserInfo userInfoList: " + userInfoList);
+        boolean res = !noneMatch(userInfoList, el);
+        logger.debug("isAddedUserInfo: " + res);
+        return res;
+    }
+
+    protected abstract boolean noneMatch(List<R> userInfoList, R uInfo);
+
+    protected abstract boolean match(R el1, R el2);
+
+    public List<R> getAll() throws IOException {
+        return getAll(false);
+    }
+
+    public List<R> get(R el) throws IOException {
+        List<R> list = getAll();
+        return list.stream().filter(item -> {
+            return match(item, el);
+        }).collect(Collectors.toList());
     }
 
     protected List<R> readFromFile(Class<R> c) throws IOException {
@@ -58,14 +80,18 @@ public abstract class FileReader<R extends Info> {
 
             list = csvToBean.parse();
             return list;
-        } else {
-            file.createNewFile();
         }
+//        else {
+//            file.createNewFile();
+//        }
         return list;
     }
 
     protected void writeToFile(R info) throws IOException, CsvRequiredFieldEmptyException, CsvDataTypeMismatchException, CsvValidationException {
-
+        File file = new File(getFullFileName());
+        if (!file.exists()){
+            file.createNewFile();
+        }
         CSVReader reader = new CSVReader(new java.io.FileReader(getFullFileName()));
         String[] nextLine = reader.readNext();
         reader.close();

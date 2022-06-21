@@ -35,13 +35,13 @@ public class UserInfoFileReader extends FileReader<UserInfo> {
 
     @Override
     protected boolean add() throws IOException, CsvRequiredFieldEmptyException, CsvDataTypeMismatchException, CsvValidationException {
-        List<UserInfo> userInfoList = get();
+        List<UserInfo> userInfoList = getAll();
 
         logger.debug("INSERTING userInfo: " + userInfo.toString());
 
         if (noneMatch(userInfoList, this.userInfo)) {
             super.writeToFile(userInfo);
-            get(true);
+            getAll(true);
             logger.debug("userInfo was INSERTED: " + userInfo.toString());
             return true;
         }
@@ -51,7 +51,7 @@ public class UserInfoFileReader extends FileReader<UserInfo> {
     }
 
     @Override
-    public List<UserInfo> get(boolean force) throws IOException {
+    public List<UserInfo> getAll(boolean force) throws IOException {
         if (userInfoList == null || refresh() || force) {
             logger.info("Getting info about users.");
             userInfoList = readFromFile(UserInfo.class);
@@ -59,13 +59,14 @@ public class UserInfoFileReader extends FileReader<UserInfo> {
         return userInfoList;
     }
 
-    public boolean isAddedUserInfo(UserInfo uInfo) throws IOException {
-        List<UserInfo> userInfoList = get();
-        logger.debug("isAddedUserInfo userInfoList: " + userInfoList);
-        boolean res = !noneMatch(userInfoList, uInfo);
-        logger.debug("isAddedUserInfo: " + res);
-        return res;
-    }
+//    @Override
+//    public boolean contains(UserInfo el) throws IOException {
+//        List<UserInfo> userInfoList = get();
+//        logger.debug("isAddedUserInfo userInfoList: " + userInfoList);
+//        boolean res = !noneMatch(userInfoList, el);
+//        logger.debug("isAddedUserInfo: " + res);
+//        return res;
+//    }
 
     private boolean refresh(){
         if ((createDate.getTime() + REFRESH_TIME_OUT) <= new Date().getTime()){
@@ -76,9 +77,15 @@ public class UserInfoFileReader extends FileReader<UserInfo> {
         }
     }
 
-    private boolean noneMatch(List<UserInfo> userInfoList, UserInfo uInfo){
+    @Override
+    protected boolean noneMatch(List<UserInfo> userInfoList, UserInfo uInfo){
         logger.debug("userInfoList: " + userInfoList.toString());
-        return userInfoList.stream().noneMatch(item -> item.getChatId().equals(uInfo.getChatId())
+        return userInfoList.stream().noneMatch(item -> match(item,uInfo)
                 && item.getUserId() == uInfo.getUserId());
+    }
+
+    @Override
+    protected boolean match(UserInfo el1, UserInfo el2) {
+        return el1.getChatId().equals(el2.getChatId());
     }
 }
