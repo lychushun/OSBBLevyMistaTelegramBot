@@ -15,6 +15,7 @@ import com.osbblevymista.send.processors.SessionSendMessageProcessor;
 import com.osbblevymista.system.Messages;
 import com.osbblevymista.system.SessionAttributes;
 import com.osbblevymista.system.SessionManager;
+import com.osbblevymista.utils.AuthUtil;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -56,6 +57,7 @@ public class TelegramStarter1 implements CommandLineRunner {
     private final UserInfoFileReader fileWorker;
     private final AdminProcessor adminProcessor;
     private final SessionManager sessionManager;
+    private final AuthUtil authUtil;
 
     private final Logger logger = LoggerFactory.getLogger(TelegramStarter1.class);
 
@@ -97,7 +99,7 @@ public class TelegramStarter1 implements CommandLineRunner {
                             if (strMessage.equals("/start")) {
                                 newMessages = createStartPage(sendMessageParamsBuilder.build(), message.getFrom().getId());
                             } else {
-                                sessionManager.addLoginAndPassToSession(optional, message, fileWorker);
+//                                sessionManager.addLoginAndPassToSession(optional, message, fileWorker);
 
 //                session.setAttribute(SessionAttributes.LOGIN, "yura.lychushun@gmail.com");
 //                session.setAttribute(SessionAttributes.PASS, "31101993");
@@ -111,8 +113,8 @@ public class TelegramStarter1 implements CommandLineRunner {
 //                                    String login = sessionManager.getSessionLogin(optional);
 //                                    String pass = sessionManager.getSessionPass(optional);
 
-                                    String login = sessionManager.getSessionLogin(message.getFrom().getId());
-                                    String pass = sessionManager.getSessionPass(message.getFrom().getId());
+                                    String login = authUtil.getSessionLogin(message.getFrom().getId());
+                                    String pass = authUtil.getSessionPass(message.getFrom().getId());
 
                                     sendMessageParamsBuilder
                                             .login(login)

@@ -1,6 +1,7 @@
 package com.osbblevymista.models;
 
 import com.opencsv.bean.CsvBindByName;
+import com.opencsv.bean.CsvBindByPosition;
 import lombok.Data;
 
 import java.text.DateFormat;
@@ -34,7 +35,7 @@ public class AuthInfo implements Info{
 
     @Override
     public String[] getAsArray() {
-        return new String[]{String.valueOf(userId), pass, login, String.valueOf(active), createDateTs};
+        return new String[]{String.valueOf(active), createDateTs, login, pass, String.valueOf(userId)};
     }
 
     public AuthInfo(){
