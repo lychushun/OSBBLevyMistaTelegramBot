@@ -1,0 +1,9 @@
+1. sudo ssh -i /Users/yurii.luchyshyn/work/projects/TelegramBot/OSBBLevyMista.pem ec2-user@ec2-3-126-59-51.eu-central-1.compute.amazonaws.com 
+
+2. sudo sftp -i /Users/yurii.luchyshyn/work/projects/TelegramBot/OSBBLevyMista.pem ec2-user@ec2-3-67-85-34.eu-central-1.compute.amazonaws.com/ /Users/yurii.luchyshyn/work/projects/TelegramBot/target/OSBBLevyMista.jar
+
+3. put /Users/yurii.luchyshyn/work/projects/TelegramBot/target/OSBBLevyMista.jar 
+
+4. java  -jar OSBBLevyMista.jar
+
+5. tail -f ...
