@@ -39,13 +39,13 @@ public class ArrearsPage extends BasePage {
 
         ExecutorListenerResponse executorListenerResponse = new ExecutorListenerResponse();
 
-        if (StringUtils.isEmpty(sendMessageParams.getLogin()) || StringUtils.isEmpty(sendMessageParams.getPass())) {
-                executorListenerResponse.messages.add(Messages.MISSING_LOG_AND_PASS.getMessage());
+        if (StringUtils.isEmpty(sendMessageParams.getCookie())) {
+                executorListenerResponse.messages.add(Messages.MISSING_COOKIE.getMessage());
         } else {
-            ArrearsMiyDimProcessor arrearsMiyDim = new ArrearsMiyDimProcessor(sendMessageParams.getLogin(), sendMessageParams.getPass());
-            if (!arrearsMiyDim.getIsLogin()){
+            ArrearsMiyDimProcessor arrearsMiyDim = new ArrearsMiyDimProcessor(sendMessageParams.getCookie());
+            if (!arrearsMiyDim.isLogin()){
                 executorListenerResponse.messages.add(arrearsMiyDim.getErrorMessage());
-                executorListenerResponse.messages.add(Messages.MISSING_LOG_AND_PASS.getMessage());
+                executorListenerResponse.messages.add(Messages.MISSING_COOKIE.getMessage());
             } else {
                 ArrearsMessages arrearsMessages = new ArrearsMessages(arrearsMiyDim);
                 executorListenerResponse.messages.add(arrearsMessages.getMessage(ArrearsMessages.ARREARS.ARREARS.getValue()));

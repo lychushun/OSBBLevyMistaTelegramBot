@@ -9,8 +9,10 @@ import lombok.Getter;
 public class SendMessageParams {
 
     private Long chatId;
-
     private long userId;
+
+    private String clientIp;
+    private String clientPort;
 
     private String login;
     private String pass;
@@ -31,6 +33,10 @@ public class SendMessageParams {
 
     public String getLastName(){
         return lastName == null ? "" : lastName;
+    }
+
+    public String getChatIdAsString(){
+        return chatId != null ? chatId.toString() : "";
     }
 
 }

@@ -1,5 +1,6 @@
 package com.osbblevymista.telegram.send.processors;
 
+import com.osbblevymista.api.services.MiyDimService;
 import com.osbblevymista.telegram.keyabords.KeyboardParam;
 import com.osbblevymista.telegram.keyabords.buttons.OSBBKeyboardButton;
 import com.osbblevymista.telegram.pages.BasePage;
@@ -34,6 +35,8 @@ public class ActionSendMessageProcessor {
     private final Logger logger = LoggerFactory.getLogger(ActionSendMessageProcessor.class);
 
     private final SendMessageBuilder sendMessageBuilder;
+    private final MiyDimService miyDimService;
+
 
     public List<BiFunction<SendMessageParams, OSBBKeyboardButton, OSBBSendMessage>> createSendMessageList(OSBBKeyboardButton osbbKeyboardButton) throws UnsupportedEncodingException, URISyntaxException {
         ArrayList<BiFunction<SendMessageParams, OSBBKeyboardButton, OSBBSendMessage>> arrayList = new ArrayList<>();
@@ -240,9 +243,10 @@ public class ActionSendMessageProcessor {
         if (osbbKeyboardButton.canExecute()) {
             KeyboardParam keyboardParam = KeyboardParam
                     .builder()
-                    .login(sendMessageParams.getLogin())
-                    .pass(sendMessageParams.getPass())
-                    .chatId(sendMessageParams.getChatId().toString())
+                    .clientIp(sendMessageParams.getClientIp())
+                    .clientPort(sendMessageParams.getClientPort())
+                    .chatId(sendMessageParams.getChatIdAsString())
+                    .miyDimCookie(miyDimService.getCookie(sendMessageParams.getChatIdAsString()))
                     .build();
 
             initSendMessage = osbbKeyboardButton.doExecute(keyboardParam, o -> {
@@ -283,8 +287,7 @@ public class ActionSendMessageProcessor {
             messageBuffer.delete(0, messageBuffer.length());
             PageParams pageParams = PageParams
                     .builder()
-                    .login(sendMessageParams.getLogin())
-                    .pass(sendMessageParams.getPass())
+                    .cookie(miyDimService.getCookie(sendMessageParams.getChatIdAsString()))
                     .build();
 
             initSendMessage = page.doExecute(pageParams, o -> {

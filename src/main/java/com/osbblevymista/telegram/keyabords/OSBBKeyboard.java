@@ -26,12 +26,7 @@ public abstract class OSBBKeyboard {
     private boolean admin;
     @Setter
     protected String sufix = "";
-    @Setter
-    @Getter
-    private String clientIp;
-    @Setter
-    @Getter
-    private String clientPort;
+
 
 
     protected OSBBKeyboardButton osbbKeyboardButtonBack = new OSBBKeyboardButton(Actions.BUTTON_BACK.getText());;

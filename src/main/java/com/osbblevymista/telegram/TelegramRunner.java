@@ -229,6 +229,8 @@ public class TelegramRunner {
                                      .chatId(message.getChatId())
                                      .login(sendMessageParam.getLogin())
                                      .pass(sendMessageParam.getPass())
+                                     .clientIp(clientIp)
+                                     .clientPort(clientPort)
                                      .build();
 
                              return item.apply(sendMessageParams, osbbKeyboardButton);
@@ -296,8 +298,6 @@ public class TelegramRunner {
         ReportPage reportPage = ReportPage.getInstance(isAdmin);
 
         MainKeyboard mainKeyboard = new MainKeyboard(isAdmin);
-        mainKeyboard.setClientIp(clientIp);
-        mainKeyboard.setClientPort(clientPort);
         mainKeyboard.setArrearsPage(arrearsPage);
         mainKeyboard.setInfoPage(infoPage);
         mainKeyboard.setSettingsPage(settingsPage);

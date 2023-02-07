@@ -24,6 +24,10 @@ public class MiyDimService {
     private final Logger logger = LoggerFactory.getLogger(MiyDimProcessor.class);
     private final CookiesManager cookiesManager;
 
+    public String getCookie(String chatId){
+        return cookiesManager.getCookie(chatId);
+    }
+
     public Optional<String> auth(String login, String pass, String chatId) {
         try {
             String cookie = logIn(login, pass);
@@ -62,14 +66,22 @@ public class MiyDimService {
             HtmlPage page2 = button.click();
 
             HtmlPage currentPage = page2.getPage();
-            String applicationCookie = currentPage.getWebClient().getCookieManager().getCookie(".AspNet.ApplicationCookie").getValue();
             HtmlListItem item = currentPage.getFirstByXPath("//div[contains(@class, 'validation-summary-errors')]/ul/li");
             String errorMessage = Objects.nonNull(item) ? item.getFirstChild().asNormalizedText() : "";
-            if (!hasText(errorMessage)) {
+            if (hasText(errorMessage)) {
                 throw new Exception(errorMessage);
             } else {
-                return applicationCookie;
+                return getAspNetApplicationCookie(currentPage);
             }
+        }
+    }
+
+    private String getAspNetApplicationCookie(HtmlPage currentPage) throws Exception {
+        if (currentPage != null && currentPage.getWebClient() != null
+                && currentPage.getWebClient().getCookieManager() != null && currentPage.getWebClient().getCookieManager().getCookies() != null) {
+            return currentPage.getWebClient().getCookieManager().getCookie(".AspNet.ApplicationCookie").getValue();
+        } else {
+            throw new Exception("Проблема з автризацію.");
         }
     }
 

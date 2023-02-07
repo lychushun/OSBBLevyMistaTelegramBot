@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class AppealMiyDimProcessor extends MiyDimProcessor{
-    public AppealMiyDimProcessor(String login, String pass) {
-        super(login, pass);
+    public AppealMiyDimProcessor(String cookie) {
+        super(cookie);
     }
 
     public List<Appeal> getAppeals() throws IOException {

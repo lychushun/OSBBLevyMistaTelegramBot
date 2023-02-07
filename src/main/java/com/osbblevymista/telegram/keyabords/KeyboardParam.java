@@ -7,8 +7,9 @@ import lombok.Getter;
 @Builder
 public class KeyboardParam {
 
-    String login;
-    String pass;
-    String chatId;
+    private String chatId;
+    private String miyDimCookie;
+    private String clientIp;
+    private String clientPort;
 
 }

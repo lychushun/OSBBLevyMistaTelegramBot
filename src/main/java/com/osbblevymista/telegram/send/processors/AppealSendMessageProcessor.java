@@ -49,9 +49,9 @@ public class AppealSendMessageProcessor {
     }
 
     private List<Function<Message, OSBBSendMessage>> createAppeal(SendMessageParams sendMessageParam, String message) throws IOException, URISyntaxException {
-        AppealMiyDimProcessor arrearsMiyDim = new AppealMiyDimProcessor(sendMessageParam.getLogin(), sendMessageParam.getPass());
+        AppealMiyDimProcessor arrearsMiyDim = new AppealMiyDimProcessor(sendMessageParam.getChatIdAsString());
 
-        if (arrearsMiyDim.getIsLogin()) {
+        if (arrearsMiyDim.isLogin()) {
             boolean response = arrearsMiyDim.createAppeal(message);
             List<Function<Message, OSBBSendMessage>> list;
             if (response) {
@@ -65,7 +65,7 @@ public class AppealSendMessageProcessor {
         } else {
             return createResponse(sendMessageParam,
                     arrearsMiyDim.getErrorMessage() + "\n" +
-                            Messages.MISSING_LOG_AND_PASS.getMessage() + "\n");
+                            Messages.MISSING_COOKIE.getMessage() + "\n");
         }
     }
 

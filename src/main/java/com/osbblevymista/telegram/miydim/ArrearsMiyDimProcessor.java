@@ -15,8 +15,8 @@ import java.util.HashMap;
 import java.util.List;
 
 public class ArrearsMiyDimProcessor extends MiyDimProcessor{
-    public ArrearsMiyDimProcessor(String login, String pass) {
-        super(login, pass);
+    public ArrearsMiyDimProcessor(String cookie) {
+        super(cookie);
     }
 
     public HashMap<String, String> getPayments(){

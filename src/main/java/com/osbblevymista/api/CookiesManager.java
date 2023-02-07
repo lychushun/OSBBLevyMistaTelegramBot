@@ -16,6 +16,10 @@ public class CookiesManager {
         cookies.put(id, cookie);
     }
 
+    public String getCookie(String chatId){
+        return cookies.get(chatId);
+    }
+
     public void removeCookies(String id){
         cookies.remove(id);
     }

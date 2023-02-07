@@ -1,16 +1,10 @@
 package com.osbblevymista.telegram.keyabords;
 
-import com.osbblevymista.telegram.executorlistener.ExecutorListenerResponse;
-import com.osbblevymista.telegram.executorlistener.OSBBExecutorListener;
-import com.osbblevymista.telegram.keyabords.buttons.OSBBInlineKeyboardButton;
 import com.osbblevymista.telegram.keyabords.buttons.OSBBKeyboardButton;
 import com.osbblevymista.telegram.pages.*;
 import com.osbblevymista.telegram.pages.appeals.AppealPage;
 import com.osbblevymista.telegram.system.Actions;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
-
-import java.io.IOException;
-import java.net.URISyntaxException;
 
 public class MainKeyboard extends OSBBKeyboard {
 
@@ -21,8 +15,6 @@ public class MainKeyboard extends OSBBKeyboard {
     private final OSBBKeyboardButton osbbKeyboardButtonAdmin = new OSBBKeyboardButton(Actions.BUTTON_ADMIN.getText());
     private final OSBBKeyboardButton osbbKeyboardButtonAppeal = new OSBBKeyboardButton(Actions.BUTTON_APPEAL.getText());
 
-    private final OSBBKeyboardButton osbbKeyboardButtonVisitMiyDim = new OSBBKeyboardButton(Actions.BUTTON_VISIT_MIYDIM.getText());
-
     {
 
         osbbKeyboardButtonArrears.setId(Actions.BUTTON_ARREARS.getText());
@@ -30,26 +22,6 @@ public class MainKeyboard extends OSBBKeyboard {
 
         osbbKeyboardButtonAppeal.setId(Actions.BUTTON_APPEAL.getText());
         insertIntoFirstRow(osbbKeyboardButtonAppeal);
-
-        osbbKeyboardButtonVisitMiyDim.setId(Actions.BUTTON_VISIT_MIYDIM.getText());
-        osbbKeyboardButtonVisitMiyDim.setOsbbExecutorListener(new OSBBExecutorListener() {
-            @Override
-            public ExecutorListenerResponse doExecute(KeyboardParam keyboardParam) throws IOException, URISyntaxException {
-                ExecutorListenerResponse executorListenerResponse = new ExecutorListenerResponse();
-                executorListenerResponse.setTitle("miydimWebT");
-//                executorListenerResponse.messages.add("<p>aaa</p>");
-//                executorListenerResponse.setParseMode(MessagesParseMode.HTML);
-                OSBBInlineKeyboardButton osbbInlineKeyboardButton = new OSBBInlineKeyboardButton();
-                osbbInlineKeyboardButton.setId("miydimWeb");
-                osbbInlineKeyboardButton.setText("miydimWebM");
-
-//                osbbInlineKeyboardButton.setText("miydimWeb");
-                osbbInlineKeyboardButton.setUrl("http://"+ getClientIp() + ":" + getClientPort() + "/TelegramBot/src/main/web_pages/index.html?chatId=" + keyboardParam.chatId);
-                executorListenerResponse.insertOSBBInlineKeyboardButtonNextCell(osbbInlineKeyboardButton);
-                return executorListenerResponse;
-            }
-        });
-        insertIntoFirstRow(osbbKeyboardButtonVisitMiyDim);
 
         osbbKeyboardButtonInfo.setId(Actions.BUTTON_INFO.getText());
         insertIntoSecondRow(osbbKeyboardButtonInfo);
@@ -98,20 +70,5 @@ public class MainKeyboard extends OSBBKeyboard {
     public KeyboardButton getBack() {
         return null;
     }
-
-//    @AllArgsConstructor
-//    @Getter
-//    public enum BUTTONS {
-//        CONTACT("Контакти \uD83D\uDE01"),
-//        INFO("Інформація \u2139"),
-//        ARREARS("Заборгованість \uD83D\uDCB0"),
-//        SETTINGS("Налаштування \uD83D\uDEA9"),
-//        CHATS("Чати \uD83D\uDCDA"),
-//        ADMIN("Адмін \uD83D\uDC77"),
-//        APPEAL("Звернення \uD83D\uDE4B"),
-//        REPORTS("Звіти та документи \uD83D\uDCC4");
-//
-//        String text;
-//    }
 
 }

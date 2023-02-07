@@ -91,8 +91,8 @@ public class AppealKeyboard extends OSBBKeyboard {
             public ExecutorListenerResponse doExecute(KeyboardParam keyboardParam) throws IOException, URISyntaxException {
                 ExecutorListenerResponse executorListenerResponse = new ExecutorListenerResponse();
 
-                AppealMiyDimProcessor arrearsMiyDim = new AppealMiyDimProcessor(keyboardParam.getLogin(), keyboardParam.getPass());
-                if (arrearsMiyDim.getIsLogin()) {
+                AppealMiyDimProcessor arrearsMiyDim = new AppealMiyDimProcessor(keyboardParam.getMiyDimCookie());
+                if (arrearsMiyDim.isLogin()) {
                     List<Appeal> appealList = arrearsMiyDim.getAppeals();
                     appealList.forEach(item -> {
                         StringBuilder stringBuffer = new StringBuilder();
@@ -109,7 +109,7 @@ public class AppealKeyboard extends OSBBKeyboard {
                 } else {
                     executorListenerResponse.messages.add(
                             arrearsMiyDim.getErrorMessage() + "\n" +
-                                    Messages.MISSING_LOG_AND_PASS.getMessage() + "\n");
+                                    Messages.MISSING_COOKIE.getMessage() + "\n");
                 }
 
                 return executorListenerResponse;
@@ -145,8 +145,8 @@ public class AppealKeyboard extends OSBBKeyboard {
             public ExecutorListenerResponse doExecute(KeyboardParam keyboardParam) throws UnsupportedEncodingException, URISyntaxException {
                 ExecutorListenerResponse executorListenerResponse = new ExecutorListenerResponse();
 
-                if (StringUtils.isEmpty(keyboardParam.getLogin()) || StringUtils.isEmpty(keyboardParam.getPass())) {
-                    executorListenerResponse.messages.add(Messages.MISSING_LOG_AND_PASS.getMessage());
+                if (StringUtils.isEmpty(keyboardParam.getMiyDimCookie())) {
+                    executorListenerResponse.messages.add(Messages.MISSING_COOKIE.getMessage());
                 } else {
                     if (appealTypes == AppealTypes.SIMPLE) {
                         executorListenerResponse.messages.add(Messages.INSERT_SIMPLE_REQUEST_DATA_FOR_MYIDIM.getMessage());

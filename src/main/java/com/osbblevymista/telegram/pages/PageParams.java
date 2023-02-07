@@ -7,7 +7,6 @@ import lombok.Getter;
 @Getter
 public class PageParams {
 
-    String login;
-    String pass;
+    String cookie;
 
 }
