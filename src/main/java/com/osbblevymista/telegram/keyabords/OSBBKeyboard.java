@@ -27,8 +27,6 @@ public abstract class OSBBKeyboard {
     @Setter
     protected String sufix = "";
 
-
-
     protected OSBBKeyboardButton osbbKeyboardButtonBack = new OSBBKeyboardButton(Actions.BUTTON_BACK.getText());;
 
     private boolean isDisplayBackKey = false;

@@ -38,9 +38,15 @@ public abstract class FileReader<R extends Info> {
         return fullFileName;
     }
 
-    protected abstract boolean add() throws IOException, CsvRequiredFieldEmptyException, CsvDataTypeMismatchException, CsvValidationException;
+//    protected abstract boolean add() throws IOException, CsvRequiredFieldEmptyException, CsvDataTypeMismatchException, CsvValidationException;
 
     public abstract List<R> getAll(boolean force) throws IOException;
+
+
+    public void add(R file) throws IOException, CsvRequiredFieldEmptyException, CsvDataTypeMismatchException, CsvValidationException {
+            writeToFile(file);
+    }
+
 
     public boolean contains(R el) throws IOException{
         return contains(el, false);
@@ -67,11 +73,19 @@ public abstract class FileReader<R extends Info> {
         }).collect(Collectors.toList());
     }
 
+    public void deleteFile(){
+        logger.info("Deleting file...");
+        File f= new File(getFullFileName());           //file to be delete
+        f.delete();
+    }
+
     protected List<R> readFromFile(Class<R> c) throws IOException {
-        File file = new File(getFullFileName());
+        logger.info("Reading file...");
+        String fullFileName = getFullFileName();
+        File file = new File(fullFileName);
         List<R> list = new ArrayList<>();
         if (file.exists()) {
-            Reader reader = Files.newBufferedReader(Path.of(getFullFileName()));
+            Reader reader = Files.newBufferedReader(Path.of(fullFileName));
             CsvToBean<R> csvToBean = new CsvToBeanBuilder<R>(reader)
                     .withType(c)
                     .withIgnoreLeadingWhiteSpace(true)
@@ -87,18 +101,20 @@ public abstract class FileReader<R extends Info> {
     }
 
     protected void writeToFile(R info) throws IOException, CsvRequiredFieldEmptyException, CsvDataTypeMismatchException, CsvValidationException {
-        File file = new File(getFullFileName());
+        logger.info("Writing file...");
+        String fullFileName = getFullFileName();
+        File file = new File(fullFileName);
         if (!file.exists()){
             file.createNewFile();
         }
-        CSVReader reader = new CSVReader(new java.io.FileReader(getFullFileName()));
+        CSVReader reader = new CSVReader(new java.io.FileReader(fullFileName));
         String[] nextLine = reader.readNext();
         reader.close();
 
         List<R> list = new ArrayList<>();
         list.add(info);
 
-        Writer writer = new FileWriter(getFullFileName(), true);
+        Writer writer = new FileWriter(fullFileName, true);
         CSVWriter csvWriter = new CSVWriter(writer);
 
         if (nextLine != null) {

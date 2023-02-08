@@ -13,23 +13,26 @@ import java.util.Date;
 @Data
 public class UserInfo implements Info {
 
-    @CsvBindByName(column="CHATID", required = true)
+    @CsvBindByName(column="CHAT_ID", required = true)
     private String chatId;
 
-    @CsvBindByName(column="FIRSTNAME", required = true)
+    @CsvBindByName(column="FIRST_NAME", required = true)
     private String firstName = "";
 
-    @CsvBindByName(column="LASTNAME")
+    @CsvBindByName(column="LAST_NAME")
     private String lastName = new String("-");
 
-    @CsvBindByName(column="SENTNOTIFICATION")
+    @CsvBindByName(column="SENT_NOTIFICATION")
     private boolean sentNotifications = true;
 
-    @CsvBindByName(column="USERID", required = true)
+    @CsvBindByName(column="USER_ID", required = true)
     private long userId;
 
-    @CsvBindByName(column="CREATEDATETS", required = true)
+    @CsvBindByName(column="CREATE_DATE_TS", required = true)
     private String createDateTs;
+
+    @CsvBindByName(column="LAST_ACTIVE_DATE_TS", required = true)
+    private String lastActiveDateTs;
 
     @CsvBindByName(column="APARTMENT")
     private String apartment = new String("-");
@@ -37,19 +40,18 @@ public class UserInfo implements Info {
     @CsvBindByName(column="HOUSE")
     private String house = new String("-");
 
-    @CsvBindByName(column="USERNAME")
+    @CsvBindByName(column="USER_NAME")
     private String userName = new String("-");
 
-    @CsvBindByName(column="FIRSTNAMEMD")
+    @CsvBindByName(column="FIRST_NAME_MD")
     private String firstNameMD = new String("-");
 
-    @CsvBindByName(column="LASTNAMEMD")
+    @CsvBindByName(column="LAST_NAME_MD")
     private String lastNameMD = new String("-");
 
     public UserInfo(){
-        Date date = Calendar.getInstance().getTime();
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
-        createDateTs = dateFormat.format(date);
+        createDateTs = getCurrentDateTs();
+        lastActiveDateTs = createDateTs;
 
         lastNameMD = "-";
         firstNameMD = "-";
@@ -57,6 +59,10 @@ public class UserInfo implements Info {
         house = "-";
         apartment = "-";
         lastName = "-";
+    }
+
+    public void updateLastActiveDate(){
+        lastActiveDateTs = getCurrentDateTs();
     }
 
     public void setFirstName(String name){
@@ -85,7 +91,7 @@ public class UserInfo implements Info {
 
     @Override
     public String[] getHeaders(){
-        return new String[]{"chatId", "firstName", "lastName", "sentNotifications", "userId", "createDate", "apartment", "house", "userName", "firstNameMD", "lastNameMD"};
+        return new String[]{"chat_Id", "first_Name", "last_Name", "sent_Notifications", "user_Id", "create_Date", "last_Active_Date", "apartment", "house", "user_Name", "first_Name_MD", "last_Name_MD"};
     }
 
     @Override
@@ -94,6 +100,7 @@ public class UserInfo implements Info {
                 apartment,
                 chatId,
                 createDateTs,
+                lastActiveDateTs,
                 firstName,
                 firstNameMD,
                 house,
@@ -103,6 +110,12 @@ public class UserInfo implements Info {
                 String.valueOf(userId),
                 userName
         };
+    }
+
+    private String getCurrentDateTs(){
+        Date date = Calendar.getInstance().getTime();
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+        return dateFormat.format(date);
     }
 
 }

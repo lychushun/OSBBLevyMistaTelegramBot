@@ -28,6 +28,8 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static java.util.Objects.nonNull;
+
 @AllArgsConstructor
 @Component
 public class ActionSendMessageProcessor {
@@ -68,7 +70,7 @@ public class ActionSendMessageProcessor {
                 );
             }
 
-            if (Objects.nonNull(page)) {
+            if (nonNull(page)) {
 
                 if (page.messages.size() > 0) {
                     arrayList.add(new BiFunction<SendMessageParams, OSBBKeyboardButton, OSBBSendMessage>() {
@@ -219,7 +221,7 @@ public class ActionSendMessageProcessor {
         OSBBSendMessage sendMessage = sendMessageBuilder.createBaseMessage(sendMessageParams.getChatId());
         StringBuilder messageBuffer = new StringBuilder();
 
-        if (Objects.nonNull(page) && page.isOSBBKeyboard()) {
+        if (nonNull(page) && page.isOSBBKeyboard()) {
             ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup(page.getOsbbKeyboard().getKeyBoard());
             replyKeyboardMarkup.setResizeKeyboard(true);
             sendMessage.setReplyMarkup(replyKeyboardMarkup);
@@ -257,7 +259,7 @@ public class ActionSendMessageProcessor {
                     return true;
                 }
 
-                if (Objects.nonNull(keyboardButtons) && keyboardButtons.size() > 0) {
+                if (nonNull(keyboardButtons) && keyboardButtons.size() > 0) {
                     sendMessage.setReplyMarkup(new InlineKeyboardMarkup(keyboardButtons));
                     messageBuffer.append(o.getTitle()).append("\n");
                     sendMessage.setText(messageBuffer.toString());
@@ -283,10 +285,13 @@ public class ActionSendMessageProcessor {
         boolean initSendMessage = false;
         StringBuffer messageBuffer = new StringBuffer();
 
-        if (Objects.nonNull(page) && page.canExecute()) {
+        if (nonNull(page) && page.canExecute()) {
             messageBuffer.delete(0, messageBuffer.length());
             PageParams pageParams = PageParams
                     .builder()
+                    .clientIp(sendMessageParams.getClientIp())
+                    .clientPort(sendMessageParams.getClientPort())
+                    .chatId(sendMessageParams.getChatId())
                     .cookie(miyDimService.getCookie(sendMessageParams.getChatIdAsString()))
                     .build();
 
@@ -299,7 +304,7 @@ public class ActionSendMessageProcessor {
                     messageBuffer.append(getMessage(o.messages)).append("\n");
                 }
 
-                if (Objects.nonNull(keyboardButtons) && keyboardButtons.size() > 0) {
+                if (nonNull(keyboardButtons) && keyboardButtons.size() > 0) {
                     InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup(keyboardButtons);
 
                     sendMessage.setReplyMarkup(inlineKeyboardMarkup);

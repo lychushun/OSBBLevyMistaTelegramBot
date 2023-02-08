@@ -16,15 +16,18 @@ import com.osbblevymista.telegram.send.OSBBSendMessage;
 import com.osbblevymista.telegram.send.SendMessageBuilder;
 import com.osbblevymista.telegram.send.SendMessageParams;
 import com.osbblevymista.telegram.send.processors.ActionSendMessageProcessor;
-import com.osbblevymista.telegram.send.processors.AdminProcessor;
+//import com.osbblevymista.telegram.send.processors.AdminProcessor;
 import com.osbblevymista.telegram.send.processors.SessionSendMessageProcessor;
+import com.osbblevymista.telegram.services.AdminInfoService;
+import com.osbblevymista.telegram.services.UserInfoService;
 import com.osbblevymista.telegram.system.Messages;
 import com.osbblevymista.telegram.system.SessionManager;
-import com.osbblevymista.telegram.utils.AuthUtil;
+//import com.osbblevymista.telegram.utils.AuthUtil;
 import lombok.RequiredArgsConstructor;
 import org.apache.shiro.session.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -55,10 +58,12 @@ public class TelegramRunner {
     private final SendMessageBuilder sendMessageBuilder;
     private final ActionSendMessageProcessor actionSendMessageProcessor;
     private final SessionSendMessageProcessor sessionSendMessageProcessor;
-    private final UserInfoFileReader fileWorker;
-    private final AdminProcessor adminProcessor;
-    private final SessionManager sessionManager;
-    private final AuthUtil authUtil;
+    //    private final UserInfoFileReader fileWorker;
+//    private final AdminProcessor adminProcessor;
+    private final UserInfoService userInfoService;
+    private final AdminInfoService adminInfoService;
+//    private final SessionManager sessionManager;
+//    private final AuthUtil authUtil;
 
     private final Logger logger = LoggerFactory.getLogger(ApplicationConfig.class);
 
@@ -74,13 +79,13 @@ public class TelegramRunner {
     @Value("${client.port}")
     private String clientPort;
 
-    @Bean
+    @Bean(name = "telegramTaskExecutor")
     public TaskExecutor taskExecutor() {
         return new SimpleAsyncTaskExecutor(); // Or use another one of your liking
     }
 
     @Bean
-    public CommandLineRunner schedulingRunner(TaskExecutor executor) {
+    public CommandLineRunner schedulingTelegramRunner(@Qualifier("telegramTaskExecutor") TaskExecutor executor) {
         return new CommandLineRunner() {
             public void run(String... args) throws Exception {
                 System.out.println("Running telegram...");
@@ -127,7 +132,8 @@ public class TelegramRunner {
                                 userInfo.setChatId(message.getChat().getId().toString());
                                 userInfo.setUserId(message.getFrom().getId());
                                 userInfo.setUserName(message.getFrom().getUserName());
-                                fileWorker.add(userInfo);
+                                userInfoService.addRow(userInfo);
+//                                fileWorker.add(userInfo);
 
                                 //                                sessionManager.addLoginAndPassToSession(optional, message, fileWorker);
 
@@ -140,15 +146,10 @@ public class TelegramRunner {
                                 }
 
                                 if (update.hasMessage()) {
-//                                    String login = sessionManager.getSessionLogin(optional);
-//                                    String pass = sessionManager.getSessionPass(optional);
-
-                                    String login = authUtil.getSessionLogin(message.getFrom().getId());
-                                    String pass = authUtil.getSessionPass(message.getFrom().getId());
-
                                     sendMessageParamsBuilder
-                                            .login(login)
-                                            .pass(pass)
+                                            .clientPort(clientPort)
+                                            .clientIp(clientIp)
+                                            .chatId(chatId)
                                             .build();
 
                                     newMessages = sessionSendMessageProcessor.processSession(message, sendMessageParamsBuilder.build(), optional);
@@ -159,7 +160,6 @@ public class TelegramRunner {
                                     }
                                 }
                             }
-
 
                         } else {
                             newMessages.add(actionSendMessageProcessor.createSimpleMessage(sendMessageParamsBuilder.build(), Messages.UNRECOGNIZED_COMMAND.getMessage()));
@@ -224,16 +224,7 @@ public class TelegramRunner {
             list.add(new Function<Message, OSBBSendMessage>() {
                          @Override
                          public OSBBSendMessage apply(Message message) {
-                             SendMessageParams sendMessageParams = SendMessageParams
-                                     .builder()
-                                     .chatId(message.getChatId())
-                                     .login(sendMessageParam.getLogin())
-                                     .pass(sendMessageParam.getPass())
-                                     .clientIp(clientIp)
-                                     .clientPort(clientPort)
-                                     .build();
-
-                             return item.apply(sendMessageParams, osbbKeyboardButton);
+                             return item.apply(sendMessageParam, osbbKeyboardButton);
                          }
                      }
             );
@@ -244,14 +235,22 @@ public class TelegramRunner {
 
     private List<Function<Message, OSBBSendMessage>> createStartPage(SendMessageParams sendMessageParams, long fromId) throws IOException, CsvException, URISyntaxException {
         OSBBKeyboardButton osbbKeyboardButton = new OSBBKeyboardButton();
-        osbbKeyboardButton.setNextPage(getPageInfrastructure(isAdmin(fromId)));
+        osbbKeyboardButton.setNextPage(
+                getPageInfrastructure(
+                        adminInfoService.isAdmin(fromId)
+                )
+        );
         osbbKeyboardButton.messages.add(Messages.START_NEW_PERSON.getMessage());
         return processMessage(sendMessageParams, osbbKeyboardButton);
     }
 
     private OSBBKeyboardButton getOSBBKeyboardButton(Message message) throws IOException, CsvException {
         String buttonText = message.getText();
-        MainPage mainPage = getPageInfrastructure(isAdmin(message.getFrom().getId()));
+        MainPage mainPage = getPageInfrastructure(
+                adminInfoService.isAdmin(
+                        message.getFrom().getId()
+                )
+        );
         return mainPage.currentButton(buttonText);
     }
 
@@ -268,11 +267,11 @@ public class TelegramRunner {
         };
     }
 
-    private boolean isAdmin(long adminId) throws IOException, CsvException {
-//        AdminProcessor adminProcessor = AdminProcessor.createInstance();
-//        adminProcessor.addAdmin("Yura", "", 759291097);
-        return adminProcessor.isAdmin(adminId);
-    }
+//    private boolean isAdmin(long adminId) throws IOException, CsvException {
+////        AdminProcessor adminProcessor = AdminProcessor.createInstance();
+////        adminProcessor.addAdmin("Yura", "", 759291097);
+//        return adminInfoService.isAdmin(adminId);
+//    }
 
     private SendMessageParams.SendMessageParamsBuilder getSendMessageParamsBuilder(Message message, Long chatId) {
         return SendMessageParams

@@ -11,11 +11,10 @@ public class SendMessageParams {
     private Long chatId;
     private long userId;
 
+    private String loginCookie;
+
     private String clientIp;
     private String clientPort;
-
-    private String login;
-    private String pass;
 
     private String firstName = "";
     private String lastName = "";

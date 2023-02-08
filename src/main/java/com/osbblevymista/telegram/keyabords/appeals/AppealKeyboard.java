@@ -7,6 +7,7 @@ import com.osbblevymista.telegram.keyabords.OSBBKeyboard;
 import com.osbblevymista.telegram.keyabords.buttons.OSBBKeyboardButton;
 import com.osbblevymista.telegram.miydim.Appeal;
 import com.osbblevymista.telegram.miydim.AppealMiyDimProcessor;
+import com.osbblevymista.telegram.pages.ArrearsPage;
 import com.osbblevymista.telegram.pages.appeals.SubmitSimpleAppealPage;
 import com.osbblevymista.telegram.pages.appeals.SubmitUrgentAppealPage;
 import com.osbblevymista.telegram.system.Actions;
@@ -24,58 +25,7 @@ public class AppealKeyboard extends OSBBKeyboard {
 
     private final OSBBKeyboardButton osbbKeyboardButtonCreateSimple = new OSBBKeyboardButton(Actions.BUTTON_APPEAL_SIMPLE_CREATE.getText());
     private final OSBBKeyboardButton osbbKeyboardButtonCreateUrgent = new OSBBKeyboardButton(Actions.BUTTON_APPEAL_URGENT_CREATE.getText());
-
-    //    private final OSBBKeyboardButton osbbKeyboardButtonCreateSimple = new OSBBKeyboardButton(Actions.BUTTON_APPEAL_SIMPLE_CREATE.getText());
-//    private final OSBBKeyboardButton osbbKeyboardButtonCreateUrgent = new OSBBKeyboardButton(Actions.BUTTON_APPEAL_URGENT_CREATE.getText());
     private final OSBBKeyboardButton osbbKeyboardButtonGet = new OSBBKeyboardButton(Actions.BUTTON_APPEAL_REVIEW.getText());
-//
-//    {
-//        osbbKeyboardButtonCreateSimple.setId(Actions.BUTTON_APPEAL_SIMPLE_CREATE.getText());
-//        osbbKeyboardButtonCreateSimple.setOsbbExecutorListener(getOsbbExecutorListenerCreate(OSBBExecutorListenerCreatorType.SIMPLE));
-//        insertIntoFirstRow(osbbKeyboardButtonCreateSimple);
-//
-//
-//        osbbKeyboardButtonCreateUrgent.setId(Actions.BUTTON_APPEAL_URGENT_CREATE.getText());
-//        osbbKeyboardButtonCreateUrgent.setOsbbExecutorListener(getOsbbExecutorListenerCreate(OSBBExecutorListenerCreatorType.URGENT));
-//        insertIntoFirstRow(osbbKeyboardButtonCreateUrgent);
-//
-//
-//        OSBBExecutorListener osbbExecutorListenerGet = new OSBBExecutorListener() {
-//            @Override
-//            public ExecutorListenerResponse doExecute(KeyboardParam keyboardParam) throws IOException, URISyntaxException {
-//                ExecutorListenerResponse executorListenerResponse = new ExecutorListenerResponse();
-//
-//                AppealMiyDimProcessor arrearsMiyDim = new AppealMiyDimProcessor(keyboardParam.getLogin(), keyboardParam.getPass());
-//                if (arrearsMiyDim.getIsLogin()) {
-//                    List<Appeal> appealList = arrearsMiyDim.getAppeals();
-//                    appealList.forEach(item -> {
-//                        StringBuilder stringBuffer = new StringBuilder();
-//                        stringBuffer
-//                                .append("<b>Дата створення: </b>")
-//                                .append(item.getCreateDateTime())
-//                                .append("\n")
-//                                .append("<b>Повідомлення: </b>").append(item.getMessage())
-//                                .append("\n")
-//                                .append("<b>Статус: </b>").append(item.getAppeal_status().toString())
-//                                .append("\n");
-//                        executorListenerResponse.messages.add(stringBuffer.toString());
-//                    });
-//                } else {
-//                    executorListenerResponse.messages.add(
-//                            arrearsMiyDim.getErrorMessage() + "\n" +
-//                                    Messages.MISSING_LOG_AND_PASS.getMessage() + "\n");
-//                }
-//
-//                return executorListenerResponse;
-//            }
-//        };
-//
-//        osbbKeyboardButtonGet.setId(Actions.BUTTON_APPEAL_REVIEW.getText());
-//        osbbKeyboardButtonGet.messages.add(Messages.GET_REQUEST_DATA_FOR_MYIDIM.getMessage());
-//        osbbKeyboardButtonGet.setOsbbExecutorListener(osbbExecutorListenerGet);
-//        insertIntoFirstRow(osbbKeyboardButtonGet);
-//
-//    }
 
     {
         osbbKeyboardButtonCreateSimple.setId(Actions.BUTTON_APPEAL_SIMPLE_CREATE.getText());
@@ -107,9 +57,16 @@ public class AppealKeyboard extends OSBBKeyboard {
                         executorListenerResponse.messages.add(stringBuffer.toString());
                     });
                 } else {
-                    executorListenerResponse.messages.add(
-                            arrearsMiyDim.getErrorMessage() + "\n" +
-                                    Messages.MISSING_COOKIE.getMessage() + "\n");
+                    return ArrearsPage.notLoginResponse(
+                            keyboardParam.getClientIp(),
+                            keyboardParam.getClientPort(),
+                            keyboardParam.getChatId(),
+                            arrearsMiyDim.getErrorMessage()
+                    );
+
+//                    executorListenerResponse.messages.add(
+//                            arrearsMiyDim.getErrorMessage() + "\n" +
+//                                    Messages.MISSING_COOKIE.getMessage() + "\n");
                 }
 
                 return executorListenerResponse;
@@ -146,7 +103,12 @@ public class AppealKeyboard extends OSBBKeyboard {
                 ExecutorListenerResponse executorListenerResponse = new ExecutorListenerResponse();
 
                 if (StringUtils.isEmpty(keyboardParam.getMiyDimCookie())) {
-                    executorListenerResponse.messages.add(Messages.MISSING_COOKIE.getMessage());
+                    executorListenerResponse = ArrearsPage.notLoginResponse(
+                            keyboardParam.getClientIp(),
+                            keyboardParam.getClientPort(),
+                            keyboardParam.getChatId().toString(),
+                            null
+                    );
                 } else {
                     if (appealTypes == AppealTypes.SIMPLE) {
                         executorListenerResponse.messages.add(Messages.INSERT_SIMPLE_REQUEST_DATA_FOR_MYIDIM.getMessage());

@@ -1,17 +1,27 @@
 package com.osbblevymista.telegram.keyabords;
 
+import com.osbblevymista.OSBBLevyMista45;
+import com.osbblevymista.api.services.MiyDimService;
 import com.osbblevymista.telegram.executorlistener.ExecutorListenerResponse;
 import com.osbblevymista.telegram.executorlistener.OSBBExecutorListener;
 import com.osbblevymista.telegram.keyabords.buttons.OSBBInlineKeyboardButton;
 import com.osbblevymista.telegram.keyabords.buttons.OSBBKeyboardButton;
 import com.osbblevymista.telegram.system.Actions;
+import com.osbblevymista.telegram.system.Messages;
+import lombok.Setter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-public class SettingsKeyboard  extends OSBBKeyboard {
+public class SettingsKeyboard extends OSBBKeyboard {
 
+    final Logger logger = LoggerFactory.getLogger(SettingsKeyboard.class);
+
+    @Setter
+    private MiyDimService miyDimService;
 
     private final OSBBKeyboardButton osbbKeyboardButtonVisitMiyDim = new OSBBKeyboardButton(Actions.BUTTON_VISIT_MIYDIM.getText());
     private final OSBBKeyboardButton osbbKeyboardButtonExitMiyDim = new OSBBKeyboardButton(Actions.BUTTON_EXIT_MIYDIM.getText());
@@ -24,17 +34,46 @@ public class SettingsKeyboard  extends OSBBKeyboard {
             public ExecutorListenerResponse doExecute(KeyboardParam keyboardParam) throws IOException, URISyntaxException {
                 ExecutorListenerResponse executorListenerResponse = new ExecutorListenerResponse();
                 executorListenerResponse.setTitle("Авторизація в МійДім");
-                OSBBInlineKeyboardButton osbbInlineKeyboardButton = new OSBBInlineKeyboardButton();
-                osbbInlineKeyboardButton.setId("miydimWeb");
-                osbbInlineKeyboardButton.setText("МійДім");
-                osbbInlineKeyboardButton.setUrl("http://"+ keyboardParam.getClientIp() + ":" + keyboardParam.getClientPort() + "?chatId=" + keyboardParam.getChatId());
-                executorListenerResponse.insertOSBBInlineKeyboardButtonNextCell(osbbInlineKeyboardButton);
+                executorListenerResponse.insertOSBBInlineKeyboardButtonNextCell(
+                        generateLoginButton(keyboardParam.getClientIp(),
+                                keyboardParam.getClientPort(),
+                                keyboardParam.getChatId()
+                        ));
+
+                if (miyDimService != null) {
+                    miyDimService.deleteCookie(keyboardParam.getChatId());
+                }
+
                 return executorListenerResponse;
             }
         });
         insertIntoFirstRow(osbbKeyboardButtonVisitMiyDim);
+
+        osbbKeyboardButtonExitMiyDim.setId(Actions.BUTTON_EXIT_MIYDIM.getText());
+        osbbKeyboardButtonExitMiyDim.setOsbbExecutorListener(new OSBBExecutorListener() {
+            @Override
+            public ExecutorListenerResponse doExecute(KeyboardParam keyboardParam) {
+
+                if (miyDimService != null) {
+                    miyDimService.deleteCookie(keyboardParam.getChatId());
+                    logger.info("Was removed cookie for: " + keyboardParam.getChatId());
+                }
+
+                ExecutorListenerResponse executorListenerResponse = new ExecutorListenerResponse();
+                executorListenerResponse.messages.add(Messages.LOG_OUT_MIYDIM.getMessage());
+                return executorListenerResponse;
+            }
+        });
         insertIntoFirstRow(osbbKeyboardButtonExitMiyDim);
 
+    }
+
+    public static OSBBInlineKeyboardButton generateLoginButton(String clientIp, String clientPort, String chatId) {
+        OSBBInlineKeyboardButton osbbInlineKeyboardButton = new OSBBInlineKeyboardButton();
+        osbbInlineKeyboardButton.setId("miydimWeb");
+        osbbInlineKeyboardButton.setText("МійДім");
+        osbbInlineKeyboardButton.setUrl("http://" + clientIp + ":" + clientPort + "?chatId=" + chatId);
+        return osbbInlineKeyboardButton;
     }
 
     public SettingsKeyboard(boolean isAdmin) {

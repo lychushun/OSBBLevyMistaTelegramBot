@@ -1,7 +1,6 @@
 package com.osbblevymista.telegram.filereaders;
 
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
-import com.opencsv.exceptions.CsvException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import com.opencsv.exceptions.CsvValidationException;
 import com.osbblevymista.telegram.models.AdminInfo;
@@ -13,30 +12,21 @@ import java.util.List;
 @Component
 public class AdminFileReader extends FileReader<AdminInfo> {
 
-    private AdminInfo adminInfo;
-
-    public boolean add(String firstName, String lastName, Long adminId) throws IOException, CsvException {
-        this.adminInfo = new AdminInfo();
-        adminInfo.setFirstName(firstName);
-        adminInfo.setLastName(lastName);
-        adminInfo.setAdminId(adminId);
-        return add();
-    }
-
     @Override
     public String getFileName(){
         return "adminInfo.csv";
     }
 
-    @Override
-    protected boolean add() throws IOException, CsvRequiredFieldEmptyException, CsvDataTypeMismatchException, CsvValidationException {
-        List<AdminInfo> userInfoList = getAll();
-
-        if (noneMatch(userInfoList, this.adminInfo)) {
-            super.writeToFile(adminInfo);
-            return true;
+    public void add(List<AdminInfo> userInfo) {
+        if(userInfo!=null){
+            userInfo.forEach(el ->{
+                try {
+                    super.writeToFile(el);
+                } catch (IOException | CsvRequiredFieldEmptyException | CsvDataTypeMismatchException | CsvValidationException e) {
+                    e.printStackTrace();
+                }
+            });
         }
-        return false;
     }
 
     @Override

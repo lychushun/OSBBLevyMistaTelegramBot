@@ -7,6 +7,9 @@ import lombok.Getter;
 @Getter
 public class PageParams {
 
-    String cookie;
+    private String cookie;
+    private String clientIp;
+    private String clientPort;
+    private Long chatId;
 
 }

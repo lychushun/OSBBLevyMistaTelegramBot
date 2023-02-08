@@ -10,6 +10,7 @@ public class SubmitUrgentAppealKeyboard extends OSBBKeyboard {
     private final OSBBKeyboardButton osbbKeyboardButtonApprove = new OSBBKeyboardButton(Actions.BUTTON_APPEAL_URGENT_APPROVE.getText());
 
     {
+        osbbKeyboardButtonApprove.setId(Actions.BUTTON_APPEAL_URGENT_APPROVE.getText());
         insertIntoFirstRow(osbbKeyboardButtonApprove);
     }
 

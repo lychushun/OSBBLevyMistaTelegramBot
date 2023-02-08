@@ -7,8 +7,6 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum Actions {
-    BUTTON_PASS("Пароль \uD83D\uDD11"),
-    BUTTON_LOGIN("Логін \uD83D\uDC7B"),
     BUTTON_HEAD_OF_OSBB("Голова ОСББ \uD83D\uDC2F"),
     BUTTON_ACCOUNTANT("Бухгалтер \uD83D\uDC25"),
     BUTTON_WORKER("Заступник з господарства \uD83D\uDC77"),
@@ -37,7 +35,7 @@ public enum Actions {
     BUTTON_CAR_ENTRANCE("Форма для доступу до шлагбаунів."),
 
     BUTTON_RULES_OF_LEAVING("Правила проживання."),
-    BUTTON_MEETING_RELUSLT01022022("Підсумки Загальних зборів від 1.02.2022."),
+    BUTTON_MEETING_RELUSLT01022022("Підсумки загальних зборів від 1.02.2022."),
     BUTTON_TARIFFS("Тарифи."),
 
     BUTTON_ADMIN_SEND("Створити та розіслати повідомлення \uD83D\uDCE8"),
@@ -52,8 +50,8 @@ public enum Actions {
     BUTTON_APPEAL("Звернення \uD83D\uDE4B"),
     BUTTON_REPORTS("Документи та звіти \uD83D\uDCC4"),
 
-    BUTTON_VISIT_MIYDIM("Авторизуватись у 'МійДім'"),
-    BUTTON_EXIT_MIYDIM("Вийти з 'МійДім'");
+    BUTTON_VISIT_MIYDIM("Авторизуватись у МійДім"),
+    BUTTON_EXIT_MIYDIM("Вийти з МійДім");
 
     String text;
 }

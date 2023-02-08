@@ -1,6 +1,7 @@
 package com.osbblevymista.telegram.pages;
 
 import com.osbblevymista.telegram.executorlistener.ExecutorListenerResponse;
+import com.osbblevymista.telegram.keyabords.SettingsKeyboard;
 import com.osbblevymista.telegram.keyabords.buttons.OSBBInlineKeyboardButton;
 import com.osbblevymista.telegram.messages.ArrearsMessages;
 import com.osbblevymista.telegram.miydim.ArrearsMiyDimProcessor;
@@ -27,7 +28,7 @@ public class ArrearsPage extends BasePage {
     }
 
     {
-        super.messages.add( Messages.GETTING_ARREARS_DATA_FROM_MYIDIM.getMessage());
+        super.messages.add(Messages.GETTING_ARREARS_DATA_FROM_MYIDIM.getMessage());
     }
 
     @Override
@@ -40,12 +41,21 @@ public class ArrearsPage extends BasePage {
         ExecutorListenerResponse executorListenerResponse = new ExecutorListenerResponse();
 
         if (StringUtils.isEmpty(sendMessageParams.getCookie())) {
-                executorListenerResponse.messages.add(Messages.MISSING_COOKIE.getMessage());
+            executorListenerResponse = notLoginResponse(
+                    sendMessageParams.getClientIp(),
+                    sendMessageParams.getClientPort(),
+                    sendMessageParams.getChatId().toString(),
+                    null
+            );
         } else {
             ArrearsMiyDimProcessor arrearsMiyDim = new ArrearsMiyDimProcessor(sendMessageParams.getCookie());
-            if (!arrearsMiyDim.isLogin()){
-                executorListenerResponse.messages.add(arrearsMiyDim.getErrorMessage());
-                executorListenerResponse.messages.add(Messages.MISSING_COOKIE.getMessage());
+            if (!arrearsMiyDim.isLogin()) {
+                executorListenerResponse = notLoginResponse(
+                        sendMessageParams.getClientIp(),
+                        sendMessageParams.getClientPort(),
+                        sendMessageParams.getChatId().toString(),
+                        arrearsMiyDim.getErrorMessage()
+                );
             } else {
                 ArrearsMessages arrearsMessages = new ArrearsMessages(arrearsMiyDim);
                 executorListenerResponse.messages.add(arrearsMessages.getMessage(ArrearsMessages.ARREARS.ARREARS.getValue()));
@@ -60,8 +70,24 @@ public class ArrearsPage extends BasePage {
             }
         }
 
-
         return consumer.apply(executorListenerResponse);
+    }
+
+    public static ExecutorListenerResponse notLoginResponse(String clientId, String clientPort, String chatId, String message){
+        ExecutorListenerResponse executorListenerResponse = new ExecutorListenerResponse();
+        if (message != null){
+            executorListenerResponse.messages.add(message);
+        }
+
+        executorListenerResponse.messages.add(Messages.MISSING_COOKIE.getMessage());
+        executorListenerResponse.insertOSBBInlineKeyboardButtonNextCell(
+                SettingsKeyboard.generateLoginButton(
+                        clientId,
+                        clientPort,
+                        chatId.toString()
+                )
+        );
+        return executorListenerResponse;
     }
 
     @Override

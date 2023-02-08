@@ -1,5 +1,6 @@
 package com.osbblevymista.telegram.send.processors;
 
+import com.osbblevymista.api.services.MiyDimService;
 import com.osbblevymista.telegram.miydim.AppealMiyDimProcessor;
 import com.osbblevymista.telegram.send.OSBBSendMessage;
 import com.osbblevymista.telegram.send.SendMessageBuilder;
@@ -26,6 +27,7 @@ public class AppealSendMessageProcessor {
     private final Logger logger = LoggerFactory.getLogger(AppealSendMessageProcessor.class);
 
     private final SendMessageBuilder sendMessageBuilder;
+    private final MiyDimService miyDimService;
 
     @Value("${admin.cahtid}")
     private String boardBotId;
@@ -39,17 +41,13 @@ public class AppealSendMessageProcessor {
         return null;
     }
 
-    public List<Function<Message, OSBBSendMessage>> createSimpleAppeal(SendMessageParams sendMessageParam, String message) throws IOException, URISyntaxException {
-        return createAppeal(sendMessageParam, message);
-    }
-
     public List<Function<Message, OSBBSendMessage>> createUrgentAppeal(SendMessageParams sendMessageParam, String message) throws IOException, URISyntaxException {
         message = "ТЕРМІНОВО!!!\n" + message;
         return createAppeal(sendMessageParam, message);
     }
 
     private List<Function<Message, OSBBSendMessage>> createAppeal(SendMessageParams sendMessageParam, String message) throws IOException, URISyntaxException {
-        AppealMiyDimProcessor arrearsMiyDim = new AppealMiyDimProcessor(sendMessageParam.getChatIdAsString());
+        AppealMiyDimProcessor arrearsMiyDim = new AppealMiyDimProcessor(miyDimService.getCookie(sendMessageParam.getChatIdAsString()));
 
         if (arrearsMiyDim.isLogin()) {
             boolean response = arrearsMiyDim.createAppeal(message);
@@ -63,6 +61,12 @@ public class AppealSendMessageProcessor {
             }
             return list;
         } else {
+//            return ArrearsPage.notLoginResponse(
+//                    sendMessageParam.getClientIp(),
+//                    sendMessageParam.getClientPort(),
+//                    sendMessageParam.getChatId().toString(),
+//                    arrearsMiyDim.getErrorMessage()
+//            );
             return createResponse(sendMessageParam,
                     arrearsMiyDim.getErrorMessage() + "\n" +
                             Messages.MISSING_COOKIE.getMessage() + "\n");
