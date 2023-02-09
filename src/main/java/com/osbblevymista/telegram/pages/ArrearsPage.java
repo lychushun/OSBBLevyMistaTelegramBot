@@ -14,6 +14,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.util.function.Function;
 
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+
 public class ArrearsPage extends BasePage {
 
     private static ArrearsPage arrearsPage;
@@ -40,7 +42,7 @@ public class ArrearsPage extends BasePage {
 
         ExecutorListenerResponse executorListenerResponse = new ExecutorListenerResponse();
 
-        if (StringUtils.isEmpty(sendMessageParams.getCookie())) {
+        if (isEmpty(sendMessageParams.getCookie())) {
             executorListenerResponse = notLoginResponse(
                     sendMessageParams.getClientIp(),
                     sendMessageParams.getClientPort(),

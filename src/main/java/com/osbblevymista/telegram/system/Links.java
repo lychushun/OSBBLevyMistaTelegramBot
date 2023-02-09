@@ -13,6 +13,8 @@ public enum Links {
     CAR_ENTRANCE("https://docs.google.com/forms/d/1IiGX38cfMiF3A6JntIzOtHeQejoUvXp8QFI26ybfk0M/viewform?edit_requested=true"),
     RULES_OF_LEAVING("https://bit.ly/OSBBRulsOfLeaving"),
     TARIFFS("https://bit.ly/OSBBTariffs"),
+    TARIFFS2023("https://bit.ly/OSBBTariffs2023"),
+    PRESENTATION2023("https://bit.ly/OSBBPresentation2023"),
     MEETING_RESULT01022022("https://bit.ly/OSBBMeetingResult01022022");
 
     private String link;

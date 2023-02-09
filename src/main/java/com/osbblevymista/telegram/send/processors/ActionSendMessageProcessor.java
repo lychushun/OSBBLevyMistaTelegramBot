@@ -1,6 +1,7 @@
 package com.osbblevymista.telegram.send.processors;
 
 import com.osbblevymista.api.services.MiyDimService;
+import com.osbblevymista.telegram.executorlistener.ExecutorListenerResponse;
 import com.osbblevymista.telegram.keyabords.KeyboardParam;
 import com.osbblevymista.telegram.keyabords.buttons.OSBBKeyboardButton;
 import com.osbblevymista.telegram.pages.BasePage;
@@ -9,7 +10,6 @@ import com.osbblevymista.telegram.send.OSBBSendMessage;
 import com.osbblevymista.telegram.send.SendMessageBuilder;
 import com.osbblevymista.telegram.send.SendMessageParams;
 import lombok.AllArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -24,6 +24,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -237,10 +238,9 @@ public class ActionSendMessageProcessor {
     private OSBBSendMessage createButtonExecution(SendMessageParams sendMessageParams, OSBBKeyboardButton osbbKeyboardButton) throws
             IOException, URISyntaxException {
 
-        OSBBSendMessage sendMessage = sendMessageBuilder.createBaseMessage(sendMessageParams.getChatId());
+        AtomicReference<OSBBSendMessage> sendMessage = new AtomicReference<>(sendMessageBuilder.createBaseMessage(sendMessageParams.getChatId()));
 
         boolean initSendMessage = false;
-        StringBuffer messageBuffer = new StringBuffer();
 
         if (osbbKeyboardButton.canExecute()) {
             KeyboardParam keyboardParam = KeyboardParam
@@ -252,21 +252,8 @@ public class ActionSendMessageProcessor {
                     .build();
 
             initSendMessage = osbbKeyboardButton.doExecute(keyboardParam, o -> {
-                List<List<InlineKeyboardButton>> keyboardButtons = o.getInlineKeyboardButtons();
-                if (o.messages != null && o.messages.size() > 0) {
-                    messageBuffer.append(String.join("\n", o.messages)).append("\n");
-                    sendMessage.setText(messageBuffer.toString());
-                    return true;
-                }
-
-                if (nonNull(keyboardButtons) && keyboardButtons.size() > 0) {
-                    sendMessage.setReplyMarkup(new InlineKeyboardMarkup(keyboardButtons));
-                    messageBuffer.append(o.getTitle()).append("\n");
-                    sendMessage.setText(messageBuffer.toString());
-
-                    return true;
-                }
-                return false;
+                sendMessage.set(createExecution(sendMessageParams, o));
+                return true;
             });
         }
 
@@ -274,19 +261,17 @@ public class ActionSendMessageProcessor {
             return sendMessageBuilder.createEmptyMessage(sendMessageParams.getChatId());
         }
 
-        return sendMessage;
+        return sendMessage.get();
     }
 
     private OSBBSendMessage createPageExecution(SendMessageParams sendMessageParams, OSBBKeyboardButton osbbKeyboardButton) throws
             UnsupportedEncodingException, URISyntaxException {
-        OSBBSendMessage sendMessage = sendMessageBuilder.createBaseMessage(sendMessageParams.getChatId());
+
+        AtomicReference<OSBBSendMessage> sendMessage = new AtomicReference<>(sendMessageBuilder.createBaseMessage(sendMessageParams.getChatId()));
 
         BasePage page = getNextPage(osbbKeyboardButton);
         boolean initSendMessage = false;
-        StringBuffer messageBuffer = new StringBuffer();
-
         if (nonNull(page) && page.canExecute()) {
-            messageBuffer.delete(0, messageBuffer.length());
             PageParams pageParams = PageParams
                     .builder()
                     .clientIp(sendMessageParams.getClientIp())
@@ -296,29 +281,38 @@ public class ActionSendMessageProcessor {
                     .build();
 
             initSendMessage = page.doExecute(pageParams, o -> {
-                List<List<InlineKeyboardButton>> keyboardButtons = o.getInlineKeyboardButtons();
 
-                messageBuffer.append(o.getTitle()).append("\n");
-
-                if (!o.messages.isEmpty()) {
-                    messageBuffer.append(getMessage(o.messages)).append("\n");
-                }
-
-                if (nonNull(keyboardButtons) && keyboardButtons.size() > 0) {
-                    InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup(keyboardButtons);
-
-                    sendMessage.setReplyMarkup(inlineKeyboardMarkup);
-                }
-
-                sendMessage.setText(messageBuffer.toString());
-
-                return StringUtils.isNotEmpty(messageBuffer);
+                sendMessage.set(createExecution(sendMessageParams, o));
+                return true;
             });
         }
 
         if (!initSendMessage) {
             return sendMessageBuilder.createEmptyMessage(sendMessageParams.getChatId());
         }
+
+        return sendMessage.get();
+    }
+
+    private OSBBSendMessage createExecution(SendMessageParams sendMessageParams, ExecutorListenerResponse o){
+
+        StringBuilder messageBuffer = new StringBuilder();
+        OSBBSendMessage sendMessage = sendMessageBuilder.createBaseMessage(sendMessageParams.getChatId());
+        List<List<InlineKeyboardButton>> keyboardButtons = o.getInlineKeyboardButtons();
+
+        messageBuffer.append(o.getTitle()).append("\n");
+
+        if (!o.messages.isEmpty()) {
+            messageBuffer.append(getMessage(o.messages)).append("\n");
+        }
+
+        if (nonNull(keyboardButtons) && keyboardButtons.size() > 0) {
+            InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup(keyboardButtons);
+
+            sendMessage.setReplyMarkup(inlineKeyboardMarkup);
+        }
+
+        sendMessage.setText(messageBuffer.toString());
 
         return sendMessage;
     }

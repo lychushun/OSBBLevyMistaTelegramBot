@@ -1,7 +1,7 @@
 package com.osbblevymista.telegram;
 
 import com.opencsv.exceptions.CsvException;
-import com.osbblevymista.telegram.filereaders.UserInfoFileReader;
+import com.osbblevymista.api.services.MiyDimService;
 import com.osbblevymista.telegram.keyabords.*;
 import com.osbblevymista.telegram.keyabords.appeals.AppealKeyboard;
 import com.osbblevymista.telegram.keyabords.appeals.SubmitSimpleAppealKeyboard;
@@ -16,13 +16,10 @@ import com.osbblevymista.telegram.send.OSBBSendMessage;
 import com.osbblevymista.telegram.send.SendMessageBuilder;
 import com.osbblevymista.telegram.send.SendMessageParams;
 import com.osbblevymista.telegram.send.processors.ActionSendMessageProcessor;
-//import com.osbblevymista.telegram.send.processors.AdminProcessor;
 import com.osbblevymista.telegram.send.processors.SessionSendMessageProcessor;
 import com.osbblevymista.telegram.services.AdminInfoService;
 import com.osbblevymista.telegram.services.UserInfoService;
 import com.osbblevymista.telegram.system.Messages;
-import com.osbblevymista.telegram.system.SessionManager;
-//import com.osbblevymista.telegram.utils.AuthUtil;
 import lombok.RequiredArgsConstructor;
 import org.apache.shiro.session.Session;
 import org.slf4j.Logger;
@@ -58,12 +55,10 @@ public class TelegramRunner {
     private final SendMessageBuilder sendMessageBuilder;
     private final ActionSendMessageProcessor actionSendMessageProcessor;
     private final SessionSendMessageProcessor sessionSendMessageProcessor;
-    //    private final UserInfoFileReader fileWorker;
-//    private final AdminProcessor adminProcessor;
     private final UserInfoService userInfoService;
     private final AdminInfoService adminInfoService;
-//    private final SessionManager sessionManager;
-//    private final AuthUtil authUtil;
+    private final MiyDimService miyDimService;
+
 
     private final Logger logger = LoggerFactory.getLogger(ApplicationConfig.class);
 
@@ -295,6 +290,7 @@ public class TelegramRunner {
         ChatPage chatPage = ChatPage.getInstance(isAdmin);
         InfoPage infoPage = InfoPage.getInstance(isAdmin);
         ReportPage reportPage = ReportPage.getInstance(isAdmin);
+        SendMessagePage sendMessagePage = SendMessagePage.getInstance(isAdmin);
 
         MainKeyboard mainKeyboard = new MainKeyboard(isAdmin);
         mainKeyboard.setArrearsPage(arrearsPage);
@@ -309,6 +305,7 @@ public class TelegramRunner {
 
         SettingsKeyboard settingsKeyboard = new SettingsKeyboard(isAdmin);
         settingsKeyboard.setPrevPage(mainPage);
+        settingsKeyboard.setMiyDimService(miyDimService);
 
         AppealKeyboard appealKeyboard = new AppealKeyboard(isAdmin);
         appealKeyboard.setPrevPage(mainPage);
@@ -317,6 +314,10 @@ public class TelegramRunner {
 
         AdminKeyboard adminKeyboard = new AdminKeyboard(isAdmin);
         adminKeyboard.setPrevPage(mainPage);
+        adminKeyboard.setSendMessagePage(sendMessagePage);
+
+        SendMessageByBoardKeyboard sendMessageByBoardKeyboard = new SendMessageByBoardKeyboard(isAdmin);
+        sendMessageByBoardKeyboard.setPrevPage(adminPage);
 
         InfoKeyboard infoKeyboard = new InfoKeyboard(isAdmin);
         infoKeyboard.setPrevPage(mainPage);
@@ -332,6 +333,7 @@ public class TelegramRunner {
         mainPage.setKeyboard(mainKeyboard);
         contactPage.setKeyboard(contactKeyboard);
         settingsPage.setKeyboard(settingsKeyboard);
+        sendMessagePage.setKeyboard(sendMessageByBoardKeyboard);
         appealPage.setKeyboard(appealKeyboard);
         adminPage.setKeyboard(adminKeyboard);
         infoPage.setKeyboard(infoKeyboard);

@@ -12,7 +12,8 @@ public class AppealMiyDimProcessor extends MiyDimProcessor{
     }
 
     public List<Appeal> getAppeals() throws IOException {
-        HtmlPage page1 = webClient.getPage("https://miydimonline.com.ua/41035710/uk/order");
+//        HtmlPage page1 = webClient.getPage("https://miydimonline.com.ua/41035710/uk/order");
+        HtmlPage page1 = webClient.getPage("https://miydimonline.com.ua/order");
         List<HtmlSection> htmlSections = page1.getByXPath("//div[@id='ResidentAreaAppeal']/section");//news contents
 
         return (List<Appeal>) htmlSections.stream().map(item -> {
@@ -33,7 +34,8 @@ public class AppealMiyDimProcessor extends MiyDimProcessor{
     }
 
     public boolean createAppeal(String text) throws IOException {
-        HtmlPage page1 = webClient.getPage("https://miydimonline.com.ua/41035710/uk/order/create");
+//        HtmlPage page1 = webClient.getPage("https://miydimonline.com.ua/41035710/uk/order/create");
+        HtmlPage page1 = webClient.getPage("https://miydimonline.com.ua/order/create");
 
         List<HtmlForm> listF = page1.getForms();
         HtmlForm form = listF.stream().filter(item -> {
@@ -50,7 +52,8 @@ public class AppealMiyDimProcessor extends MiyDimProcessor{
         HtmlButton button = form.getButtonByName("Save");
         HtmlPage page2 = button.click();
 
-        if (page2.getUrl().getPath().equals("/41035710/uk/order")){
+//        if (page2.getUrl().getPath().equals("/41035710/uk/order")){
+        if (page2.getUrl().getPath().equals("/order")){
             return true;
         } else {
             return false;

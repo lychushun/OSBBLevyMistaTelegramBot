@@ -96,7 +96,8 @@ public class MiyDimService {
 
             webClient.getOptions().setThrowExceptionOnScriptError(false);
 
-            HtmlPage page1 = webClient.getPage("https://miydimonline.com.ua/41035710/uk/account/login");
+//            HtmlPage page1 = webClient.getPage("https://miydimonline.com.ua/41035710/uk/account/login");
+            HtmlPage page1 = webClient.getPage("https://miydimonline.com.ua/account/login");
 
             List<HtmlForm> listF = page1.getForms();
             HtmlForm form = listF.get(0);

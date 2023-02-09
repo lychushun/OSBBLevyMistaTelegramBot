@@ -44,14 +44,24 @@ public class ReportPage extends BasePage{
         osbbInlineKeyboardButton.setId(Actions.BUTTON_RULES_OF_LEAVING.getText());
         executorListenerResponse.insertOSBBInlineKeyboardButtonNextRow(osbbInlineKeyboardButton);
 
-        osbbInlineKeyboardButton =
-                new OSBBInlineKeyboardButton(Actions.BUTTON_TARIFFS.getText(), Links.TARIFFS.getLink());
-        osbbInlineKeyboardButton.setId(Actions.BUTTON_TARIFFS.getText());
-        executorListenerResponse.insertOSBBInlineKeyboardButtonNextRow(osbbInlineKeyboardButton);
+//        osbbInlineKeyboardButton =
+//                new OSBBInlineKeyboardButton(Actions.BUTTON_TARIFFS.getText(), Links.TARIFFS.getLink());
+//        osbbInlineKeyboardButton.setId(Actions.BUTTON_TARIFFS.getText());
+//        executorListenerResponse.insertOSBBInlineKeyboardButtonNextRow(osbbInlineKeyboardButton);
 
         osbbInlineKeyboardButton =
-                new OSBBInlineKeyboardButton(Actions.BUTTON_MEETING_RELUSLT01022022.getText(), Links.MEETING_RESULT01022022.getLink());
-        osbbInlineKeyboardButton.setId(Actions.BUTTON_MEETING_RELUSLT01022022.getText());
+                new OSBBInlineKeyboardButton(Actions.BUTTON_TARIFFS2023.getText(), Links.TARIFFS2023.getLink());
+        osbbInlineKeyboardButton.setId(Actions.BUTTON_TARIFFS2023.getText());
+        executorListenerResponse.insertOSBBInlineKeyboardButtonNextRow(osbbInlineKeyboardButton);
+
+//        osbbInlineKeyboardButton =
+//                new OSBBInlineKeyboardButton(Actions.BUTTON_MEETING_RELUSLT01022022.getText(), Links.MEETING_RESULT01022022.getLink());
+//        osbbInlineKeyboardButton.setId(Actions.BUTTON_MEETING_RELUSLT01022022.getText());
+//        executorListenerResponse.insertOSBBInlineKeyboardButtonNextRow(osbbInlineKeyboardButton);
+
+        osbbInlineKeyboardButton =
+                new OSBBInlineKeyboardButton(Actions.BUTTON_PRESENTATION2023.getText(), Links.PRESENTATION2023.getLink());
+        osbbInlineKeyboardButton.setId(Actions.BUTTON_PRESENTATION2023.getText());
         executorListenerResponse.insertOSBBInlineKeyboardButtonNextRow(osbbInlineKeyboardButton);
 
         return consumer.apply(executorListenerResponse);

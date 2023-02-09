@@ -40,10 +40,6 @@ public class SettingsKeyboard extends OSBBKeyboard {
                                 keyboardParam.getChatId()
                         ));
 
-                if (miyDimService != null) {
-                    miyDimService.deleteCookie(keyboardParam.getChatId());
-                }
-
                 return executorListenerResponse;
             }
         });

@@ -18,7 +18,8 @@ public enum Titles {
             """),
     CHATS("<u>Чати</u>"),
     APPEAL("<u>Звернення</u>"),
-    APPEAL_SIMPLE("<u>Звичайте зверннея</u>"),
+    APPEAL_SIMPLE("<u>Звичайте звернення</u>"),
+    SEND_MESSAGE("<u>Створити та розіслати повідомлення</u>"),
     APPEAL_URGENT("<u>Термінове звернення</u>"),
     ARREARS("<u>Заборгованість</u>"),
     INFO("""

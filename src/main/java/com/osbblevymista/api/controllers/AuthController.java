@@ -22,7 +22,7 @@ public class AuthController {
 
     private final MiyDimService miyDimService;
 
-    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> sessionCookieAuth(@RequestBody AuthRequest authRequest) {
         Optional<String> res = miyDimService.auth(authRequest.getLogin(), authRequest.getPass(), authRequest.getChatId());
         return res.map(s -> new ResponseEntity<>(s, HttpStatus.CONFLICT))

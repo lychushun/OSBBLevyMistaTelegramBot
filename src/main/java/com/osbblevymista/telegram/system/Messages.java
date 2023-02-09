@@ -136,9 +136,51 @@ public enum Messages {
 
     CREATING_APPEAL(129, """
             Звернення в процесі створення. Це може заняти якись час. Будь ласка зачекайте.
+            """),
+
+    INSERT_APPEAL(130, """
+            Будь ласка введіть звернення.
+            """),
+
+    CONTACT_BUTTON_CITYLIFT(131, """
+            (063) 200 09 77
+            (099) 200 09 77
+            (096) 200 09 77
+            """),
+
+    CONTACT_BUTTON_LVIVOBLENERGO(132, """
+            0 800 30 15 68
+            (067) 333 15 68
+            (093) 170 15 68
+            (050) 460 15 68
+            """),
+
+    CONTACT_BUTTON_LVIVGAZ(133, """
+            (096) 448 00 06
+            """),
+
+    CONTACT_BUTTON_REPAIROFBOILERS(134, """
+            (096) 919 14 32
+            (063) 799 30 08
+            """),
+
+    CONTACT_BUTTON_DOMOFONSERVICE(135, """
+            (098) 244 44 34
+            """),
+
+    SENDING_MESSAGE(136, """
+            Розсилання повідомлень. Це може зайняти декілька хвилин.
+            """),
+
+    SENT_MESSAGE(137, """
+            Повідомлення було надіслано %s користувачам.
             """);
 
     Integer id;
     String message;
+
+    public String format(String v1){
+        return String.format(this.message, v1);
+    }
 
 }

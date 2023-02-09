@@ -33,7 +33,7 @@ public class SendingMessageProcessor {
     @Value("${tereveni.cahtid}")
     private String terevenyBotId;
 
-    public List<Function<Message, OSBBSendMessage>> sendMessage(SendMessageParams sendMessageParam, String message) throws IOException {
+    public List<Function<Message, OSBBSendMessage>> sendMessage(SendMessageParams sendMessageParam, String messageStr) throws IOException {
         List<Function<Message, OSBBSendMessage>> messages = new ArrayList<>();
 
         List<UserInfo> userInfoList = userInfoFileReader
@@ -57,7 +57,7 @@ public class SendingMessageProcessor {
                             .build();
 
                     try {
-                        return sendMessageBuilder.createMessageExecutingDelay(sendMessageParams, message.getText());
+                        return sendMessageBuilder.createMessageExecutingDelay(sendMessageParams, messageStr);
                     } catch (UnsupportedEncodingException | URISyntaxException e) {
                         e.printStackTrace();
                         logger.error(e.getMessage(), e);
@@ -68,6 +68,21 @@ public class SendingMessageProcessor {
 
             messages.add(function);
         });
+
+        messages.add(  new Function<Message, OSBBSendMessage>() {
+            @Override
+            public OSBBSendMessage apply(Message message) {
+
+                try {
+                    return sendMessageBuilder.createSimpleMessage(sendMessageParam, Messages.SENT_MESSAGE.format(userInfoList.size() + ""));
+                } catch (UnsupportedEncodingException | URISyntaxException e) {
+                    e.printStackTrace();
+                    logger.error(e.getMessage(), e);
+                }
+                return null;
+            }
+        });
+
 
         return messages;
     }

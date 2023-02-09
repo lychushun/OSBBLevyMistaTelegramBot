@@ -11,6 +11,11 @@ public enum Actions {
     BUTTON_ACCOUNTANT("Бухгалтер \uD83D\uDC25"),
     BUTTON_WORKER("Заступник з господарства \uD83D\uDC77"),
     BUTTON_SECURITY("Охорона \uD83D\uDC6E"),
+    BUTTON_CITYLIFT("Сіті Ліфт \uD83D\uDED7"),
+    BUTTON_LVIVOBLENERGO("Львівобленерго \u26A1"),
+    BUTTON_LVIVGAZ("Львівгаз \uD83D\uDD25"),
+    BUTTON_REPAIROFBOILERS("Ремонт котлів \uD83D\uDEE0"),
+    BUTTON_DOMOFONSERVICE("Домофон сервіс \uD83D\uDCDE"),
     BUTTON_BACK("Назад \uD83D\uDC48"),
 //    BUTTON_BACK("Назад"),
 
@@ -20,6 +25,8 @@ public enum Actions {
     BUTTON_APPEAL_REVIEW("Переглянути звернення \uD83D\uDCD6"),
     BUTTON_APPEAL_SIMPLE_APPROVE("Підтвердити \u2705"),
     BUTTON_APPEAL_URGENT_APPROVE("Підтвердити \u2705"),
+
+    BUTTON_SEND_MESSAGE_APPROVE("Підтвердити \u2705"),
 
     BUTTON_CHAT_PUBLIC("Теревені"),
     BUTTON_CHAT_ANNOUNCEMENT("Оголошення"),
@@ -36,9 +43,11 @@ public enum Actions {
 
     BUTTON_RULES_OF_LEAVING("Правила проживання."),
     BUTTON_MEETING_RELUSLT01022022("Підсумки загальних зборів від 1.02.2022."),
-    BUTTON_TARIFFS("Тарифи."),
+    BUTTON_PRESENTATION2023("Презентація ОСББ 'Леви Міста' 2023"),
+    BUTTON_TARIFFS("Тарифи 2022"),
+    BUTTON_TARIFFS2023("Тарифи 2023"),
 
-    BUTTON_ADMIN_SEND("Створити та розіслати повідомлення \uD83D\uDCE8"),
+    BUTTON_ADMIN_SEND("Розіслати повідомлення \uD83D\uDCE8"),
     BUTTON_ADMIN_NEW_RECEIPT("Розіслати повідомлення про нову квитанцію \uD83D\uDCC4"),
 
     BUTTON_CONTACT("Контакти \uD83D\uDE01"),

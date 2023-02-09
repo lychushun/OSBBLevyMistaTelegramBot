@@ -3,13 +3,12 @@ package com.osbblevymista.telegram.send.processors;
 import com.opencsv.exceptions.CsvException;
 import com.osbblevymista.OSBBLevyMista45;
 import com.osbblevymista.telegram.dto.MiyDimAppealInfo;
-//import com.osbblevymista.telegram.filereaders.AuthFileReader;
+import com.osbblevymista.telegram.dto.SendMessageInfo;
 import com.osbblevymista.telegram.send.OSBBSendMessage;
 import com.osbblevymista.telegram.send.SendMessageBuilder;
 import com.osbblevymista.telegram.send.SendMessageParams;
 import com.osbblevymista.telegram.system.*;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.session.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +23,7 @@ import java.util.*;
 import java.util.function.Function;
 
 import static java.util.Objects.nonNull;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 @Component
 @RequiredArgsConstructor
@@ -40,7 +40,7 @@ public class SessionSendMessageProcessor {
         String messageStr = message.getText();
         List<PhotoSize> photoSizeList = message.getPhoto();
 
-        if (StringUtils.isNotEmpty(messageStr)) {
+        if (isNotEmpty(messageStr)) {
             return processSessionAsMessageString(messageStr, sendMessageParam, optional);
         } else {
             return processSessionAsPhoto(photoSizeList, sendMessageParam, optional);
@@ -71,13 +71,6 @@ public class SessionSendMessageProcessor {
     }
 
     private List<Function<Message, OSBBSendMessage>> markingAsReading(String message, SendMessageParams sendMessageParam, Session session) throws IOException {
-//        if (Objects.equals(message, Actions.BUTTON_LOGIN.getText())) {
-//            session.setAttribute("reading", SessionProperties.INSERTING_LOGIN);
-//            return new ArrayList<>();
-//        } else if (Objects.equals(message, Actions.BUTTON_PASS.getText())) {
-//            session.setAttribute("reading", SessionProperties.INSERTING_PASS);
-//            return new ArrayList<>();
-//        } else
             if (Objects.equals(message, Actions.BUTTON_APPEAL_SIMPLE_CREATE.getText())) {
             session.setAttribute("reading", SessionProperties.CREATING_SIMPLE_APPEAL);
             return null;
@@ -86,7 +79,7 @@ public class SessionSendMessageProcessor {
             return null;
         } else if (Objects.equals(message, Actions.BUTTON_ADMIN_SEND.getText())) {
             session.setAttribute("reading", SessionProperties.SENDING_MESSAGE_TO_ALL);
-            return new ArrayList<>();
+            return null;
         } else if (Objects.equals(message, Actions.BUTTON_ADMIN_NEW_RECEIPT.getText())) {
             return sendingMessageProcessor.sendMessageInfoAboutReceipt();
         }
@@ -98,54 +91,50 @@ public class SessionSendMessageProcessor {
         if (isClickBack(message)) {
             session.setAttribute("reading", null);
         } else {
-//            if (session.getAttribute("reading") == SessionProperties.INSERTING_LOGIN
-//                    && !Objects.equals(message, Actions.BUTTON_LOGIN.getText())) {
-//                String pass = (String) session.getAttribute(SessionAttributes.PASS);
-//                if (StringUtils.isNotEmpty(pass)) {
-//                    authFileReader.add(sendMessageParam.getUserId(), pass, message);
-//                }
-//
-//                session.setAttribute(SessionAttributes.LOGIN, message);
-//                session.setAttribute("reading", null);
-//                List<Function<Message, OSBBSendMessage>> list = new ArrayList<Function<Message, OSBBSendMessage>>();
-//                list.add(actionSendMessageProcessor.createSimpleMessage(sendMessageParam, Messages.SUCCESS_INSERT_LOGIN.getMessage()));
-//                return list;
-//            } else if (session.getAttribute("reading") == SessionProperties.INSERTING_PASS
-//                    && !Objects.equals(message, Actions.BUTTON_PASS.getText())) {
-//                String login = (String) session.getAttribute(SessionAttributes.LOGIN);
-//                if (StringUtils.isNotEmpty(login)) {
-//                    authFileReader.add(sendMessageParam.getUserId(), message, login);
-//                }
-//
-//                session.setAttribute(SessionAttributes.PASS, message);
-//                session.setAttribute("reading", null);
-//                List<Function<Message, OSBBSendMessage>> list = new ArrayList<Function<Message, OSBBSendMessage>>();
-//                list.add(actionSendMessageProcessor.createSimpleMessage(sendMessageParam, Messages.SUCCESS_INSERT_PASS.getMessage()));
-//                return list;
-//            } else
-                if (session.getAttribute("reading") == SessionProperties.CREATING_SIMPLE_APPEAL
-//                    && !isClickedOnAppeal(message)) {
+            if (session.getAttribute("reading") == SessionProperties.CREATING_SIMPLE_APPEAL
             ) {
                 return processAppeal(session, sendMessageParam, message, AppealTypes.SIMPLE);
             } else if (session.getAttribute("reading") == SessionProperties.CREATING_URGENT_APPEAL
-//                    && !isClickedOnAppeal(message)) {
             ) {
                 return processAppeal(session, sendMessageParam, message, AppealTypes.URGENT);
-            } else if (session.getAttribute("reading") == SessionProperties.SENDING_MESSAGE_TO_ALL
-                    && !isClickedOnAppeal(message)) {
-                var res = sendingMessageProcessor.sendMessage(sendMessageParam, message);
-                session.setAttribute("reading", null);
-                return res;
+            } else if (session.getAttribute("reading") == SessionProperties.SENDING_MESSAGE_TO_ALL) {
+                return processSendMessage(session, sendMessageParam, message);
             }
         }
         return null;
+    }
 
+    private List<Function<Message, OSBBSendMessage>> processSendMessage(Session session,
+                                                                   SendMessageParams sendMessageParam,
+                                                                   String message) throws IOException, URISyntaxException {
+        List<Function<Message, OSBBSendMessage>> list = new ArrayList<>();
+
+        SendMessageInfo sendMessageInfo = new SendMessageInfo();
+        if (session.getAttribute(SessionProperties.SEND_MESSAGE_INFO) != null) {
+            sendMessageInfo = (SendMessageInfo) session.getAttribute(SessionProperties.SEND_MESSAGE_INFO);
+        }
+        if (isComplete(message)) {
+            if (sendMessageInfo.getMessages().size() > 0) {
+                session.setAttribute(SessionProperties.SEND_MESSAGE_INFO, null);
+
+                list.add(createSimpleMessage(sendMessageParam, Messages.SENDING_MESSAGE.getMessage()));
+                list.addAll(sendingMessageProcessor.sendMessage(sendMessageParam, sendMessageInfo.formatMessages()));
+                session.setAttribute("reading", null);//todo need to check
+            } else {
+                list.add(createSimpleMessage(sendMessageParam, Messages.INSERT_APPEAL.getMessage()));
+            }
+            return list;
+        } else {
+            sendMessageInfo.getMessages().add(message);
+            session.setAttribute(SessionProperties.SEND_MESSAGE_INFO, sendMessageInfo);
+        }
+        return list;
     }
 
     private List<Function<Message, OSBBSendMessage>> processAppeal(Session session,
                                                                    SendMessageParams sendMessageParam,
                                                                    String message,
-                                                                   AppealTypes appealTypes) throws IOException, URISyntaxException{
+                                                                   AppealTypes appealTypes) throws IOException, URISyntaxException {
 
         List<Function<Message, OSBBSendMessage>> list = new ArrayList<>();
 
@@ -153,13 +142,16 @@ public class SessionSendMessageProcessor {
         if (session.getAttribute(SessionProperties.MIY_DIM_APPEAL_INFO) != null) {
             miyDimAppealInfo = (MiyDimAppealInfo) session.getAttribute(SessionProperties.MIY_DIM_APPEAL_INFO);
         }
-
         if (isComplete(message)) {
-            session.setAttribute("reading", null);
-            session.setAttribute(SessionProperties.MIY_DIM_APPEAL_INFO, null);
+            if (miyDimAppealInfo.getMessages().size() > 0) {
+                session.setAttribute(SessionProperties.MIY_DIM_APPEAL_INFO, null);
 
-            list.add(createSimpleMessage(sendMessageParam, Messages.CREATING_APPEAL.getMessage()));
-            list.addAll(appealSendMessageProcessor.createAppeal(sendMessageParam, miyDimAppealInfo.formatMessages(), appealTypes));
+                list.add(createSimpleMessage(sendMessageParam, Messages.CREATING_APPEAL.getMessage()));
+                list.addAll(appealSendMessageProcessor.createAppeal(sendMessageParam, miyDimAppealInfo.formatMessages(), appealTypes));
+                session.setAttribute("reading", null);//todo need to check
+            } else {
+                list.add(createSimpleMessage(sendMessageParam, Messages.INSERT_APPEAL.getMessage()));
+            }
             return list;
         } else {
             miyDimAppealInfo.getMessages().add(message);
@@ -168,7 +160,7 @@ public class SessionSendMessageProcessor {
         return list;
     }
 
-    private Function<Message, OSBBSendMessage> createSimpleMessage(SendMessageParams sendMessageParam, String text){
+    private Function<Message, OSBBSendMessage> createSimpleMessage(SendMessageParams sendMessageParam, String text) {
         return new Function<Message, OSBBSendMessage>() {
             @Override
             public OSBBSendMessage apply(Message message) {
@@ -176,7 +168,7 @@ public class SessionSendMessageProcessor {
                     return sendMessageBuilder.createSimpleMessage(sendMessageParam, text);
                 } catch (UnsupportedEncodingException | URISyntaxException e) {
                     e.printStackTrace();
-                    logger.error(e.getMessage(),e);
+                    logger.error(e.getMessage(), e);
                 }
                 return null;
             }
@@ -215,6 +207,7 @@ public class SessionSendMessageProcessor {
 
     private boolean isComplete(String message) {
         return Objects.equals(message, Actions.BUTTON_APPEAL_SIMPLE_APPROVE.getText())
-                || Objects.equals(message, Actions.BUTTON_APPEAL_URGENT_APPROVE.getText());
+                || Objects.equals(message, Actions.BUTTON_APPEAL_URGENT_APPROVE.getText())
+                || Objects.equals(message, Actions.BUTTON_SEND_MESSAGE_APPROVE.getText());
     }
 }
