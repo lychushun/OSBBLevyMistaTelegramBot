@@ -6,6 +6,10 @@
 
 5. ps aux | grep java
 
-6. java  -jar TelegramBot-1.0.jar
+6. java -Dfile.encoding=UTF8  -jar TelegramBot-1.0.jar
 
 5. tail -f ...
+
+
+./service-boot.sh start
+./service-boot.sh stop

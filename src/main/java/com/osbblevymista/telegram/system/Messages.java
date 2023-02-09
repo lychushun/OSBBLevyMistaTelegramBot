@@ -46,7 +46,7 @@ public enum Messages {
     CONTACT_BUTTON_SECURITY(106, """
             (050) 69 28 470
             
-            <b>Прийомні години: </b> 
+            <u>Прийомні години: </u> 
             цілодобово
             """),
 
