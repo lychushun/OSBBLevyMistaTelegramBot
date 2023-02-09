@@ -119,7 +119,7 @@ public class SessionSendMessageProcessor {
 
                 list.add(createSimpleMessage(sendMessageParam, Messages.SENDING_MESSAGE.getMessage()));
                 list.addAll(sendingMessageProcessor.sendMessage(sendMessageParam, sendMessageInfo.formatMessages()));
-                session.setAttribute("reading", null);//todo need to check
+//                session.setAttribute("reading", null);//todo need to check
             } else {
                 list.add(createSimpleMessage(sendMessageParam, Messages.INSERT_APPEAL.getMessage()));
             }
@@ -148,7 +148,7 @@ public class SessionSendMessageProcessor {
 
                 list.add(createSimpleMessage(sendMessageParam, Messages.CREATING_APPEAL.getMessage()));
                 list.addAll(appealSendMessageProcessor.createAppeal(sendMessageParam, miyDimAppealInfo.formatMessages(), appealTypes));
-                session.setAttribute("reading", null);//todo need to check
+//                session.setAttribute("reading", null);//todo need to check
             } else {
                 list.add(createSimpleMessage(sendMessageParam, Messages.INSERT_APPEAL.getMessage()));
             }

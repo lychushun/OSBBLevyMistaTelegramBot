@@ -3,6 +3,7 @@ package com.osbblevymista.telegram.keyabords.appeals;
 import com.osbblevymista.telegram.keyabords.OSBBKeyboard;
 import com.osbblevymista.telegram.keyabords.buttons.OSBBKeyboardButton;
 import com.osbblevymista.telegram.system.Actions;
+import com.osbblevymista.telegram.system.InvisibleCharacters;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 
 public class SubmitSimpleAppealKeyboard extends OSBBKeyboard {
@@ -16,7 +17,7 @@ public class SubmitSimpleAppealKeyboard extends OSBBKeyboard {
 
 
     public SubmitSimpleAppealKeyboard(boolean isAdmin) {
-        super(isAdmin, "\u200C");
+        super(isAdmin,  InvisibleCharacters._200C.getVal());
     }
 
     @Override

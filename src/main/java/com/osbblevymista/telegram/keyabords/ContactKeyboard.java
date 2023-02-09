@@ -2,6 +2,7 @@ package com.osbblevymista.telegram.keyabords;
 
 import com.osbblevymista.telegram.keyabords.buttons.OSBBKeyboardButton;
 import com.osbblevymista.telegram.system.Actions;
+import com.osbblevymista.telegram.system.InvisibleCharacters;
 import com.osbblevymista.telegram.system.Messages;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 
@@ -58,7 +59,7 @@ public class ContactKeyboard extends OSBBKeyboard {
     }
 
     public ContactKeyboard(boolean isAdmin) {
-        super(isAdmin, "\u200B"); // need an invisible character to identify which back button
+        super(isAdmin, InvisibleCharacters._200B.getVal()); // need an invisible character to identify which back button
     }
 
     @Override

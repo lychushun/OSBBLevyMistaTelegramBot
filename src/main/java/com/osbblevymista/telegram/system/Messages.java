@@ -59,14 +59,14 @@ public enum Messages {
     CREATING_REQUEST_DATA_FOR_MYIDIM(108, "Створюю запит. Зазвичай це займає до 1хв.\n"),
 
     RESPONSE_SIMPLE_REQUEST_DATA_FOR_MYIDIM(109, "Ви створили нове звернення. " +
-            "Ми опрацюємо його як найшвидше. " +
+            "Звернення опрацьовується правлінням протягом 3х робочих днів. Ми опрацюємо його як найшвидше. " +
             "Для перевірки статусу перейдіть у розділ '" + Actions.BUTTON_APPEAL_REVIEW.getText() + "'"),
 
-    RESPONSE_URGENT_REQUEST_DATA_FOR_MYIDIM(111, "Ви створили терміновий запит. " +
+    RESPONSE_URGENT_REQUEST_DATA_FOR_MYIDIM(111, "Ви створили термінове звернення. " +
             "Ми опрацюємо його протягом одного дня. " +
             "Для перевірки статусу перейдіть у розділ  '" + Actions.BUTTON_APPEAL_REVIEW.getText() + "'"),
 
-    RESPONSE_ERROR_REQUEST_DATA_FOR_MYIDIM(112, "Уппс, щось трапилось. " +
+    RESPONSE_ERROR_REQUEST_DATA_FOR_MYIDIM(112, "Упс, щось трапилось. " +
             "Запит не був творений. Попробуйте трохи пізніше, або зверніться до правління ОСББ."),
 
     INSERT_URGENT_REQUEST_DATA_FOR_MYIDIM(113, """
@@ -123,7 +123,7 @@ public enum Messages {
 
     NEW_RECEIPT_INFO(125, """
             <b>Вам нарахована нова квитанція за оплату ОСББ.</b>
-            Будь Ласка перейдіть у розділ <u>""" + Actions.BUTTON_ARREARS.getText() +
+            Будь ласка перейдіть у розділ <u>""" + Actions.BUTTON_ARREARS.getText() +
             "</u> та оплатіть послугу\n"),
 
     UNRECOGNIZED_COMMAND(126, """

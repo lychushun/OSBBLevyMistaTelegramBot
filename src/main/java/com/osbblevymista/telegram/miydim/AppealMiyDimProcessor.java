@@ -53,7 +53,7 @@ public class AppealMiyDimProcessor extends MiyDimProcessor{
         HtmlPage page2 = button.click();
 
 //        if (page2.getUrl().getPath().equals("/41035710/uk/order")){
-        if (page2.getUrl().getPath().equals("/order")){
+        if (page2.getUrl().getPath().contains("/order")){
             return true;
         } else {
             return false;

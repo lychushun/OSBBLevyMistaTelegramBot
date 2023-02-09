@@ -2,6 +2,7 @@ package com.osbblevymista.telegram.keyabords;
 
 import com.osbblevymista.telegram.keyabords.buttons.OSBBKeyboardButton;
 import com.osbblevymista.telegram.system.Actions;
+import com.osbblevymista.telegram.system.InvisibleCharacters;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 
 public class SendMessageByBoardKeyboard extends OSBBKeyboard {
@@ -15,7 +16,7 @@ public class SendMessageByBoardKeyboard extends OSBBKeyboard {
 
 
     public SendMessageByBoardKeyboard(boolean isAdmin) {
-        super(isAdmin, "\u3000");
+        super(isAdmin, InvisibleCharacters._200D.getVal());
     }
 
     @Override
