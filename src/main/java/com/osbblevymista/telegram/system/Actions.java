@@ -17,12 +17,14 @@ public enum Actions {
     BUTTON_REPAIROFBOILERS("Ремонт котлів \uD83D\uDEE0"),
     BUTTON_DOMOFONSERVICE("Домофон сервіс \uD83D\uDCDE"),
     BUTTON_BACK("Назад \uD83D\uDC48"),
+    BUTTON_NEXT("Далі \uD83D\uDC49"),
 //    BUTTON_BACK("Назад"),
 
 
     BUTTON_APPEAL_SIMPLE_CREATE("Створити звичайне \uD83D\uDCD7"),
     BUTTON_APPEAL_URGENT_CREATE("Створити термінове \uD83D\uDCD5"),
     BUTTON_APPEAL_REVIEW("Переглянути звернення \uD83D\uDCD6"),
+    BUTTON_BARRIER("Шлагбаум \uD83D\uDEA7"),
     BUTTON_APPEAL_SIMPLE_APPROVE("Підтвердити \u2705"),
     BUTTON_APPEAL_URGENT_APPROVE("Підтвердити \u2705"),
 
@@ -39,11 +41,14 @@ public enum Actions {
     BUTTON_CHAT_OSBB_CHAT_ANNOUNCEMENT("Купи\\Продай \"Леви Міста\""),
     BUTTON_CHAT_OSBB_CHAT_BOARD("Правління \"Леви Міста\""),
 
-    BUTTON_CAR_ENTRANCE("Форма для доступу до шлагбаунів."),
+    BUTTON_CAR_ENTRANCE("Форма для доступу до шлагбаумів."),
+    BUTTON_MIYDIM_LINK("Система Мій Дім."),
+    BUTTON_WEB_LINK("WEB сайт."),
 
     BUTTON_RULES_OF_LEAVING("Правила проживання."),
     BUTTON_MEETING_RELUSLT01022022("Підсумки загальних зборів від 1.02.2022."),
     BUTTON_PRESENTATION2023("Презентація ОСББ 'Леви Міста' 2023"),
+    BUTTON_DEBTORS("Боржники"),
     BUTTON_TARIFFS("Тарифи 2022"),
     BUTTON_TARIFFS2023("Тарифи 2023"),
 
@@ -51,6 +56,7 @@ public enum Actions {
     BUTTON_ADMIN_NEW_RECEIPT("Розіслати повідомлення про нову квитанцію \uD83D\uDCC4"),
 
     BUTTON_CONTACT("Контакти \uD83D\uDE01"),
+    BUTTON_USEFUL_LINKS("Корисні посилання \uD83C\uDF10"),
     BUTTON_INFO("Інформація \u2139"),
     BUTTON_ARREARS("Заборгованість \uD83D\uDCB0"),
     BUTTON_SETTINGS("Налаштування \uD83D\uDEA9"),

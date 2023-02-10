@@ -10,7 +10,8 @@ public enum InvisibleCharacters {
 
     _200C("\u200C"),
     _200B("\u200B"),
-    _200D("\u200D");
+    _200D("\u200D"),
+    _3000("\u3000");
     private String val;
 
 }

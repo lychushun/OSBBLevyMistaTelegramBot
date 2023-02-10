@@ -20,7 +20,7 @@ public class ScheduledTasks {
 
     private final UserInfoService userInfoService;
 
-    @Scheduled(fixedRate = 50000)
+    @Scheduled(fixedRate = 1000*60*30)
     public void reportCurrentTime() {
         log.info("Creating snapshot of user info {}, size: {}", dateFormat.format(new Date()), userInfoService.size());
         userInfoService.doSnapshot();

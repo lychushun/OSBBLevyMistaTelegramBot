@@ -69,8 +69,12 @@ public class MiyDimService {
         }
     }
 
-    public boolean delete(Long adminId) {
+    public boolean deleteAdmin(Long adminId) {
            return adminInfoService.delete(adminId);
+    }
+
+    public boolean deleteUser(Long userId) {
+           return userInfoService.delete(userId.toString());
     }
 
     public List<AdminInfoResponse> getAllAdmins() {

@@ -2,20 +2,20 @@ package com.osbblevymista.telegram.pages;
 
 import com.osbblevymista.telegram.system.Titles;
 
-public class ContactPage extends BasePage{
+public class ContactPage1 extends BasePage{
 
-    private static ContactPage contactPage = null;
+    private static ContactPage1 contactPage = null;
 
-    public static ContactPage getInstance(boolean isAdmin){
+    public static ContactPage1 getInstance(boolean isAdmin){
         if (contactPage == null){
-            contactPage = new ContactPage();
+            contactPage = new ContactPage1();
         }
         contactPage.setAdmin(isAdmin);
 
         return contactPage;
     }
 
-    private ContactPage(){
+    private ContactPage1(){
         super();
         title = Titles.CONTACTS.getTitle();
     }

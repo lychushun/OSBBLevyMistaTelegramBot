@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
+import static java.util.Objects.nonNull;
+
 
 @Getter
 public abstract class BasePage {
@@ -42,7 +44,7 @@ public abstract class BasePage {
     }
 
     public boolean isOSBBKeyboard() {
-        return Objects.nonNull(osbbKeyboard);
+        return nonNull(osbbKeyboard);
     }
 
     public void setKeyboard(OSBBKeyboard osbbKeyboard) {
@@ -77,16 +79,16 @@ public abstract class BasePage {
 //            throw new NullPointerException("OSBB Inline KeyboardButton id cannot be null");
 //        }
 
-        if (Objects.nonNull(osbbKeyboard)) {
+        if (nonNull(osbbKeyboard)) {
             List<OSBBKeyboardButton> osbbKeyboardButtonList = osbbKeyboard.getAllOSBBKeyboardButtons();
 
             for (OSBBKeyboardButton item : osbbKeyboardButtonList) {
                 if (Objects.equals(item.getId(), buttonId)) {
                     return item;
                 } else {
-                    if (Objects.nonNull(item.getNextPage())) {
+                    if (nonNull(item.getNextPage())) {
                         OSBBKeyboardButton osbbKeyboardButton = item.getNextPage().currentButton(buttonId);
-                        if (Objects.nonNull(osbbKeyboardButton)) {
+                        if (nonNull(osbbKeyboardButton)) {
                             return osbbKeyboardButton;
                         }
                     }

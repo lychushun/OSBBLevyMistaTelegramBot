@@ -36,6 +36,8 @@ public class SendingMessageProcessor {
     public List<Function<Message, OSBBSendMessage>> sendMessage(SendMessageParams sendMessageParam, String messageStr) throws IOException {
         List<Function<Message, OSBBSendMessage>> messages = new ArrayList<>();
 
+        List<String> errorChatIds = new ArrayList<>();
+
         List<UserInfo> userInfoList = userInfoFileReader
                 .getAll()
                 .stream()
@@ -59,13 +61,15 @@ public class SendingMessageProcessor {
                     try {
                         return sendMessageBuilder.createMessageExecutingDelay(sendMessageParams, messageStr);
                     } catch (UnsupportedEncodingException | URISyntaxException e) {
-                        e.printStackTrace();
+                        logger.warn("Notification was not sent to: " + item.getChatId());
+
                         logger.error(e.getMessage(), e);
+                        errorChatIds.add(item.getChatId());
+                        e.printStackTrace();
                     }
                     return null;
                 }
             };
-
             messages.add(function);
         });
 
@@ -74,7 +78,7 @@ public class SendingMessageProcessor {
             public OSBBSendMessage apply(Message message) {
 
                 try {
-                    return sendMessageBuilder.createSimpleMessage(sendMessageParam, Messages.SENT_MESSAGE.format(userInfoList.size() + ""));
+                    return sendMessageBuilder.createSimpleMessage(sendMessageParam, Messages.SENT_MESSAGE.format((userInfoList.size() - errorChatIds.size()) + "", userInfoList.size() + ""));
                 } catch (UnsupportedEncodingException | URISyntaxException e) {
                     e.printStackTrace();
                     logger.error(e.getMessage(), e);

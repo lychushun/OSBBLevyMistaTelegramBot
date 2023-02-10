@@ -18,30 +18,30 @@ import java.util.List;
 @RestController
 public class MiyDimController {
 
-    private final MiyDimService miyDimService;
+//    private final MiyDimService miyDimService;
+//
+//    @PostMapping(path = "/admin", produces = MediaType.APPLICATION_JSON_VALUE)
+//    public ResponseEntity<?> addAdmin(@RequestBody AdminInfoRequest adminInfoRequest) {
+//        Boolean res = miyDimService.addAdmin(adminInfoRequest);
+//        return new ResponseEntity<>(res, HttpStatus.OK);
+//    }
+//
+//    @DeleteMapping(path = "/admin/{adminId}", produces = MediaType.APPLICATION_JSON_VALUE)
+//    public ResponseEntity<?> deleteAdmin(@PathVariable("adminId") Long adminAd) {
+//        Boolean res = miyDimService.delete(adminAd);
+//        return new ResponseEntity<>(res, HttpStatus.OK);
+//    }
+//
+//    @GetMapping(path = "/admin", produces = MediaType.APPLICATION_JSON_VALUE)
+//    public ResponseEntity<?> getAdmin() {
+//        List<AdminInfoResponse> list = miyDimService.getAllAdmins();
+//        return new ResponseEntity<>(list, HttpStatus.OK);
+//    }
 
-    @PostMapping(path = "/admin", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> addAdmin(@RequestBody AdminInfoRequest adminInfoRequest) {
-        Boolean res = miyDimService.addAdmin(adminInfoRequest);
-        return new ResponseEntity<>(res, HttpStatus.OK);
-    }
-
-    @DeleteMapping(path = "/admin/{adminId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> deleteAdmin(@PathVariable("adminId") Long adminAd) {
-        Boolean res = miyDimService.delete(adminAd);
-        return new ResponseEntity<>(res, HttpStatus.OK);
-    }
-
-    @GetMapping(path = "/admin", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getAdmin() {
-        List<AdminInfoResponse> list = miyDimService.getAllAdmins();
-        return new ResponseEntity<>(list, HttpStatus.OK);
-    }
-
-    @GetMapping(path = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getUsers() {
-        List<UserInfoResponse> list = miyDimService.getAllUsers();
-        return new ResponseEntity<>(list, HttpStatus.OK);
-    }
+//    @GetMapping(path = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
+//    public ResponseEntity<?> getUsers() {
+//        List<UserInfoResponse> list = miyDimService.getAllUsers();
+//        return new ResponseEntity<>(list, HttpStatus.OK);
+//    }
 
 }

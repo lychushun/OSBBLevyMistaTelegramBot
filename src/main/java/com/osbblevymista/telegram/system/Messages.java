@@ -173,7 +173,11 @@ public enum Messages {
             """),
 
     SENT_MESSAGE(137, """
-            Повідомлення було надіслано %s користувачам.
+            Повідомлення було надіслано %s з %s користувачам.
+            """),
+
+    USFUL_LINKS(138, """
+            Корисні посилання
             """);
 
     Integer id;
@@ -181,6 +185,10 @@ public enum Messages {
 
     public String format(String v1){
         return String.format(this.message, v1);
+    }
+
+    public String format(String v1, String v2){
+        return String.format(this.message, v1, v2);
     }
 
 }

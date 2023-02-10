@@ -30,8 +30,10 @@ public abstract class OSBBKeyboard {
     protected String sufix = "";
 
     protected OSBBKeyboardButton osbbKeyboardButtonBack = new OSBBKeyboardButton(Actions.BUTTON_BACK.getText());;
+    protected OSBBKeyboardButton osbbKeyboardButtonNext = new OSBBKeyboardButton(Actions.BUTTON_NEXT.getText());;
 
     private boolean isDisplayBackKey = false;
+    private boolean isDisplayNextKey = false;
 
     public List<String> messages = new ArrayList<>();
 
@@ -54,6 +56,7 @@ public abstract class OSBBKeyboard {
     protected OSBBKeyboard(boolean isAdmin, String sufix) {
         this.sufix = sufix;
         osbbKeyboardButtonBack = new OSBBKeyboardButton(Actions.BUTTON_BACK.getText() + sufix);
+        osbbKeyboardButtonNext = new OSBBKeyboardButton(Actions.BUTTON_NEXT.getText() + sufix);
         this.admin = isAdmin;
     }
 
@@ -66,6 +69,18 @@ public abstract class OSBBKeyboard {
             isDisplayBackKey = true;
         } else {
             isDisplayBackKey = false;
+        }
+    }
+
+    public void setNextPage(BasePage mainPage) {
+        if (Objects.nonNull(mainPage)) {
+            osbbKeyboardButtonNext.setNextPage(mainPage);
+            osbbKeyboardButtonNext.setId(Actions.BUTTON_NEXT.getText()+sufix);
+            insertIntoFourthRow(osbbKeyboardButtonNext);
+
+            isDisplayNextKey = true;
+        } else {
+            isDisplayNextKey = false;
         }
     }
 
@@ -127,18 +142,20 @@ public abstract class OSBBKeyboard {
 
     protected void insertIntoFourthRow(OSBBKeyboardButton osbbKeyboardButton) {
         if(!osbbKeyboardButton.isOnlyAdmin() || admin) {
-            thirdOSBBKeyboardRow.add(osbbKeyboardButton);
+            fourthOSBBKeyboardRow.add(osbbKeyboardButton);
 
-            List<KeyboardButton> newMap = thirdOSBBKeyboardRow.stream().map(keyboardButton -> new KeyboardButton(keyboardButton.getText()))
+            List<KeyboardButton> newMap = fourthOSBBKeyboardRow.stream().map(keyboardButton -> new KeyboardButton(keyboardButton.getText()))
                     .collect(Collectors.toList());
 
-            thirdKeyboardRow = new KeyboardRow(newMap);
+            fourthKeyboardRow = new KeyboardRow(newMap);
         }
     }
 
     public List<OSBBKeyboardButton> getAllOSBBKeyboardButtons() {
         List<OSBBKeyboardButton> list = Stream.concat(firstOSBBKeyboardRow.stream(), secondOSBBKeyboardRow.stream()).collect(Collectors.toList());
-        return Stream.concat(list.stream(), thirdOSBBKeyboardRow.stream())
+        list = Stream.concat(list.stream(), thirdOSBBKeyboardRow.stream())
+                .collect(Collectors.toList());
+        return Stream.concat(list.stream(), fourthOSBBKeyboardRow.stream())
                 .collect(Collectors.toList());
     }
 

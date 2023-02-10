@@ -64,6 +64,11 @@ public class ReportPage extends BasePage{
         osbbInlineKeyboardButton.setId(Actions.BUTTON_PRESENTATION2023.getText());
         executorListenerResponse.insertOSBBInlineKeyboardButtonNextRow(osbbInlineKeyboardButton);
 
+        osbbInlineKeyboardButton =
+                new OSBBInlineKeyboardButton(Actions.BUTTON_DEBTORS.getText(), Links.DEBTORS.getLink());
+        osbbInlineKeyboardButton.setId(Actions.BUTTON_DEBTORS.getText());
+        executorListenerResponse.insertOSBBInlineKeyboardButtonNextRow(osbbInlineKeyboardButton);
+
         return consumer.apply(executorListenerResponse);
     }
 

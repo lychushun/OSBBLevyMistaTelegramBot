@@ -99,81 +99,83 @@ public class TelegramRunner {
 
                     try {
                         Message message = update.getMessage();
-                        logger.info("REQUEST FROM USER ID: " + message.getFrom().getId() +
-                                "; FIRST NAME: " + message.getFrom().getFirstName() +
-                                "; LAST NAME: " + message.getFrom().getLastName() +
-                                "; USER NAME: " + message.getFrom().getUserName() +
-                                "; CHAT ID: " + message.getChatId() +
-                                "; MESSAGE: " + message.getText());
+                        if (message != null) {
+                            logger.info("REQUEST FROM USER ID: " + message.getFrom().getId() +
+                                    "; FIRST NAME: " + message.getFrom().getFirstName() +
+                                    "; LAST NAME: " + message.getFrom().getLastName() +
+                                    "; USER NAME: " + message.getFrom().getUserName() +
+                                    "; CHAT ID: " + message.getChatId() +
+                                    "; MESSAGE: " + message.getText());
 
-                        Long chatId = message.getChatId();
+                            Long chatId = message.getChatId();
 
-                        List<Function<Message, OSBBSendMessage>> newMessages = new ArrayList<>();
+                            List<Function<Message, OSBBSendMessage>> newMessages = new ArrayList<>();
 
-                        SendMessageParams.SendMessageParamsBuilder sendMessageParamsBuilder = getSendMessageParamsBuilder(message, chatId);
+                            SendMessageParams.SendMessageParamsBuilder sendMessageParamsBuilder = getSendMessageParamsBuilder(message, chatId);
 
-                        String strMessage = message.getText();
-                        List<PhotoSize> photoSizes = message.getPhoto();
+                            String strMessage = message.getText();
+                            List<PhotoSize> photoSizes = message.getPhoto();
 
 //                        if (strMessage != null || photoSizes != null) {
-                        if (strMessage != null) {
+                            if (strMessage != null) {
 
-                            if (strMessage.equals("/start")) {
-                                newMessages = createStartPage(sendMessageParamsBuilder.build(), message.getFrom().getId());
-                            } else {
-                                UserInfo userInfo = new UserInfo();
-                                userInfo.setLastName(message.getChat().getLastName());
-                                userInfo.setFirstName(message.getChat().getFirstName());
-                                userInfo.setChatId(message.getChat().getId().toString());
-                                userInfo.setUserId(message.getFrom().getId());
-                                userInfo.setUserName(message.getFrom().getUserName());
-                                userInfoService.addRow(userInfo);
+                                if (strMessage.equals("/start")) {
+                                    newMessages = createStartPage(sendMessageParamsBuilder.build(), message.getFrom().getId());
+                                } else {
+                                    UserInfo userInfo = new UserInfo();
+                                    userInfo.setLastName(message.getChat().getLastName());
+                                    userInfo.setFirstName(message.getChat().getFirstName());
+                                    userInfo.setChatId(message.getChat().getId().toString());
+                                    userInfo.setUserId(message.getFrom().getId());
+                                    userInfo.setUserName(message.getFrom().getUserName());
+                                    userInfoService.addRow(userInfo);
 //                                fileWorker.add(userInfo);
 
-                                //                                sessionManager.addLoginAndPassToSession(optional, message, fileWorker);
+                                    //                                sessionManager.addLoginAndPassToSession(optional, message, fileWorker);
 
 //                session.setAttribute(SessionAttributes.LOGIN, "yura.lychushun@gmail.com");
 //                session.setAttribute(SessionAttributes.PASS, "31101993");
 
-                                if (update.hasCallbackQuery()) {
-                                    Function<CallbackQuery, OSBBSendMessage> newMessage = processCallBack();
-                                    execute(newMessage.apply(update.getCallbackQuery()));
-                                }
+                                    if (update.hasCallbackQuery()) {
+                                        Function<CallbackQuery, OSBBSendMessage> newMessage = processCallBack();
+                                        execute(newMessage.apply(update.getCallbackQuery()));
+                                    }
 
-                                if (update.hasMessage()) {
-                                    sendMessageParamsBuilder
-                                            .clientPort(clientPort)
-                                            .clientIp(clientIp)
-                                            .chatId(chatId)
-                                            .build();
+                                    if (update.hasMessage()) {
+                                        sendMessageParamsBuilder
+                                                .clientPort(clientPort)
+                                                .clientIp(clientIp)
+                                                .chatId(chatId)
+                                                .build();
 
-                                    newMessages = sessionSendMessageProcessor.processSession(message, sendMessageParamsBuilder.build(), optional);
+                                        newMessages = sessionSendMessageProcessor.processSession(message, sendMessageParamsBuilder.build(), optional);
 
-                                    if (Objects.isNull(newMessages)) {
-                                        OSBBKeyboardButton osbbKeyboardButton = getOSBBKeyboardButton(message);
-                                        newMessages = processMessage(sendMessageParamsBuilder.build(), osbbKeyboardButton);
+                                        if (Objects.isNull(newMessages)) {
+                                            OSBBKeyboardButton osbbKeyboardButton = getOSBBKeyboardButton(message);
+                                            newMessages = processMessage(sendMessageParamsBuilder.build(), osbbKeyboardButton);
+                                        }
                                     }
                                 }
+
+                            } else {
+                                newMessages.add(actionSendMessageProcessor.createSimpleMessage(sendMessageParamsBuilder.build(), Messages.UNRECOGNIZED_COMMAND.getMessage()));
                             }
 
-                        } else {
-                            newMessages.add(actionSendMessageProcessor.createSimpleMessage(sendMessageParamsBuilder.build(), Messages.UNRECOGNIZED_COMMAND.getMessage()));
+                            newMessages.forEach(item -> {
+                                try {
+                                    OSBBSendMessage osbbSendMessage = item.apply(update.getMessage());
+                                    if (osbbSendMessage.getExecutingDelay() > 0) {
+                                        Date startDate = new Date();
+                                        while (startDate.getTime() + osbbSendMessage.getExecutingDelay() >= new Date().getTime()) {
+                                        }
+                                    }
+                                    execute(osbbSendMessage);
+                                } catch (TelegramApiException e) {
+                                    e.printStackTrace();
+                                    logger.error(e.getMessage(), e);
+                                }
+                            });
                         }
-
-                        newMessages.forEach(item -> {
-                            try {
-                                OSBBSendMessage osbbSendMessage = item.apply(update.getMessage());
-                                if (osbbSendMessage.getExecutingDelay() > 0) {
-                                    Date startDate = new Date();
-                                    while (startDate.getTime() + osbbSendMessage.getExecutingDelay() >= new Date().getTime()) {
-                                    }
-                                }
-                                execute(osbbSendMessage);
-                            } catch (TelegramApiException e) {
-                                e.printStackTrace();
-                                logger.error(e.getMessage(), e);
-                            }
-                        });
                     } catch (Exception e) {
                         e.printStackTrace();
                         logger.error(e.getMessage(), e);
@@ -280,7 +282,8 @@ public class TelegramRunner {
 
     public MainPage getPageInfrastructure(boolean isAdmin) {
         MainPage mainPage = MainPage.getInstance(isAdmin);
-        ContactPage contactPage = ContactPage.getInstance(isAdmin);
+        ContactPage1 contactPage1 = ContactPage1.getInstance(isAdmin);
+        ContactPage2 contactPage2 = ContactPage2.getInstance(isAdmin);
         ArrearsPage arrearsPage = ArrearsPage.getInstance(isAdmin);
         SettingsPage settingsPage = SettingsPage.getInstance(isAdmin);
         AppealPage appealPage = AppealPage.getInstance(isAdmin);
@@ -300,8 +303,12 @@ public class TelegramRunner {
         mainKeyboard.setAdminPage(adminPage);
         mainKeyboard.setChatPage(chatPage);
 
-        ContactKeyboard contactKeyboard = new ContactKeyboard(isAdmin);
-        contactKeyboard.setPrevPage(infoPage);
+        ContactKeyboard1 contactKeyboard1 = new ContactKeyboard1(isAdmin);
+        contactKeyboard1.setPrevPage(infoPage);
+//        contactKeyboard1.setNextPage(contactPage2);
+
+        ContactKeyboard2 contactKeyboard2 = new ContactKeyboard2(isAdmin);
+        contactKeyboard2.setPrevPage(contactPage1);
 
         SettingsKeyboard settingsKeyboard = new SettingsKeyboard(isAdmin);
         settingsKeyboard.setPrevPage(mainPage);
@@ -321,7 +328,7 @@ public class TelegramRunner {
 
         InfoKeyboard infoKeyboard = new InfoKeyboard(isAdmin);
         infoKeyboard.setPrevPage(mainPage);
-        infoKeyboard.setContactPage(contactPage);
+        infoKeyboard.setContactPage(contactPage1);
         infoKeyboard.setReportPage(reportPage);
 
         SubmitSimpleAppealKeyboard submitSimpleAppealKeyboard = new SubmitSimpleAppealKeyboard(isAdmin);
@@ -331,7 +338,8 @@ public class TelegramRunner {
         submitUrgentAppealKeyboard.setPrevPage(appealPage);
 
         mainPage.setKeyboard(mainKeyboard);
-        contactPage.setKeyboard(contactKeyboard);
+        contactPage1.setKeyboard(contactKeyboard1);
+        contactPage2.setKeyboard(contactKeyboard2);
         settingsPage.setKeyboard(settingsKeyboard);
         sendMessagePage.setKeyboard(sendMessageByBoardKeyboard);
         appealPage.setKeyboard(appealKeyboard);
