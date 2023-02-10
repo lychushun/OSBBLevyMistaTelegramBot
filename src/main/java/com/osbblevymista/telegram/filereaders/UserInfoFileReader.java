@@ -15,19 +15,17 @@ import java.util.List;
 public class UserInfoFileReader extends FileReader<UserInfo> {
 
     @Override
-    public String getFileName(){
+    public String getFileName() {
         return "userInfo.csv";
     }
 
     public void add(List<UserInfo> userInfo) {
-        if(userInfo!=null){
-            userInfo.forEach(el ->{
-                try {
-                    super.writeToFile(el);
-                } catch (IOException | CsvRequiredFieldEmptyException | CsvDataTypeMismatchException | CsvValidationException e) {
-                    e.printStackTrace();
-                }
-            });
+        if (userInfo != null) {
+            try {
+                super.writeToFile(userInfo);
+            } catch (IOException | CsvRequiredFieldEmptyException | CsvDataTypeMismatchException | CsvValidationException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -37,9 +35,8 @@ public class UserInfoFileReader extends FileReader<UserInfo> {
     }
 
     @Override
-    protected boolean noneMatch(List<UserInfo> userInfoList, UserInfo uInfo){
-        logger.debug("userInfoList: " + userInfoList.toString());
-        return userInfoList.stream().noneMatch(item -> match(item,uInfo)
+    protected boolean noneMatch(List<UserInfo> userInfoList, UserInfo uInfo) {
+        return userInfoList.stream().noneMatch(item -> match(item, uInfo)
                 && item.getUserId() == uInfo.getUserId());
     }
 

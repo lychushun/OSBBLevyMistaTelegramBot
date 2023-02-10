@@ -30,7 +30,7 @@ public class OSBBKeyboardButton extends KeyboardButton {
 
     private boolean onlyAdmin = false;
 
-    private OSBBExecutorListener osbbExecutorListener;
+    private OSBBExecutorListener onClickListener;
 
     public List<String> messages = new ArrayList<>();
 
@@ -41,12 +41,12 @@ public class OSBBKeyboardButton extends KeyboardButton {
     }
 
     public boolean doExecute(KeyboardParam keyboardParam, Function<ExecutorListenerResponse, Boolean> consumer) throws IOException, URISyntaxException {
-        ExecutorListenerResponse executorListenerResponse = osbbExecutorListener.doExecute(keyboardParam);
+        ExecutorListenerResponse executorListenerResponse = onClickListener.doExecute(keyboardParam);
         return consumer.apply(executorListenerResponse);
     }
 
     public boolean canExecute(){
-        return Objects.nonNull(osbbExecutorListener);
+        return Objects.nonNull(onClickListener);
     }
 
 }

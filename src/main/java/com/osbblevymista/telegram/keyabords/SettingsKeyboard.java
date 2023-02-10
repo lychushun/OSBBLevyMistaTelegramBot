@@ -1,6 +1,5 @@
 package com.osbblevymista.telegram.keyabords;
 
-import com.osbblevymista.OSBBLevyMista45;
 import com.osbblevymista.api.services.MiyDimService;
 import com.osbblevymista.telegram.executorlistener.ExecutorListenerResponse;
 import com.osbblevymista.telegram.executorlistener.OSBBExecutorListener;
@@ -29,7 +28,7 @@ public class SettingsKeyboard extends OSBBKeyboard {
     {
 
         osbbKeyboardButtonVisitMiyDim.setId(Actions.BUTTON_VISIT_MIYDIM.getText());
-        osbbKeyboardButtonVisitMiyDim.setOsbbExecutorListener(new OSBBExecutorListener() {
+        osbbKeyboardButtonVisitMiyDim.setOnClickListener(new OSBBExecutorListener() {
             @Override
             public ExecutorListenerResponse doExecute(KeyboardParam keyboardParam) throws IOException, URISyntaxException {
                 ExecutorListenerResponse executorListenerResponse = new ExecutorListenerResponse();
@@ -46,7 +45,7 @@ public class SettingsKeyboard extends OSBBKeyboard {
         insertIntoFirstRow(osbbKeyboardButtonVisitMiyDim);
 
         osbbKeyboardButtonExitMiyDim.setId(Actions.BUTTON_EXIT_MIYDIM.getText());
-        osbbKeyboardButtonExitMiyDim.setOsbbExecutorListener(new OSBBExecutorListener() {
+        osbbKeyboardButtonExitMiyDim.setOnClickListener(new OSBBExecutorListener() {
             @Override
             public ExecutorListenerResponse doExecute(KeyboardParam keyboardParam) {
 

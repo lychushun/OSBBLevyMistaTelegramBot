@@ -23,7 +23,7 @@ public class SendMessageParams {
     private int executingDelay;
 
     public String getUserName(){
-        return "@"+userName;
+        return "@"+(userName == null ? "" : userName);
     }
 
     public String getFirstName(){

@@ -1,13 +1,17 @@
 package com.osbblevymista.telegram.send;
 
+import com.osbblevymista.telegram.keyabords.SettingsKeyboard;
 import com.osbblevymista.telegram.system.Messages;
-import com.osbblevymista.telegram.system.MessagesParseMode;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class SendMessageBuilder {
@@ -48,6 +52,24 @@ public class SendMessageBuilder {
         sendMessage.setText(Messages.DEFAULT_ANSWER.getMessage());
         sendMessage.setParseMode(ParseMode.HTML);
 
+        return sendMessage;
+    }
+
+    public OSBBSendMessage generateMiyDimNotLoginMessage(SendMessageParams sendMessageParam ){
+        OSBBSendMessage sendMessage = createBaseMessage(sendMessageParam.getChatId());
+
+        List<InlineKeyboardButton> inlineKeyboardButtons = new ArrayList<>();
+        inlineKeyboardButtons.add(SettingsKeyboard.generateLoginButton(
+                sendMessageParam.getClientIp(),
+                sendMessageParam.getClientPort(),
+                sendMessageParam.getChatId().toString()
+        ));
+
+        InlineKeyboardMarkup.InlineKeyboardMarkupBuilder inlineKeyboardMarkupBuilder = InlineKeyboardMarkup.builder();
+        sendMessage.setReplyMarkup(inlineKeyboardMarkupBuilder
+                .keyboardRow(inlineKeyboardButtons)
+                .build());
+        sendMessage.setText(Messages.MISSING_COOKIE.getMessage());
         return sendMessage;
     }
 

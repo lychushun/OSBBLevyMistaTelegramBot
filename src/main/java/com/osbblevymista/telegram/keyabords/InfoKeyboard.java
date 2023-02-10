@@ -31,7 +31,7 @@ public class InfoKeyboard extends OSBBKeyboard {
         insertIntoFirstRow(osbbKeyboardButtonReports);
 
         osbbKeyboardButtonMiyDim.setId(Actions.BUTTON_USEFUL_LINKS.getText());
-        osbbKeyboardButtonMiyDim.setOsbbExecutorListener(new OSBBExecutorListener() {
+        osbbKeyboardButtonMiyDim.setOnClickListener(new OSBBExecutorListener() {
             @Override
             public ExecutorListenerResponse doExecute(KeyboardParam keyboardParam) throws IOException, URISyntaxException {
                 ExecutorListenerResponse executorListenerResponse = new ExecutorListenerResponse();

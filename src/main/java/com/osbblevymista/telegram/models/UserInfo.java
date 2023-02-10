@@ -100,10 +100,10 @@ public class UserInfo implements Info {
                 apartment,
                 chatId,
                 createDateTs,
-                lastActiveDateTs,
                 firstName,
                 firstNameMD,
                 house,
+                lastActiveDateTs,
                 lastName,
                 lastNameMD,
                 String.valueOf(sentNotifications),
@@ -114,7 +114,7 @@ public class UserInfo implements Info {
 
     private String getCurrentDateTs(){
         Date date = Calendar.getInstance().getTime();
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         return dateFormat.format(date);
     }
 

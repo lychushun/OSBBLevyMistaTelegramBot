@@ -1,28 +1,40 @@
 package com.osbblevymista.telegram.services;
 
-import com.opencsv.bean.CsvBindByName;
-import com.opencsv.exceptions.CsvDataTypeMismatchException;
-import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
-import com.opencsv.exceptions.CsvValidationException;
+import com.osbblevymista.OSBBLevyMista45;
 import com.osbblevymista.telegram.filereaders.UserInfoFileReader;
 import com.osbblevymista.telegram.models.UserInfo;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
-import java.util.*;
-import java.util.function.Function;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static java.util.function.Function.identity;
 
-@Service
+@Component
 @RequiredArgsConstructor
+@Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class UserInfoService extends FileService<UserInfo, String>{
+
+    final Logger logger = LoggerFactory.getLogger(OSBBLevyMista45.class);
 
     private Map<String, UserInfo> userInfoMap;
     private final UserInfoFileReader userInfoFileReader;
+
+    @PostConstruct
+    private void initUserInfo() throws IOException {
+        List<UserInfo> userInfoList = userInfoFileReader.getAll(true);
+        userInfoMap = userInfoList.stream().collect(Collectors.toMap(UserInfo::getChatId, identity()));
+    }
 
     @Override
     public void addRow(UserInfo userInfo){
@@ -38,11 +50,7 @@ public class UserInfoService extends FileService<UserInfo, String>{
         return userInfoMap.get(chatId);
     }
 
-    @PostConstruct
-    private void initUserInfo() throws IOException {
-        List<UserInfo> userInfoList = userInfoFileReader.getAll(true);
-        userInfoMap = userInfoList.stream().collect(Collectors.toMap(UserInfo::getChatId, identity()));
-    }
+
 
     @Override
     public void doSnapshot(){

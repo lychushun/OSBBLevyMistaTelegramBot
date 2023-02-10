@@ -39,17 +39,17 @@ public class AuthInfo implements Info{
 
     public AuthInfo(){
         Date date = Calendar.getInstance().getTime();
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         createDateTs = dateFormat.format(date);
         active = true;
     }
 
     public Date getCreateTs() throws ParseException {
-        return new SimpleDateFormat("yyyy-mm-dd hh:mm:ss").parse(this.createDateTs);
+        return new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(this.createDateTs);
     }
 
     public long getCreateTsLong() throws ParseException {
-        return new SimpleDateFormat("yyyy-mm-dd hh:mm:ss").parse(this.createDateTs).getTime();
+        return new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(this.createDateTs).getTime();
     }
 
 }

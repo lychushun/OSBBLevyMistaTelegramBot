@@ -6,6 +6,7 @@ import com.opencsv.exceptions.CsvValidationException;
 import com.osbblevymista.telegram.filereaders.AdminFileReader;
 import com.osbblevymista.telegram.models.AdminInfo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -18,7 +19,7 @@ import java.util.stream.Collectors;
 
 import static java.util.function.Function.identity;
 
-@Service
+@Component
 @RequiredArgsConstructor
 public class AdminInfoService extends FileService<AdminInfo, Long>{
 

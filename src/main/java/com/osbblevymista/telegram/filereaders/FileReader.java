@@ -129,5 +129,36 @@ public abstract class FileReader<R extends Info> {
         writer.close();
     }
 
+    protected void writeToFile(List<R> listInfo) throws IOException, CsvRequiredFieldEmptyException, CsvDataTypeMismatchException, CsvValidationException {
+        logger.info("Writing file...");
+        String fullFileName = getFullFileName();
+        File file = new File(fullFileName);
+        if (!file.exists()){
+            file.createNewFile();
+
+        }
+        if (listInfo != null && listInfo.size() > 0) {
+            CSVReader reader = new CSVReader(new java.io.FileReader(fullFileName));
+            String[] nextLine = reader.readNext();
+            reader.close();
+
+            Writer writer = new FileWriter(fullFileName, true);
+            CSVWriter csvWriter = new CSVWriter(writer);
+
+            if (nextLine != null) {
+                listInfo.forEach(it -> {
+                    csvWriter.writeNext(it.getAsArray());
+                });
+            } else {
+                StatefulBeanToCsvBuilder<R> builder = new StatefulBeanToCsvBuilder<>(csvWriter);
+                StatefulBeanToCsv<R> beanWriter = builder.build();
+                beanWriter.write(listInfo);
+            }
+            csvWriter.close();
+            writer.close();
+        }
+
+    }
+
 
 }

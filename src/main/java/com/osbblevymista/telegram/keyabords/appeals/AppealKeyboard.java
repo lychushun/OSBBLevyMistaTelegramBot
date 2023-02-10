@@ -33,11 +33,11 @@ public class AppealKeyboard extends OSBBKeyboard {
 
     {
         osbbKeyboardButtonCreateSimple.setId(Actions.BUTTON_APPEAL_SIMPLE_CREATE.getText());
-        osbbKeyboardButtonCreateSimple.setOsbbExecutorListener(getOsbbExecutorListenerCreate(AppealTypes.SIMPLE));
+        osbbKeyboardButtonCreateSimple.setOnClickListener(getOsbbExecutorListenerCreate(AppealTypes.SIMPLE));
         insertIntoFirstRow(osbbKeyboardButtonCreateSimple);
 
         osbbKeyboardButtonCreateUrgent.setId(Actions.BUTTON_APPEAL_URGENT_CREATE.getText());
-        osbbKeyboardButtonCreateUrgent.setOsbbExecutorListener(getOsbbExecutorListenerCreate(AppealTypes.URGENT));
+        osbbKeyboardButtonCreateUrgent.setOnClickListener(getOsbbExecutorListenerCreate(AppealTypes.URGENT));
         insertIntoFirstRow(osbbKeyboardButtonCreateUrgent);
 
         OSBBExecutorListener osbbExecutorListenerGet = new OSBBExecutorListener() {
@@ -75,7 +75,7 @@ public class AppealKeyboard extends OSBBKeyboard {
 
         osbbKeyboardButtonGet.setId(Actions.BUTTON_APPEAL_REVIEW.getText());
         osbbKeyboardButtonGet.messages.add(Messages.GET_REQUEST_DATA_FOR_MYIDIM.getMessage());
-        osbbKeyboardButtonGet.setOsbbExecutorListener(osbbExecutorListenerGet);
+        osbbKeyboardButtonGet.setOnClickListener(osbbExecutorListenerGet);
         insertIntoFirstRow(osbbKeyboardButtonGet);
 
 
@@ -95,7 +95,7 @@ public class AppealKeyboard extends OSBBKeyboard {
         };
 
         osbbKeyboardButtonBarrier.setId(Actions.BUTTON_BARRIER.getText());
-        osbbKeyboardButtonBarrier.setOsbbExecutorListener(osbbExecutorListenerGet);
+        osbbKeyboardButtonBarrier.setOnClickListener(osbbExecutorListenerGet);
         insertIntoSecondRow(osbbKeyboardButtonBarrier);
     }
 

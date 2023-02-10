@@ -5,6 +5,7 @@ import com.osbblevymista.telegram.models.UserInfo;
 import com.osbblevymista.telegram.send.OSBBSendMessage;
 import com.osbblevymista.telegram.send.SendMessageBuilder;
 import com.osbblevymista.telegram.send.SendMessageParams;
+import com.osbblevymista.telegram.services.ChanelMessengerService;
 import com.osbblevymista.telegram.system.Messages;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -29,9 +30,10 @@ public class SendingMessageProcessor {
 
     private final SendMessageBuilder sendMessageBuilder;
     private final UserInfoFileReader userInfoFileReader;
+    private final ChanelMessengerService chanelMessengerService;
 
-    @Value("${tereveni.cahtid}")
-    private String terevenyBotId;
+//    @Value("${tereveni.cahtid}")
+//    private String terevenyBotId;
 
     public List<Function<Message, OSBBSendMessage>> sendMessage(SendMessageParams sendMessageParam, String messageStr) throws IOException {
         List<Function<Message, OSBBSendMessage>> messages = new ArrayList<>();
@@ -44,10 +46,10 @@ public class SendingMessageProcessor {
                 .filter(UserInfo::isSentNotifications)
                 .collect(Collectors.toList());
 
-        UserInfo userInfoTereveny = new UserInfo();
-        userInfoTereveny.setChatId(terevenyBotId);
-
-        userInfoList.add(userInfoTereveny);
+//        UserInfo userInfoTereveny = new UserInfo();
+//        userInfoTereveny.setChatId(terevenyBotId);
+//
+//        userInfoList.add(userInfoTereveny);
 
         userInfoList.forEach(item -> {
             Function<Message, OSBBSendMessage> function = new Function<Message, OSBBSendMessage>() {
@@ -78,7 +80,8 @@ public class SendingMessageProcessor {
             public OSBBSendMessage apply(Message message) {
 
                 try {
-                    return sendMessageBuilder.createSimpleMessage(sendMessageParam, Messages.SENT_MESSAGE.format((userInfoList.size() - errorChatIds.size()) + "", userInfoList.size() + ""));
+                    chanelMessengerService.sendMessageToTereveni(messageStr);
+                    return sendMessageBuilder.createSimpleMessage(sendMessageParam, Messages.SENT_MESSAGE.format((userInfoList.size()+1 - errorChatIds.size()) + "", userInfoList.size()+1 + ""));
                 } catch (UnsupportedEncodingException | URISyntaxException e) {
                     e.printStackTrace();
                     logger.error(e.getMessage(), e);
