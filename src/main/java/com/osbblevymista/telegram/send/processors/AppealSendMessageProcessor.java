@@ -19,6 +19,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 
 @Component
@@ -41,9 +42,9 @@ public class AppealSendMessageProcessor {
                     if (arrearsMiyDim.isLogin()) {
                         try {
                             chanelMessengerService.sendMessageToBord(sendMessageParam, messageStr);
-                            boolean response = arrearsMiyDim.createAppeal(generateStrMessage(messageStr, appealTypes));
-                            if (response) {
-                                return generateOSBBSendMessage(sendMessageParam, appealTypes);
+                            Optional<String> link = arrearsMiyDim.createAppeal(generateStrMessage(messageStr, appealTypes));
+                            if (link.isPresent()) {
+                                return generateAppealBotMessage(sendMessageParam, appealTypes, link.get());
                             } else {
                                 return sendMessageBuilder.createSimpleMessage(sendMessageParam, Messages.RESPONSE_ERROR_REQUEST_DATA_FOR_MYIDIM.getMessage());
                             }
@@ -69,11 +70,19 @@ public class AppealSendMessageProcessor {
         return message;
     }
 
-    private OSBBSendMessage generateOSBBSendMessage(SendMessageParams sendMessageParam, AppealTypes appealTypes) throws UnsupportedEncodingException, URISyntaxException {
+    private OSBBSendMessage generateAppealBotMessage(SendMessageParams sendMessageParam, AppealTypes appealTypes, String link) throws UnsupportedEncodingException, URISyntaxException {
         if (appealTypes == AppealTypes.SIMPLE) {
-            return sendMessageBuilder.createSimpleMessage(sendMessageParam, Messages.RESPONSE_SIMPLE_REQUEST_DATA_FOR_MYIDIM.getMessage());
+//            return sendMessageBuilder.createSimpleMessage(sendMessageParam, Messages.RESPONSE_SIMPLE_REQUEST_DATA_FOR_MYIDIM.getMessage());
+            return sendMessageBuilder.generateMiyDimAppealMessage(
+                    sendMessageParam,
+                    Messages.RESPONSE_SIMPLE_REQUEST_DATA_FOR_MYIDIM.getMessage(),
+                    link);
         } else if (appealTypes == AppealTypes.URGENT){
-            return sendMessageBuilder.createSimpleMessage(sendMessageParam, Messages.RESPONSE_SIMPLE_REQUEST_DATA_FOR_MYIDIM.getMessage());
+            return sendMessageBuilder.generateMiyDimAppealMessage(
+                    sendMessageParam,
+                    Messages.RESPONSE_URGENT_REQUEST_DATA_FOR_MYIDIM.getMessage(),
+                    link
+            );
         } else {
             return null;
         }

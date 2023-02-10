@@ -71,6 +71,14 @@ public class SettingsKeyboard extends OSBBKeyboard {
         return osbbInlineKeyboardButton;
     }
 
+    public static OSBBInlineKeyboardButton generateOrderButton(String url) {
+        OSBBInlineKeyboardButton osbbInlineKeyboardButton = new OSBBInlineKeyboardButton();
+        osbbInlineKeyboardButton.setId("Звернення");
+        osbbInlineKeyboardButton.setText("МійДім");
+        osbbInlineKeyboardButton.setUrl(url);
+        return osbbInlineKeyboardButton;
+    }
+
     public SettingsKeyboard(boolean isAdmin) {
         super(isAdmin);
     }

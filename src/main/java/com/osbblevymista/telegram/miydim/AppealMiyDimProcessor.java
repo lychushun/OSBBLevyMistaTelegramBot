@@ -4,6 +4,7 @@ import com.gargoylesoftware.htmlunit.html.*;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class AppealMiyDimProcessor extends MiyDimProcessor{
@@ -33,7 +34,7 @@ public class AppealMiyDimProcessor extends MiyDimProcessor{
                 }).collect(Collectors.toList());
     }
 
-    public boolean createAppeal(String text) throws IOException {
+    public Optional<String> createAppeal(String text) throws IOException {
 //        HtmlPage page1 = webClient.getPage("https://miydimonline.com.ua/41035710/uk/order/create");
         HtmlPage page1 = webClient.getPage("https://miydimonline.com.ua/order/create");
 
@@ -54,9 +55,15 @@ public class AppealMiyDimProcessor extends MiyDimProcessor{
 
 //        if (page2.getUrl().getPath().equals("/41035710/uk/order")){
         if (page2.getUrl().getPath().contains("/order")){
-            return true;
+            return Optional.of(getLastRequest(page2));
         } else {
-            return false;
+            return Optional.empty();
         }
+    }
+
+    private String getLastRequest(HtmlPage orderPage){
+        List<HtmlAnchor> links = orderPage.getByXPath("//a[@class='appeal-comments']");
+        HtmlAnchor link = links.get(0);
+        return "https://miydimonline.com.ua" + link.getHrefAttribute();
     }
 }

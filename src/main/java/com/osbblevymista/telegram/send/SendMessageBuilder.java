@@ -73,4 +73,20 @@ public class SendMessageBuilder {
         return sendMessage;
     }
 
+    public OSBBSendMessage generateMiyDimAppealMessage(SendMessageParams sendMessageParam, String message, String link){
+        OSBBSendMessage sendMessage = createBaseMessage(sendMessageParam.getChatId());
+
+        List<InlineKeyboardButton> inlineKeyboardButtons = new ArrayList<>();
+        inlineKeyboardButtons.add(SettingsKeyboard.generateOrderButton(
+                link
+        ));
+
+        InlineKeyboardMarkup.InlineKeyboardMarkupBuilder inlineKeyboardMarkupBuilder = InlineKeyboardMarkup.builder();
+        sendMessage.setReplyMarkup(inlineKeyboardMarkupBuilder
+                .keyboardRow(inlineKeyboardButtons)
+                .build());
+        sendMessage.setText(message + "\n\n" + Messages.LAST_APPEAL.getMessage());
+        return sendMessage;
+    }
+
 }
