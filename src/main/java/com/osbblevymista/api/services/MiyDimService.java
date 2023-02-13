@@ -55,7 +55,7 @@ public class MiyDimService {
             return Optional.empty();
         } catch (Exception e) {
             logger.warn("Can not login. Message - " + e.getMessage());
-            return Optional.of(e.getMessage());
+            return Optional.of("Упс, щось трапилось. Перевірте логин та пароль, або спробуйте пізніше.");
         }
     }
 

@@ -32,60 +32,52 @@ public class AppealSendMessageProcessor {
     private final MiyDimService miyDimService;
     private final ChanelMessengerService chanelMessengerService;
 
+    public Function<Message, List<OSBBSendMessage>> createAppeal(SendMessageParams sendMessageParam, String messageStr, AppealTypes appealTypes) {
+        return new Function<Message, List<OSBBSendMessage>>() {
+            @Override
+            public List<OSBBSendMessage> apply(Message message) {
+                AppealMiyDimProcessor arrearsMiyDim = new AppealMiyDimProcessor(miyDimService.getCookie(sendMessageParam.getChatIdAsString()));
+                List<OSBBSendMessage> osbbSendMessages = new ArrayList<>();
+                if (arrearsMiyDim.isLogin()) {
+                    try {
 
-    public List<Function<Message, OSBBSendMessage>> createAppeal(SendMessageParams sendMessageParam, String messageStr, AppealTypes appealTypes) throws IOException, URISyntaxException {
-            List<Function<Message, OSBBSendMessage>> list = new ArrayList<>();
-            list.add(new Function<Message, OSBBSendMessage>() {
-                @Override
-                public OSBBSendMessage apply(Message message) {
-                    AppealMiyDimProcessor arrearsMiyDim = new AppealMiyDimProcessor(miyDimService.getCookie(sendMessageParam.getChatIdAsString()));
-                    if (arrearsMiyDim.isLogin()) {
-                        try {
-                            chanelMessengerService.sendMessageToBord(sendMessageParam, messageStr);
-                            Optional<String> link = arrearsMiyDim.createAppeal(generateStrMessage(messageStr, appealTypes));
-                            if (link.isPresent()) {
-                                return generateAppealBotMessage(sendMessageParam, appealTypes, link.get());
-                            } else {
-                                return sendMessageBuilder.createSimpleMessage(sendMessageParam, Messages.RESPONSE_ERROR_REQUEST_DATA_FOR_MYIDIM.getMessage());
-                            }
-                        } catch (UnsupportedEncodingException | URISyntaxException e) {
-                            e.printStackTrace();
-                            logger.error(e.getMessage(), e);
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                        chanelMessengerService.sendMessageAppealToBord(sendMessageParam, messageStr, appealTypes);
+                        Optional<String> link = arrearsMiyDim.createAppeal(generateStrMessage(messageStr, appealTypes));
+                        if (link.isPresent()) {
+                            OSBBSendMessage osbbSendMessage = generateAppealBotMessage(sendMessageParam, appealTypes);
+                            osbbSendMessages.add(osbbSendMessage);
+
+                            osbbSendMessage = sendMessageBuilder.generateMiyDimAppealMessage(sendMessageParam, link.get());
+                            osbbSendMessages.add(osbbSendMessage);
+                        } else {
+                            osbbSendMessages.add(sendMessageBuilder.createSimpleMessage(sendMessageParam, Messages.RESPONSE_ERROR_REQUEST_DATA_FOR_MYIDIM.getMessage()));
                         }
-                    } else {
-                        return sendMessageBuilder.generateMiyDimNotLoginMessage(sendMessageParam);
+                    } catch (UnsupportedEncodingException | URISyntaxException e) {
+                        e.printStackTrace();
+                        logger.error(e.getMessage(), e);
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
-                    return null;
+                } else {
+                    osbbSendMessages.add(sendMessageBuilder.generateMiyDimNotLoginMessage(sendMessageParam));
                 }
-            });
-            return list;
+                return osbbSendMessages;
+            }
+        };
     }
 
-    private String generateStrMessage(String message, AppealTypes appealTypes){
+    private String generateStrMessage(String message, AppealTypes appealTypes) {
         if (appealTypes == AppealTypes.URGENT) {
             message = "ТЕРМІНОВО!!!\n" + message;
         }
         return message;
     }
 
-    private OSBBSendMessage generateAppealBotMessage(SendMessageParams sendMessageParam, AppealTypes appealTypes, String link) throws UnsupportedEncodingException, URISyntaxException {
-        if (appealTypes == AppealTypes.SIMPLE) {
-//            return sendMessageBuilder.createSimpleMessage(sendMessageParam, Messages.RESPONSE_SIMPLE_REQUEST_DATA_FOR_MYIDIM.getMessage());
-            return sendMessageBuilder.generateMiyDimAppealMessage(
-                    sendMessageParam,
-                    Messages.RESPONSE_SIMPLE_REQUEST_DATA_FOR_MYIDIM.getMessage(),
-                    link);
-        } else if (appealTypes == AppealTypes.URGENT){
-            return sendMessageBuilder.generateMiyDimAppealMessage(
-                    sendMessageParam,
-                    Messages.RESPONSE_URGENT_REQUEST_DATA_FOR_MYIDIM.getMessage(),
-                    link
-            );
-        } else {
-            return null;
+    private OSBBSendMessage generateAppealBotMessage(SendMessageParams sendMessageParam, AppealTypes appealTypes) throws UnsupportedEncodingException, URISyntaxException {
+        if (appealTypes == AppealTypes.URGENT) {
+            return sendMessageBuilder.createSimpleMessage(sendMessageParam, Messages.RESPONSE_URGENT_REQUEST_DATA_FOR_MYIDIM.getMessage());
         }
+        return sendMessageBuilder.createSimpleMessage(sendMessageParam, Messages.RESPONSE_SIMPLE_REQUEST_DATA_FOR_MYIDIM.getMessage());
     }
 
 }

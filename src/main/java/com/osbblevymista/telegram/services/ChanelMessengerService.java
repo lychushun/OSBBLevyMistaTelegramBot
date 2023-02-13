@@ -2,6 +2,7 @@ package com.osbblevymista.telegram.services;
 
 import com.osbblevymista.telegram.miydim.MiyDimProcessor;
 import com.osbblevymista.telegram.send.SendMessageParams;
+import com.osbblevymista.telegram.system.AppealTypes;
 import com.osbblevymista.telegram.system.Messages;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -52,7 +53,24 @@ public class ChanelMessengerService {
     }
 
     private String generateMessageUrl(String bot, String chatId, String message) {
-        return "https://api.telegram.org/bot" + bot + "/sendMessage?chat_id=" + chatId + "&text=" + message;
+        return "https://api.telegram.org/bot" + bot + "/sendMessage?chat_id=" + chatId + "&parse_mode=HTML&text=" + message;
     }
 
+    public void sendMessageAppealToBord(SendMessageParams sendMessageParam, String messageStr, AppealTypes appealTypes) {
+
+        String stringBuilder = Messages.NEW_MESSAGE_NOTIFICATION_BOARD.getMessage() +
+                "\n" +
+                (appealTypes == AppealTypes.URGENT ? "<b>ТЕРМІНОВО!!!</b>" : "") +
+                "\n" +
+                sendMessageParam.getFirstName() +
+                " " +
+                sendMessageParam.getLastName() +
+                ":" +
+                sendMessageParam.getUserName() +
+                "\n" +
+                messageStr;
+
+        String url = generateMessageUrl(token, bordChatId, stringBuilder);
+        restTemplate.getForObject(url, String.class);
+    }
 }

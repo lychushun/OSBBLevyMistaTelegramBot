@@ -9,6 +9,7 @@ import com.osbblevymista.telegram.pages.PageParams;
 import com.osbblevymista.telegram.send.OSBBSendMessage;
 import com.osbblevymista.telegram.send.SendMessageBuilder;
 import com.osbblevymista.telegram.send.SendMessageParams;
+import com.osbblevymista.telegram.system.Messages;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,14 +42,14 @@ public class ActionSendMessageProcessor {
     private final MiyDimService miyDimService;
 
 
-    public List<BiFunction<SendMessageParams, OSBBKeyboardButton, OSBBSendMessage>> createSendMessageList(OSBBKeyboardButton osbbKeyboardButton) throws UnsupportedEncodingException, URISyntaxException {
-        ArrayList<BiFunction<SendMessageParams, OSBBKeyboardButton, OSBBSendMessage>> arrayList = new ArrayList<>();
+    public List<BiFunction<SendMessageParams, OSBBKeyboardButton, List<OSBBSendMessage>>> createSendMessageList(OSBBKeyboardButton osbbKeyboardButton) throws UnsupportedEncodingException, URISyntaxException {
+        ArrayList<BiFunction<SendMessageParams, OSBBKeyboardButton, List<OSBBSendMessage>>> arrayList = new ArrayList<>();
 
         if (Objects.isNull(osbbKeyboardButton)) {
-            arrayList.add(new BiFunction<SendMessageParams, OSBBKeyboardButton, OSBBSendMessage>() {
+            arrayList.add(new BiFunction<SendMessageParams, OSBBKeyboardButton, List<OSBBSendMessage>>() {
                               @Override
-                              public OSBBSendMessage apply(SendMessageParams sendMessageParams, OSBBKeyboardButton osbbKeyboardButton) {
-                                  return sendMessageBuilder.createEmptyMessage(sendMessageParams.getChatId());
+                              public List<OSBBSendMessage> apply(SendMessageParams sendMessageParams, OSBBKeyboardButton osbbKeyboardButton) {
+                                  return createHomePageMessageList(sendMessageParams);
                               }
                           }
             );
@@ -56,11 +57,13 @@ public class ActionSendMessageProcessor {
             BasePage page = getNextPage(osbbKeyboardButton);
 
             if (osbbKeyboardButton.messages.size() > 0) {
-                arrayList.add(new BiFunction<SendMessageParams, OSBBKeyboardButton, OSBBSendMessage>() {
+                arrayList.add(new BiFunction<SendMessageParams, OSBBKeyboardButton, List<OSBBSendMessage>>() {
                                   @Override
-                                  public OSBBSendMessage apply(SendMessageParams sendMessageParams, OSBBKeyboardButton osbbKeyboardButton) {
+                                  public List<OSBBSendMessage> apply(SendMessageParams sendMessageParams, OSBBKeyboardButton osbbKeyboardButton) {
                                       try {
-                                          return createButtonMessage(sendMessageParams, osbbKeyboardButton);
+                                          List<OSBBSendMessage> list = new ArrayList<>();
+                                          list.add(createButtonMessage(sendMessageParams, osbbKeyboardButton));
+                                          return list;
                                       } catch (UnsupportedEncodingException | URISyntaxException e) {
                                           e.printStackTrace();
                                           logger.error(e.getMessage(), e);
@@ -74,11 +77,13 @@ public class ActionSendMessageProcessor {
             if (nonNull(page)) {
 
                 if (page.messages.size() > 0) {
-                    arrayList.add(new BiFunction<SendMessageParams, OSBBKeyboardButton, OSBBSendMessage>() {
+                    arrayList.add(new BiFunction<SendMessageParams, OSBBKeyboardButton, List<OSBBSendMessage>>() {
                                       @Override
-                                      public OSBBSendMessage apply(SendMessageParams sendMessageParams, OSBBKeyboardButton osbbKeyboardButton) {
+                                      public List<OSBBSendMessage> apply(SendMessageParams sendMessageParams, OSBBKeyboardButton osbbKeyboardButton) {
                                           try {
-                                              return createPageMessage(sendMessageParams, osbbKeyboardButton);
+                                              List<OSBBSendMessage> list = new ArrayList<>();
+                                              list.add(createPageMessage(sendMessageParams, osbbKeyboardButton));
+                                              return list;
                                           } catch (UnsupportedEncodingException | URISyntaxException e) {
                                               e.printStackTrace();
                                               logger.error(e.getMessage(), e);
@@ -90,11 +95,13 @@ public class ActionSendMessageProcessor {
                 }
 
                 if (page.isOSBBKeyboard()) {
-                    arrayList.add(new BiFunction<SendMessageParams, OSBBKeyboardButton, OSBBSendMessage>() {
+                    arrayList.add(new BiFunction<SendMessageParams, OSBBKeyboardButton, List<OSBBSendMessage>>() {
                                       @Override
-                                      public OSBBSendMessage apply(SendMessageParams sendMessageParams, OSBBKeyboardButton osbbKeyboardButton) {
+                                      public List<OSBBSendMessage> apply(SendMessageParams sendMessageParams, OSBBKeyboardButton osbbKeyboardButton) {
                                           try {
-                                              return createPageKeyboard(sendMessageParams, osbbKeyboardButton);
+                                              List<OSBBSendMessage> list = new ArrayList<>();
+                                              list.add(createPageKeyboard(sendMessageParams, osbbKeyboardButton));
+                                              return list;
                                           } catch (UnsupportedEncodingException | URISyntaxException e) {
                                               e.printStackTrace();
                                               logger.error(e.getMessage(), e);
@@ -106,11 +113,13 @@ public class ActionSendMessageProcessor {
                 }
 
                 if (page.canExecute()) {
-                    arrayList.add(new BiFunction<SendMessageParams, OSBBKeyboardButton, OSBBSendMessage>() {
+                    arrayList.add(new BiFunction<SendMessageParams, OSBBKeyboardButton, List<OSBBSendMessage>>() {
                                       @Override
-                                      public OSBBSendMessage apply(SendMessageParams sendMessageParams, OSBBKeyboardButton osbbKeyboardButton) {
+                                      public List<OSBBSendMessage> apply(SendMessageParams sendMessageParams, OSBBKeyboardButton osbbKeyboardButton) {
                                           try {
-                                              return createPageExecution(sendMessageParams, osbbKeyboardButton);
+                                              List<OSBBSendMessage> list = new ArrayList<>();
+                                              list.add(createPageExecution(sendMessageParams, osbbKeyboardButton));
+                                              return list;
                                           } catch (UnsupportedEncodingException | URISyntaxException e) {
                                               e.printStackTrace();
                                               logger.error(e.getMessage(), e);
@@ -123,11 +132,13 @@ public class ActionSendMessageProcessor {
             }
 
             if (osbbKeyboardButton.canExecute()) {
-                arrayList.add(new BiFunction<SendMessageParams, OSBBKeyboardButton, OSBBSendMessage>() {
+                arrayList.add(new BiFunction<SendMessageParams, OSBBKeyboardButton, List<OSBBSendMessage>>() {
                                   @Override
-                                  public OSBBSendMessage apply(SendMessageParams sendMessageParams, OSBBKeyboardButton osbbKeyboardButton) {
+                                  public List<OSBBSendMessage> apply(SendMessageParams sendMessageParams, OSBBKeyboardButton osbbKeyboardButton) {
                                       try {
-                                          return createButtonExecution(sendMessageParams, osbbKeyboardButton);
+                                          List<OSBBSendMessage> list = new ArrayList<>();
+                                          list.add(createButtonExecution(sendMessageParams, osbbKeyboardButton));
+                                          return list;
                                       } catch (URISyntaxException | IOException e) {
                                           e.printStackTrace();
                                           logger.error(e.getMessage(), e);
@@ -140,10 +151,10 @@ public class ActionSendMessageProcessor {
         }
 
         if (arrayList.isEmpty()) {
-            arrayList.add(new BiFunction<SendMessageParams, OSBBKeyboardButton, OSBBSendMessage>() {
+            arrayList.add(new BiFunction<SendMessageParams, OSBBKeyboardButton, List<OSBBSendMessage>>() {
                               @Override
-                              public OSBBSendMessage apply(SendMessageParams sendMessageParams, OSBBKeyboardButton osbbKeyboardButton) {
-                                  return sendMessageBuilder.createEmptyMessage(sendMessageParams.getChatId());
+                              public List<OSBBSendMessage> apply(SendMessageParams sendMessageParams, OSBBKeyboardButton osbbKeyboardButton) {
+                                  return createHomePageMessageList(sendMessageParams);
                               }
                           }
             );
@@ -151,7 +162,7 @@ public class ActionSendMessageProcessor {
         return arrayList;
     }
 
-    public Function<Message, OSBBSendMessage> createSimpleMessage(SendMessageParams sendMessageParam, String text){
+    public Function<Message, OSBBSendMessage> createSimpleMessage(SendMessageParams sendMessageParam, String text) {
         return new Function<Message, OSBBSendMessage>() {
             @Override
             public OSBBSendMessage apply(Message message) {
@@ -159,11 +170,22 @@ public class ActionSendMessageProcessor {
                     return sendMessageBuilder.createSimpleMessage(sendMessageParam, text);
                 } catch (UnsupportedEncodingException | URISyntaxException e) {
                     e.printStackTrace();
-                    logger.error(e.getMessage(),e);
+                    logger.error(e.getMessage(), e);
                 }
                 return null;
             }
         };
+    }
+
+    public List<OSBBSendMessage> createHomePageMessage(SendMessageParams sendMessageParam) {
+        return createHomePageMessageList(sendMessageParam);
+    }
+
+    public List<OSBBSendMessage> createHomePageMessageList(SendMessageParams sendMessageParam) {
+        List<OSBBSendMessage> osbbSendMessages = new ArrayList<>();
+        OSBBSendMessage osbbSendMessage = sendMessageBuilder.goHomeMessage(sendMessageParam, Messages.UNRECOGNIZED_COMMAND.getMessage());
+        osbbSendMessages.add(osbbSendMessage);
+        return osbbSendMessages;
     }
 
     private BasePage getNextPage(OSBBKeyboardButton osbbKeyboardButton) {
@@ -294,7 +316,7 @@ public class ActionSendMessageProcessor {
         return sendMessage.get();
     }
 
-    private OSBBSendMessage createExecution(SendMessageParams sendMessageParams, ExecutorListenerResponse o){
+    private OSBBSendMessage createExecution(SendMessageParams sendMessageParams, ExecutorListenerResponse o) {
 
         StringBuilder messageBuffer = new StringBuilder();
         OSBBSendMessage sendMessage = sendMessageBuilder.createBaseMessage(sendMessageParams.getChatId());
@@ -308,7 +330,6 @@ public class ActionSendMessageProcessor {
 
         if (nonNull(keyboardButtons) && keyboardButtons.size() > 0) {
             InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup(keyboardButtons);
-
             sendMessage.setReplyMarkup(inlineKeyboardMarkup);
         }
 

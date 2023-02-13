@@ -66,7 +66,7 @@ public class SettingsKeyboard extends OSBBKeyboard {
     public static OSBBInlineKeyboardButton generateLoginButton(String clientIp, String clientPort, String chatId) {
         OSBBInlineKeyboardButton osbbInlineKeyboardButton = new OSBBInlineKeyboardButton();
         osbbInlineKeyboardButton.setId("miydimWeb");
-        osbbInlineKeyboardButton.setText("МійДім");
+        osbbInlineKeyboardButton.setText("МійДім - Авторизація");
         osbbInlineKeyboardButton.setUrl("http://" + clientIp + ":" + clientPort + "?chatId=" + chatId);
         return osbbInlineKeyboardButton;
     }
@@ -74,8 +74,16 @@ public class SettingsKeyboard extends OSBBKeyboard {
     public static OSBBInlineKeyboardButton generateOrderButton(String url) {
         OSBBInlineKeyboardButton osbbInlineKeyboardButton = new OSBBInlineKeyboardButton();
         osbbInlineKeyboardButton.setId("Звернення");
-        osbbInlineKeyboardButton.setText("МійДім");
+        osbbInlineKeyboardButton.setText("МійДім - Звернення");
         osbbInlineKeyboardButton.setUrl(url);
+        return osbbInlineKeyboardButton;
+    }
+
+    public static OSBBInlineKeyboardButton generateHomeButton() {
+        OSBBInlineKeyboardButton osbbInlineKeyboardButton = new OSBBInlineKeyboardButton();
+        osbbInlineKeyboardButton.setId("Звернення");
+        osbbInlineKeyboardButton.setText("Головна");
+        osbbInlineKeyboardButton.setCallbackData("/main");
         return osbbInlineKeyboardButton;
     }
 

@@ -10,16 +10,13 @@ import com.osbblevymista.telegram.system.Messages;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Component
@@ -32,12 +29,9 @@ public class SendingMessageProcessor {
     private final UserInfoFileReader userInfoFileReader;
     private final ChanelMessengerService chanelMessengerService;
 
-//    @Value("${tereveni.cahtid}")
-//    private String terevenyBotId;
+    public List<OSBBSendMessage> sendMessage(SendMessageParams sendMessageParam, String messageStr) throws IOException {
 
-    public List<Function<Message, OSBBSendMessage>> sendMessage(SendMessageParams sendMessageParam, String messageStr) throws IOException {
-        List<Function<Message, OSBBSendMessage>> messages = new ArrayList<>();
-
+        List<OSBBSendMessage> list = new ArrayList<>();
         List<String> errorChatIds = new ArrayList<>();
 
         List<UserInfo> userInfoList = userInfoFileReader
@@ -46,56 +40,40 @@ public class SendingMessageProcessor {
                 .filter(UserInfo::isSentNotifications)
                 .collect(Collectors.toList());
 
-//        UserInfo userInfoTereveny = new UserInfo();
-//        userInfoTereveny.setChatId(terevenyBotId);
-//
-//        userInfoList.add(userInfoTereveny);
-
         userInfoList.forEach(item -> {
-            Function<Message, OSBBSendMessage> function = new Function<Message, OSBBSendMessage>() {
-                @Override
-                public OSBBSendMessage apply(Message message) {
-                    SendMessageParams sendMessageParams = SendMessageParams
-                            .builder()
-                            .chatId(Long.valueOf(item.getChatId()))
-                            .build();
+            List<OSBBSendMessage> osbbSendMessages = new ArrayList<>();
+            SendMessageParams sendMessageParams = SendMessageParams
+                    .builder()
+                    .chatId(Long.valueOf(item.getChatId()))
+                    .build();
 
-                    try {
-                        return sendMessageBuilder.createMessageExecutingDelay(sendMessageParams, messageStr);
-                    } catch (UnsupportedEncodingException | URISyntaxException e) {
-                        logger.warn("Notification was not sent to: " + item.getChatId());
+            try {
+                osbbSendMessages.add(sendMessageBuilder.createMessageExecutingDelay(sendMessageParams, messageStr));
+            } catch (UnsupportedEncodingException | URISyntaxException e) {
+                logger.warn("Notification was not sent to: " + item.getChatId());
 
-                        logger.error(e.getMessage(), e);
-                        errorChatIds.add(item.getChatId());
-                        e.printStackTrace();
-                    }
-                    return null;
-                }
-            };
-            messages.add(function);
-        });
-
-        messages.add(  new Function<Message, OSBBSendMessage>() {
-            @Override
-            public OSBBSendMessage apply(Message message) {
-
-                try {
-                    chanelMessengerService.sendMessageToTereveni(messageStr);
-                    return sendMessageBuilder.createSimpleMessage(sendMessageParam, Messages.SENT_MESSAGE.format((userInfoList.size()+1 - errorChatIds.size()) + "", userInfoList.size()+1 + ""));
-                } catch (UnsupportedEncodingException | URISyntaxException e) {
-                    e.printStackTrace();
-                    logger.error(e.getMessage(), e);
-                }
-                return null;
+                logger.error(e.getMessage(), e);
+                errorChatIds.add(item.getChatId());
+                e.printStackTrace();
             }
+            list.addAll(osbbSendMessages);
         });
 
+        List<OSBBSendMessage> osbbSendMessages = new ArrayList<>();
+        try {
+            chanelMessengerService.sendMessageToTereveni(messageStr);
+            osbbSendMessages.add(sendMessageBuilder.createSimpleMessage(sendMessageParam, Messages.SENT_MESSAGE.format((userInfoList.size() + 1 - errorChatIds.size()) + "", userInfoList.size() + 1 + "")));
+        } catch (UnsupportedEncodingException | URISyntaxException e) {
+            e.printStackTrace();
+            logger.error(e.getMessage(), e);
+        }
 
-        return messages;
+        list.addAll(osbbSendMessages);
+        return list;
     }
 
-    public List<Function<Message, OSBBSendMessage>> sendMessageInfoAboutReceipt() throws IOException {
-        List<Function<Message, OSBBSendMessage>> messages = new ArrayList<>();
+    public List<OSBBSendMessage> sendMessageInfoAboutReceipt() throws IOException {
+        List<OSBBSendMessage> list = new ArrayList<>();
 
         List<UserInfo> userInfoList = userInfoFileReader
                 .getAll()
@@ -104,28 +82,22 @@ public class SendingMessageProcessor {
                 .collect(Collectors.toList());
 
         userInfoList.forEach(item -> {
-            Function<Message, OSBBSendMessage> function = new Function<Message, OSBBSendMessage>() {
-                @Override
-                public OSBBSendMessage apply(Message message) {
-                    SendMessageParams sendMessageParams = SendMessageParams
-                            .builder()
-                            .chatId(Long.valueOf(item.getChatId()))
-                            .build();
+            List<OSBBSendMessage> osbbSendMessages = new ArrayList<>();
+            SendMessageParams sendMessageParams = SendMessageParams
+                    .builder()
+                    .chatId(Long.valueOf(item.getChatId()))
+                    .build();
 
-                    try {
-                        return sendMessageBuilder.createMessageExecutingDelay(sendMessageParams, Messages.NEW_RECEIPT_INFO.getMessage());
-                    } catch (UnsupportedEncodingException | URISyntaxException e) {
-                        e.printStackTrace();
-                        logger.error(e.getMessage(), e);
-                    }
-                    return null;
-                }
-            };
-
-            messages.add(function);
+            try {
+                osbbSendMessages.add(sendMessageBuilder.createMessageExecutingDelay(sendMessageParams, Messages.NEW_RECEIPT_INFO.getMessage()));
+            } catch (UnsupportedEncodingException | URISyntaxException e) {
+                e.printStackTrace();
+                logger.error(e.getMessage(), e);
+            }
+            list.addAll(osbbSendMessages);
         });
 
-        return messages;
+        return list;
     }
 
 }

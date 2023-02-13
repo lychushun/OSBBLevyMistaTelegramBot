@@ -55,7 +55,7 @@ public class SendMessageBuilder {
         return sendMessage;
     }
 
-    public OSBBSendMessage generateMiyDimNotLoginMessage(SendMessageParams sendMessageParam ){
+    public OSBBSendMessage generateMiyDimNotLoginMessage(SendMessageParams sendMessageParam) {
         OSBBSendMessage sendMessage = createBaseMessage(sendMessageParam.getChatId());
 
         List<InlineKeyboardButton> inlineKeyboardButtons = new ArrayList<>();
@@ -73,19 +73,31 @@ public class SendMessageBuilder {
         return sendMessage;
     }
 
-    public OSBBSendMessage generateMiyDimAppealMessage(SendMessageParams sendMessageParam, String message, String link){
+    public OSBBSendMessage generateMiyDimAppealMessage(SendMessageParams sendMessageParam, String link) {
         OSBBSendMessage sendMessage = createBaseMessage(sendMessageParam.getChatId());
 
         List<InlineKeyboardButton> inlineKeyboardButtons = new ArrayList<>();
-        inlineKeyboardButtons.add(SettingsKeyboard.generateOrderButton(
-                link
-        ));
+        inlineKeyboardButtons.add(SettingsKeyboard.generateOrderButton(link));
 
         InlineKeyboardMarkup.InlineKeyboardMarkupBuilder inlineKeyboardMarkupBuilder = InlineKeyboardMarkup.builder();
         sendMessage.setReplyMarkup(inlineKeyboardMarkupBuilder
                 .keyboardRow(inlineKeyboardButtons)
                 .build());
-        sendMessage.setText(message + "\n\n" + Messages.LAST_APPEAL.getMessage());
+        sendMessage.setText(Messages.LAST_APPEAL.getMessage());
+        return sendMessage;
+    }
+
+    public OSBBSendMessage goHomeMessage(SendMessageParams sendMessageParam, String message) {
+        OSBBSendMessage sendMessage = createBaseMessage(sendMessageParam.getChatId());
+
+        List<InlineKeyboardButton> inlineKeyboardButtons = new ArrayList<>();
+        inlineKeyboardButtons.add(SettingsKeyboard.generateHomeButton());
+
+        InlineKeyboardMarkup.InlineKeyboardMarkupBuilder inlineKeyboardMarkupBuilder = InlineKeyboardMarkup.builder();
+        sendMessage.setReplyMarkup(inlineKeyboardMarkupBuilder
+                .keyboardRow(inlineKeyboardButtons)
+                .build());
+        sendMessage.setText(message);
         return sendMessage;
     }
 
