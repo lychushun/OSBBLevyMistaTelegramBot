@@ -32,7 +32,7 @@ public class SettingsKeyboard extends OSBBKeyboard {
             @Override
             public ExecutorListenerResponse doExecute(KeyboardParam keyboardParam) throws IOException, URISyntaxException {
                 ExecutorListenerResponse executorListenerResponse = new ExecutorListenerResponse();
-                executorListenerResponse.setTitle("Авторизація в МійДім");
+                executorListenerResponse.setTitle("Авторизація в Мій Дім");
                 executorListenerResponse.insertOSBBInlineKeyboardButtonNextCell(
                         generateLoginButton(keyboardParam.getClientIp(),
                                 keyboardParam.getClientPort(),
@@ -66,7 +66,7 @@ public class SettingsKeyboard extends OSBBKeyboard {
     public static OSBBInlineKeyboardButton generateLoginButton(String clientIp, String clientPort, String chatId) {
         OSBBInlineKeyboardButton osbbInlineKeyboardButton = new OSBBInlineKeyboardButton();
         osbbInlineKeyboardButton.setId("miydimWeb");
-        osbbInlineKeyboardButton.setText("МійДім - Авторизація");
+        osbbInlineKeyboardButton.setText("Мій Дім - Авторизація");
         osbbInlineKeyboardButton.setUrl("http://" + clientIp + ":" + clientPort + "?chatId=" + chatId);
         return osbbInlineKeyboardButton;
     }
@@ -74,7 +74,7 @@ public class SettingsKeyboard extends OSBBKeyboard {
     public static OSBBInlineKeyboardButton generateOrderButton(String url) {
         OSBBInlineKeyboardButton osbbInlineKeyboardButton = new OSBBInlineKeyboardButton();
         osbbInlineKeyboardButton.setId("Звернення");
-        osbbInlineKeyboardButton.setText("МійДім - Звернення");
+        osbbInlineKeyboardButton.setText("Мій Дім - Звернення");
         osbbInlineKeyboardButton.setUrl(url);
         return osbbInlineKeyboardButton;
     }

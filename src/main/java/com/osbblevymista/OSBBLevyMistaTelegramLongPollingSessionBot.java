@@ -2,6 +2,7 @@ package com.osbblevymista;
 
 import com.opencsv.exceptions.CsvException;
 import com.osbblevymista.api.services.MiyDimService;
+import com.osbblevymista.botexecution.BotExecution;
 import com.osbblevymista.telegram.ApplicationConfig;
 import com.osbblevymista.telegram.keyabords.*;
 import com.osbblevymista.telegram.keyabords.appeals.AppealKeyboard;
@@ -81,7 +82,7 @@ public class OSBBLevyMistaTelegramLongPollingSessionBot extends TelegramLongPoll
 
                 Long chatId = message.getChatId();
 
-                BotExecutionData botExecutionData = new BotExecutionData();
+                BotExecution botExecutionData = new BotExecution();
 
                 SendMessageParams.SendMessageParamsBuilder sendMessageParamsBuilder = getSendMessageParamsBuilder(message, chatId);
 
@@ -96,10 +97,11 @@ public class OSBBLevyMistaTelegramLongPollingSessionBot extends TelegramLongPoll
                                 adminInfoService.isAdmin(message.getFrom().getId())
                         ));
                     } else if (command.equals("/main")) {
-                        botExecutionData = botExecutionDataService.generateMainPage(sendMessageParamsBuilder.build(), getPageInfrastructure(
-                                adminInfoService.isAdmin(message.getFrom().getId())
-                        ));
-                    }  else if (command.equals("/loginSuccess")) {
+                        botExecutionData = botExecutionDataService.generateMainPage(sendMessageParamsBuilder.build(),
+                                getPageInfrastructure(
+                                        adminInfoService.isAdmin(message.getChatId())
+                                ));
+                    } else if (command.equals("/loginSuccess")) {
                         botExecutionData = botExecutionDataService.generateSuccessLogin(sendMessageParamsBuilder.build(), getPageInfrastructure(
                                 adminInfoService.isAdmin(message.getFrom().getId())
                         ));
@@ -184,7 +186,7 @@ public class OSBBLevyMistaTelegramLongPollingSessionBot extends TelegramLongPoll
         super.onRegister();
     }
 
-    private UserInfo getUserInfo(Message message){
+    private UserInfo getUserInfo(Message message) {
         UserInfo userInfo = new UserInfo();
         userInfo.setLastName(message.getChat().getLastName());
         userInfo.setFirstName(message.getChat().getFirstName());
@@ -207,7 +209,7 @@ public class OSBBLevyMistaTelegramLongPollingSessionBot extends TelegramLongPoll
         };
     }
 
-    private void processMultiMessages(BotExecutionData botExecutionData, Message message) {
+    private void processMultiMessages(BotExecution botExecutionData, Message message) {
         botExecutionData.execute(message, (OSBBSendMessage el) -> {
                     try {
                         execute(el);

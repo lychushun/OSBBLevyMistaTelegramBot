@@ -21,7 +21,7 @@ public abstract class BasePage {
 
     protected OSBBKeyboard osbbKeyboard;
 
-    public List<String> messages = new ArrayList<>();
+    protected List<String> messages = new ArrayList<>();
 
     protected String pageId;
     protected String title;

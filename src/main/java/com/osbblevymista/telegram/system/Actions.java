@@ -65,8 +65,8 @@ public enum Actions {
     BUTTON_APPEAL("Звернення \uD83D\uDE4B"),
     BUTTON_REPORTS("Документи та звіти \uD83D\uDCC4"),
 
-    BUTTON_VISIT_MIYDIM("Авторизуватись у МійДім"),
-    BUTTON_EXIT_MIYDIM("Вийти з МійДім");
+    BUTTON_VISIT_MIYDIM("Авторизуватись у Мій Дім"),
+    BUTTON_EXIT_MIYDIM("Вийти з Мій Дім");
 
     String text;
 }

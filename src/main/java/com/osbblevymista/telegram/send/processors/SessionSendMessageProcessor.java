@@ -1,11 +1,11 @@
 package com.osbblevymista.telegram.send.processors;
 
 import com.opencsv.exceptions.CsvException;
-import com.osbblevymista.BotExecutionData;
 import com.osbblevymista.OSBBLevyMista45;
+import com.osbblevymista.botexecution.BotExecution;
+import com.osbblevymista.botexecution.BotExecutionObject;
 import com.osbblevymista.telegram.dto.MiyDimAppealInfo;
 import com.osbblevymista.telegram.dto.SendMessageInfo;
-import com.osbblevymista.telegram.send.OSBBSendMessage;
 import com.osbblevymista.telegram.send.SendMessageBuilder;
 import com.osbblevymista.telegram.send.SendMessageParams;
 import com.osbblevymista.telegram.system.*;
@@ -39,7 +39,7 @@ public class SessionSendMessageProcessor {
     private final ActionSendMessageProcessor actionSendMessageProcessor;
     private final SendMessageBuilder sendMessageBuilder;
 
-    public BotExecutionData processSession(Message message, SendMessageParams sendMessageParam, Optional<Session> optional) throws IOException, URISyntaxException, CsvException {
+    public BotExecution processSession(Message message, SendMessageParams sendMessageParam, Optional<Session> optional) throws IOException, URISyntaxException, CsvException {
         String messageStr = message.getText();
         List<PhotoSize> photoSizeList = message.getPhoto();
 
@@ -50,7 +50,7 @@ public class SessionSendMessageProcessor {
         }
     }
 
-    protected BotExecutionData processSessionAsMessageString(String message, SendMessageParams sendMessageParam, Optional<Session> optional) throws IOException, URISyntaxException, CsvException {
+    protected BotExecution processSessionAsMessageString(String message, SendMessageParams sendMessageParam, Optional<Session> optional) throws IOException, URISyntaxException, CsvException {
         if (optional.isPresent()) {
             Session session = optional.get();
             if (nonNull(session.getAttribute("reading"))) {
@@ -62,7 +62,7 @@ public class SessionSendMessageProcessor {
         return null;
     }
 
-    protected BotExecutionData processSessionAsPhoto(List<PhotoSize> photoSizeList, SendMessageParams sendMessageParam, Optional<Session> optional) throws IOException, URISyntaxException, CsvException {
+    protected BotExecution processSessionAsPhoto(List<PhotoSize> photoSizeList, SendMessageParams sendMessageParam, Optional<Session> optional) throws IOException, URISyntaxException, CsvException {
         if (optional.isPresent()) {
             Session session = optional.get();
             if (nonNull(session.getAttribute("reading"))) {
@@ -72,8 +72,8 @@ public class SessionSendMessageProcessor {
         return null;
     }
 
-    private BotExecutionData markingAsReading(String message, SendMessageParams sendMessageParam, Session session) throws IOException {
-        BotExecutionData botExecutionData = new BotExecutionData();
+    private BotExecution markingAsReading(String message, SendMessageParams sendMessageParam, Session session) throws IOException {
+        BotExecution botExecutionData = new BotExecution();
         if (Objects.equals(message, Actions.BUTTON_APPEAL_SIMPLE_CREATE.getText())) {
             session.setAttribute("reading", SessionProperties.CREATING_SIMPLE_APPEAL);
             return null;
@@ -84,12 +84,13 @@ public class SessionSendMessageProcessor {
             session.setAttribute("reading", SessionProperties.SENDING_MESSAGE_TO_ALL);
             return null;
         } else if (Objects.equals(message, Actions.BUTTON_ADMIN_NEW_RECEIPT.getText())) {
-            botExecutionData.addExecutionsForMessage( sendingMessageProcessor.sendMessageInfoAboutReceipt());
+            botExecutionData.addExecutionsForMessage(sendingMessageProcessor.sendMessageInfoAboutReceipt(sendMessageParam));
+            return botExecutionData;
         }
         return null;
     }
 
-    private BotExecutionData reading(String message, SendMessageParams sendMessageParam, Session session) throws IOException, URISyntaxException, CsvException {
+    private BotExecution reading(String message, SendMessageParams sendMessageParam, Session session) throws IOException, URISyntaxException, CsvException {
         if (isClickBack(message)) {
             session.setAttribute("reading", null);
             return null;
@@ -104,14 +105,14 @@ public class SessionSendMessageProcessor {
                 return processSendMessage(session, sendMessageParam, message);
             }
         }
-        return BotExecutionData.empty();
+        return BotExecution.empty();
     }
 
-    private BotExecutionData processSendMessage(Session session,
-                                                SendMessageParams sendMessageParam,
-                                                String message) throws IOException, URISyntaxException {
+    private BotExecution processSendMessage(Session session,
+                                            SendMessageParams sendMessageParam,
+                                            String message) throws IOException, URISyntaxException {
 
-        BotExecutionData botExecutionData = new BotExecutionData();
+        BotExecution botExecutionData = new BotExecution();
 
         SendMessageInfo sendMessageInfo = new SendMessageInfo();
         if (session.getAttribute(SessionProperties.SEND_MESSAGE_INFO) != null) {
@@ -134,12 +135,12 @@ public class SessionSendMessageProcessor {
         return botExecutionData;
     }
 
-    private BotExecutionData processAppeal(Session session,
-                                           SendMessageParams sendMessageParam,
-                                           String message,
-                                           AppealTypes appealTypes) throws IOException, URISyntaxException {
+    private BotExecution processAppeal(Session session,
+                                       SendMessageParams sendMessageParam,
+                                       String message,
+                                       AppealTypes appealTypes) throws IOException, URISyntaxException {
 
-        BotExecutionData botExecutionData = new BotExecutionData();
+        BotExecution botExecutionData = new BotExecution();
         MiyDimAppealInfo miyDimAppealInfo = new MiyDimAppealInfo();
         if (session.getAttribute(SessionProperties.MIY_DIM_APPEAL_INFO) != null) {
             miyDimAppealInfo = (MiyDimAppealInfo) session.getAttribute(SessionProperties.MIY_DIM_APPEAL_INFO);
@@ -149,7 +150,9 @@ public class SessionSendMessageProcessor {
                 session.setAttribute(SessionProperties.MIY_DIM_APPEAL_INFO, null);
 
                 botExecutionData.addExecutionsForMessage(createSimpleMessageList(sendMessageParam, Messages.CREATING_APPEAL.getMessage()));
-                botExecutionData.addExecutionsForMessage(appealSendMessageProcessor.createAppeal(sendMessageParam, miyDimAppealInfo.formatMessages(), appealTypes));
+                BotExecutionObject botExecution = new BotExecutionObject();
+                botExecution.setExecution(appealSendMessageProcessor.createAppeal(sendMessageParam, miyDimAppealInfo.formatMessages(), appealTypes));
+                botExecutionData.addExecutionsForMessage(botExecution);
             } else {
                 botExecutionData.addExecutionsForMessage(createSimpleMessageList(sendMessageParam, Messages.INSERT_APPEAL.getMessage()));
             }
@@ -158,12 +161,14 @@ public class SessionSendMessageProcessor {
             miyDimAppealInfo.getMessages().add(message);
             session.setAttribute(SessionProperties.MIY_DIM_APPEAL_INFO, miyDimAppealInfo);
         }
-        return BotExecutionData.empty();
+        return BotExecution.empty();
     }
 
-    private OSBBSendMessage createSimpleMessageList(SendMessageParams sendMessageParam, String text) {
+    private BotExecutionObject createSimpleMessageList(SendMessageParams sendMessageParam, String text) {
         try {
-            return sendMessageBuilder.createSimpleMessage(sendMessageParam, text);
+            BotExecutionObject botExecutionObject = new BotExecutionObject();
+            botExecutionObject.setExecution(sendMessageBuilder.createSimpleMessage(sendMessageParam, text));
+            return botExecutionObject;
         } catch (UnsupportedEncodingException | URISyntaxException e) {
             e.printStackTrace();
             logger.error(e.getMessage(), e);
@@ -171,7 +176,7 @@ public class SessionSendMessageProcessor {
         }
     }
 
-    private BotExecutionData reading(List<PhotoSize> photoSizeList, SendMessageParams sendMessageParam, Session session) throws IOException, URISyntaxException, CsvException {
+    private BotExecution reading(List<PhotoSize> photoSizeList, SendMessageParams sendMessageParam, Session session) throws IOException, URISyntaxException, CsvException {
 
 //        if (session.getAttribute("reading") == SessionProperties.CREATING_SIMPLE_APPEAL
 ////                    && !isClickedOnAppeal(message)) {
@@ -185,7 +190,7 @@ public class SessionSendMessageProcessor {
 //            return res;
 //        }
 
-        return BotExecutionData.empty();
+        return BotExecution.empty();
 
     }
 

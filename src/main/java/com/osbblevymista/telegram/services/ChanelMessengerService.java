@@ -26,6 +26,9 @@ public class ChanelMessengerService {
     @Value("${telegram.messenger.bot.token}")
     private String token;
 
+    @Value("${telegram.bot.token}")
+    private String bot;
+
     @Value("${telegram.bot.name}")
     private String name;
 
@@ -44,6 +47,16 @@ public class ChanelMessengerService {
                 messageStr;
 
         String url = generateMessageUrl(token, bordChatId, stringBuilder);
+        restTemplate.getForObject(url, String.class);
+    }
+
+    public void sendMessageByChatIdAsMessenger(String messageStr, String chatId) {
+        String url = generateMessageUrl(token, chatId, messageStr);
+        restTemplate.getForObject(url, String.class);
+    }
+
+    public void sendMessageByChatIdAsBot(String messageStr, String chatId) {
+        String url = generateMessageUrl(bot, chatId, messageStr);
         restTemplate.getForObject(url, String.class);
     }
 

@@ -1,6 +1,7 @@
 package com.osbblevymista.telegram.send.processors;
 
 import com.osbblevymista.api.services.MiyDimService;
+import com.osbblevymista.botexecution.BotExecutionObject;
 import com.osbblevymista.telegram.executorlistener.ExecutorListenerResponse;
 import com.osbblevymista.telegram.keyabords.KeyboardParam;
 import com.osbblevymista.telegram.keyabords.buttons.OSBBKeyboardButton;
@@ -76,7 +77,7 @@ public class ActionSendMessageProcessor {
 
             if (nonNull(page)) {
 
-                if (page.messages.size() > 0) {
+                if (page.getMessages().size() > 0) {
                     arrayList.add(new BiFunction<SendMessageParams, OSBBKeyboardButton, List<OSBBSendMessage>>() {
                                       @Override
                                       public List<OSBBSendMessage> apply(SendMessageParams sendMessageParams, OSBBKeyboardButton osbbKeyboardButton) {
@@ -177,8 +178,10 @@ public class ActionSendMessageProcessor {
         };
     }
 
-    public List<OSBBSendMessage> createHomePageMessage(SendMessageParams sendMessageParam) {
-        return createHomePageMessageList(sendMessageParam);
+    public BotExecutionObject createHomePageMessage(SendMessageParams sendMessageParam) {
+        BotExecutionObject botExecutionObject = new BotExecutionObject();
+        botExecutionObject.setExecution(sendMessageBuilder.goHomeMessage(sendMessageParam, Messages.UNRECOGNIZED_COMMAND.getMessage()));
+        return botExecutionObject;
     }
 
     public List<OSBBSendMessage> createHomePageMessageList(SendMessageParams sendMessageParam) {
@@ -211,9 +214,9 @@ public class ActionSendMessageProcessor {
         OSBBSendMessage sendMessage = sendMessageBuilder.createBaseMessage(sendMessageParams.getChatId());
         StringBuilder messageBuffer = new StringBuilder();
 
-        if (page.messages.size() > 0) {
+        if (page.getMessages().size() > 0) {
             messageBuffer.delete(0, messageBuffer.length());
-            messageBuffer.append(getMessage(page.messages)).append("\n");
+            messageBuffer.append(getMessage(page.getMessages())).append("\n");
             sendMessage.setText(messageBuffer.toString());
             return sendMessage;
         } else {

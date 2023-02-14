@@ -8,6 +8,7 @@ import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import com.opencsv.exceptions.CsvValidationException;
 import com.osbblevymista.api.CookiesManager;
+import com.osbblevymista.api.Messages;
 import com.osbblevymista.api.dto.request.AdminInfoRequest;
 import com.osbblevymista.api.dto.response.AdminInfoResponse;
 import com.osbblevymista.api.dto.response.UserInfoResponse;
@@ -15,6 +16,7 @@ import com.osbblevymista.api.mappings.AdminMapper;
 import com.osbblevymista.api.mappings.UserMapper;
 import com.osbblevymista.telegram.miydim.MiyDimProcessor;
 import com.osbblevymista.telegram.services.AdminInfoService;
+import com.osbblevymista.telegram.services.ChanelMessengerService;
 import com.osbblevymista.telegram.services.UserInfoService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -22,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.lang.reflect.Member;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -39,6 +42,7 @@ public class MiyDimService {
     private final UserInfoService userInfoService;
     private final AdminMapper adminMapper;
     private final UserMapper userMapper;
+    private final ChanelMessengerService chanelMessengerService;
 
     public String getCookie(String chatId) {
         return cookiesManager.getCookie(chatId);
@@ -52,10 +56,11 @@ public class MiyDimService {
         try {
             String cookie = logIn(login, pass);
             cookiesManager.addCookies(chatId, cookie);
+            chanelMessengerService.sendMessageByChatIdAsBot(Messages.MIY_DIM_AUTH_SUCCESS.getMessage(), chatId);
             return Optional.empty();
         } catch (Exception e) {
             logger.warn("Can not login. Message - " + e.getMessage());
-            return Optional.of("Упс, щось трапилось. Перевірте логин та пароль, або спробуйте пізніше.");
+            return Optional.of(Messages.MIY_DIM_AUTH_SUCCESS.getMessage());
         }
     }
 
