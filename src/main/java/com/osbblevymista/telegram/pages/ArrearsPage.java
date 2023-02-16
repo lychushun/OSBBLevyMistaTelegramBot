@@ -8,7 +8,6 @@ import com.osbblevymista.telegram.miydim.ArrearsMiyDimProcessor;
 import com.osbblevymista.telegram.system.Actions;
 import com.osbblevymista.telegram.system.Messages;
 import com.osbblevymista.telegram.system.Titles;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
@@ -76,6 +75,10 @@ public class ArrearsPage extends BasePage {
     }
 
     public static ExecutorListenerResponse notLoginResponse(String clientId, String clientPort, String chatId, String message){
+        return notLoginResponse(clientId, clientPort, chatId, message, "");
+    }
+
+    public static ExecutorListenerResponse notLoginResponse(String clientId, String clientPort, String chatId, String message, String callBackMessage){
         ExecutorListenerResponse executorListenerResponse = new ExecutorListenerResponse();
         if (message != null){
             executorListenerResponse.messages.add(message);
@@ -86,7 +89,8 @@ public class ArrearsPage extends BasePage {
                 SettingsKeyboard.generateLoginButton(
                         clientId,
                         clientPort,
-                        chatId.toString()
+                        chatId.toString(),
+                        callBackMessage
                 )
         );
         return executorListenerResponse;

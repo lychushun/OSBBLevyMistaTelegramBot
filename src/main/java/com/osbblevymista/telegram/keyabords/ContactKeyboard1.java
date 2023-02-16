@@ -31,31 +31,20 @@ public class ContactKeyboard1 extends OSBBKeyboard {
 
         osbbKeyboardButtonWorker.setId(Actions.BUTTON_WORKER.getText());
         osbbKeyboardButtonWorker.messages.add(Messages.CONTACT_BUTTON_WORKER.getMessage());
-        insertIntoFirstRow(osbbKeyboardButtonWorker);
+        insertIntoSecondRow(osbbKeyboardButtonWorker);
 
         osbbKeyboardButtonWorkSecurity.setId(Actions.BUTTON_SECURITY.getText());
         osbbKeyboardButtonWorkSecurity.messages.add(Messages.CONTACT_BUTTON_SECURITY.getMessage());
         insertIntoSecondRow(osbbKeyboardButtonWorkSecurity);
 
-        osbbKeyboardButtonCityLift.setId(Actions.BUTTON_CITYLIFT.getText());
-        osbbKeyboardButtonCityLift.messages.add(Messages.CONTACT_BUTTON_CITYLIFT.getMessage());
-        insertIntoSecondRow(osbbKeyboardButtonCityLift);
-
         osbbKeyboardButtonLvivoblenergo.setId(Actions.BUTTON_LVIVOBLENERGO.getText());
         osbbKeyboardButtonLvivoblenergo.messages.add(Messages.CONTACT_BUTTON_LVIVOBLENERGO.getMessage());
-        insertIntoSecondRow(osbbKeyboardButtonLvivoblenergo);
+        insertIntoThirdRow(osbbKeyboardButtonLvivoblenergo);
 
         osbbKeyboardButtonLvivGaz.setId(Actions.BUTTON_LVIVGAZ.getText());
         osbbKeyboardButtonLvivGaz.messages.add(Messages.CONTACT_BUTTON_LVIVGAZ.getMessage());
         insertIntoThirdRow(osbbKeyboardButtonLvivGaz);
 
-        osbbKeyboardButtonRepaipofboilers.setId(Actions.BUTTON_REPAIROFBOILERS.getText());
-        osbbKeyboardButtonRepaipofboilers.messages.add(Messages.CONTACT_BUTTON_REPAIROFBOILERS.getMessage());
-        insertIntoThirdRow(osbbKeyboardButtonRepaipofboilers);
-
-        osbbKeyboardButtonDomofon.setId(Actions.BUTTON_DOMOFONSERVICE.getText());
-        osbbKeyboardButtonDomofon.messages.add(Messages.CONTACT_BUTTON_DOMOFONSERVICE.getMessage());
-        insertIntoThirdRow(osbbKeyboardButtonDomofon);
     }
 
     public ContactKeyboard1(boolean isAdmin) {

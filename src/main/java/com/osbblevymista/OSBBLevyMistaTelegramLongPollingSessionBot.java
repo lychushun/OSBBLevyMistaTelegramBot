@@ -265,7 +265,7 @@ public class OSBBLevyMistaTelegramLongPollingSessionBot extends TelegramLongPoll
 
         ContactKeyboard1 contactKeyboard1 = new ContactKeyboard1(isAdmin);
         contactKeyboard1.setPrevPage(infoPage);
-//        contactKeyboard1.setNextPage(contactPage2);
+        contactKeyboard1.setNextPage(contactPage2);
 
         ContactKeyboard2 contactKeyboard2 = new ContactKeyboard2(isAdmin);
         contactKeyboard2.setPrevPage(contactPage1);

@@ -9,5 +9,7 @@ public class AuthRequest {
     private String login;
     private String pass;
     private String chatId;
+    private String command;
+    private String message;
 
 }

@@ -10,6 +10,7 @@ import com.opencsv.exceptions.CsvValidationException;
 import com.osbblevymista.api.CookiesManager;
 import com.osbblevymista.api.Messages;
 import com.osbblevymista.api.dto.request.AdminInfoRequest;
+import com.osbblevymista.api.dto.request.AuthRequest;
 import com.osbblevymista.api.dto.response.AdminInfoResponse;
 import com.osbblevymista.api.dto.response.UserInfoResponse;
 import com.osbblevymista.api.mappings.AdminMapper;
@@ -18,18 +19,21 @@ import com.osbblevymista.telegram.miydim.MiyDimProcessor;
 import com.osbblevymista.telegram.services.AdminInfoService;
 import com.osbblevymista.telegram.services.ChanelMessengerService;
 import com.osbblevymista.telegram.services.UserInfoService;
+import com.osbblevymista.telegram.system.Commands;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.lang.reflect.Member;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.osbblevymista.telegram.system.Messages.INSERT_SIMPLE_REQUEST_DATA_FOR_MYIDIM;
+import static com.osbblevymista.telegram.system.Messages.INSERT_URGENT_REQUEST_DATA_FOR_MYIDIM;
 import static org.springframework.util.StringUtils.hasText;
 
 @Service
@@ -52,15 +56,19 @@ public class MiyDimService {
         cookiesManager.removeCookies(chatId);
     }
 
-    public Optional<String> auth(String login, String pass, String chatId) {
+//    public Optional<String> auth(String login, String pass, String chatId, String command) {
+    public Optional<String> auth(AuthRequest authRequest) {
         try {
-            String cookie = logIn(login, pass);
-            cookiesManager.addCookies(chatId, cookie);
-            chanelMessengerService.sendMessageByChatIdAsBot(Messages.MIY_DIM_AUTH_SUCCESS.getMessage(), chatId);
+            String cookie = logIn(authRequest.getLogin(), authRequest.getPass());
+            cookiesManager.addCookies(authRequest.getChatId(), cookie);
+            chanelMessengerService.sendMessageByChatIdAsBot(Messages.MIY_DIM_AUTH_SUCCESS.getMessage(), authRequest.getChatId());
+            sendCommand(authRequest.getCommand(), authRequest.getChatId());
+//            chanelMessengerService.sendCommandByChatIdAsBot(getCommand(authRequest.getCommand()), authRequest.getChatId());
             return Optional.empty();
         } catch (Exception e) {
+            e.printStackTrace();
             logger.warn("Can not login. Message - " + e.getMessage());
-            return Optional.of(Messages.MIY_DIM_AUTH_SUCCESS.getMessage());
+            return Optional.of(Messages.MIY_DIM_AUTH_ERROR.getMessage());
         }
     }
 
@@ -137,6 +145,34 @@ public class MiyDimService {
         } else {
             throw new Exception("Проблема з автризацію.");
         }
+    }
+
+    private String getCommand(String command){
+        try {
+           command = java.net.URLDecoder.decode(command, "UTF-8");
+//            command = hasText(command) ? "/" + command : "";
+
+            return command;
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
+    private void sendCommand(String command, String chatId){
+        command = getCommand(command);
+        if (hasText(command)) {
+            chanelMessengerService.sendMessageByChatIdAsBot(getMessageByCommand(command), chatId);
+        }
+    }
+
+    private String getMessageByCommand(String command){
+      switch (Commands.fromString(command)){
+          case SIMPLE_APPEAL: return INSERT_SIMPLE_REQUEST_DATA_FOR_MYIDIM.getMessage();
+          case URGENT_APPEAL: return INSERT_URGENT_REQUEST_DATA_FOR_MYIDIM.getMessage();
+          default:
+              return "";
+      }
     }
 
 }

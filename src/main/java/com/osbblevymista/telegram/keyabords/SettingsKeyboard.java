@@ -64,10 +64,14 @@ public class SettingsKeyboard extends OSBBKeyboard {
     }
 
     public static OSBBInlineKeyboardButton generateLoginButton(String clientIp, String clientPort, String chatId) {
+        return generateLoginButton(clientIp, clientPort, chatId, "");
+    }
+
+    public static OSBBInlineKeyboardButton generateLoginButton(String clientIp, String clientPort, String chatId, String callBackMessage) {
         OSBBInlineKeyboardButton osbbInlineKeyboardButton = new OSBBInlineKeyboardButton();
         osbbInlineKeyboardButton.setId("miydimWeb");
         osbbInlineKeyboardButton.setText("Мій Дім - Авторизація");
-        osbbInlineKeyboardButton.setUrl("http://" + clientIp + ":" + clientPort + "?chatId=" + chatId);
+        osbbInlineKeyboardButton.setUrl("http://" + clientIp + ":" + clientPort + "?chatId=" + chatId + "&command="+callBackMessage);
         return osbbInlineKeyboardButton;
     }
 

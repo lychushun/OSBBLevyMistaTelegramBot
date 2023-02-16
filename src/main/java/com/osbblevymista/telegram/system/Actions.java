@@ -1,18 +1,18 @@
 package com.osbblevymista.telegram.system;
 
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Getter
 public enum Actions {
-    BUTTON_HEAD_OF_OSBB("Голова ОСББ \uD83D\uDC2F"),
-    BUTTON_ACCOUNTANT("Бухгалтер \uD83D\uDC25"),
+    BUTTON_HEAD_OF_OSBB("Голова ОСББ \uD83D\uDC68\u200D\uD83D\uDCBC"),
+    BUTTON_ACCOUNTANT("Бухгалтер  \uD83E\uDDEE"),
     BUTTON_WORKER("Заступник з господарства \uD83D\uDC77"),
     BUTTON_SECURITY("Охорона \uD83D\uDC6E"),
     BUTTON_CITYLIFT("Сіті Ліфт \uD83D\uDED7"),
-    BUTTON_LVIVOBLENERGO("Львівобленерго \u26A1"),
+    BUTTON_LVIVOBLENERGO("Львівобленерго \uD83D\uDCA1"),
     BUTTON_LVIVGAZ("Львівгаз \uD83D\uDD25"),
     BUTTON_REPAIROFBOILERS("Ремонт котлів \uD83D\uDEE0"),
     BUTTON_DOMOFONSERVICE("Домофон сервіс \uD83D\uDCDE"),
@@ -37,9 +37,9 @@ public enum Actions {
     BUTTON_PAYMENT_PRIVAT24("Оплатити Privat24"),
     BUTTON_PAYMENT_IPAY("Оплатити iPAY"),
 
-    BUTTON_CHAT_OSBB_CHAT_TEREVENI("Теревені \"Леви Міста\""),
-    BUTTON_CHAT_OSBB_CHAT_ANNOUNCEMENT("Купи\\Продай \"Леви Міста\""),
-    BUTTON_CHAT_OSBB_CHAT_BOARD("Правління \"Леви Міста\""),
+    BUTTON_CHAT_OSBB_CHAT_TEREVENI("ОСББЛевиМіста_теревені"),
+    BUTTON_CHAT_OSBB_CHAT_ANNOUNCEMENT("ОСББЛевиМіста_купи\\продай"),
+    BUTTON_CHAT_OSBB_CHAT_BOARD("ОСББЛевиМіста_правління"),
 
     BUTTON_CAR_ENTRANCE("Форма для доступу до шлагбаумів."),
     BUTTON_MIYDIM_LINK("Система Мій Дім."),
@@ -55,7 +55,7 @@ public enum Actions {
     BUTTON_ADMIN_SEND("Розіслати повідомлення \uD83D\uDCE8"),
     BUTTON_ADMIN_NEW_RECEIPT("Розіслати повідомлення про нову квитанцію \uD83D\uDCC4"),
 
-    BUTTON_CONTACT("Контакти \uD83D\uDE01"),
+    BUTTON_CONTACT("Контакти ☎️"),
     BUTTON_USEFUL_LINKS("Корисні посилання \uD83C\uDF10"),
     BUTTON_INFO("Інформація \u2139"),
     BUTTON_ARREARS("Заборгованість \uD83D\uDCB0"),
@@ -68,5 +68,5 @@ public enum Actions {
     BUTTON_VISIT_MIYDIM("Авторизуватись у Мій Дім"),
     BUTTON_EXIT_MIYDIM("Вийти з Мій Дім");
 
-    String text;
+    private final String text;
 }

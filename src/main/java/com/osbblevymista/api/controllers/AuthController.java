@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,7 +22,7 @@ public class AuthController {
 
     @PostMapping(path = "/auth", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> sessionCookieAuth(@RequestBody AuthRequest authRequest) {
-        Optional<String> res = miyDimService.auth(authRequest.getLogin(), authRequest.getPass(), authRequest.getChatId());
+        Optional<String> res = miyDimService.auth(authRequest);
         return res.map(s -> new ResponseEntity<>(s, HttpStatus.CONFLICT))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.OK));
     }

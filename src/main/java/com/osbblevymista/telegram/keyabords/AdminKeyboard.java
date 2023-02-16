@@ -14,18 +14,17 @@ public class AdminKeyboard extends OSBBKeyboard{
     private final OSBBKeyboardButton osbbKeyboardButtonNewReceipt = new OSBBKeyboardButton(Actions.BUTTON_ADMIN_NEW_RECEIPT.getText());
 
     {
-//        OSBBExecutorListener osbbExecutorListenerSend = new OSBBExecutorListener() {
-//            @Override
-//            public ExecutorListenerResponse doExecute(KeyboardParam keyboardParam) {
-//                ExecutorListenerResponse executorListenerResponse = new ExecutorListenerResponse();
-//                executorListenerResponse.messages.add(Messages.SENT_MESSAGE_TO_ALL.getMessage());
-//                return executorListenerResponse;
-//            }
-//        };
+        OSBBExecutorListener osbbExecutorListenerSend = new OSBBExecutorListener() {
+            @Override
+            public ExecutorListenerResponse doExecute(KeyboardParam keyboardParam) {
+                ExecutorListenerResponse executorListenerResponse = new ExecutorListenerResponse();
+                executorListenerResponse.messages.add(Messages.SENT_MESSAGE_TO_ALL.getMessage());
+                return executorListenerResponse;
+            }
+        };
 
         osbbKeyboardButtonSend.setId(Actions.BUTTON_ADMIN_SEND.getText());
-        osbbKeyboardButtonSend.messages.add(Messages.SENT_MESSAGE_TO_ALL.getMessage());
-//        osbbKeyboardButtonSend.setOsbbExecutorListener(osbbExecutorListenerSend);
+        osbbKeyboardButtonSend.setOnClickListener(osbbExecutorListenerSend);
         insertIntoFirstRow(osbbKeyboardButtonSend);
 
         osbbKeyboardButtonNewReceipt.setId(Actions.BUTTON_ADMIN_NEW_RECEIPT.getText());

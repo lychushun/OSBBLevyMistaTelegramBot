@@ -2,6 +2,7 @@ package com.osbblevymista.telegram.send.processors;
 
 import com.opencsv.exceptions.CsvException;
 import com.osbblevymista.OSBBLevyMista45;
+import com.osbblevymista.api.services.MiyDimService;
 import com.osbblevymista.botexecution.BotExecution;
 import com.osbblevymista.botexecution.BotExecutionObject;
 import com.osbblevymista.telegram.dto.MiyDimAppealInfo;
@@ -25,8 +26,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import static com.osbblevymista.telegram.system.Commands.SIMPLE_APPEAL;
+import static com.osbblevymista.telegram.system.Commands.URGENT_APPEAL;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+import static org.springframework.util.StringUtils.hasText;
 
 @Component
 @RequiredArgsConstructor
@@ -108,6 +112,8 @@ public class SessionSendMessageProcessor {
         return BotExecution.empty();
     }
 
+    private final MiyDimService miyDimService;
+
     private BotExecution processSendMessage(Session session,
                                             SendMessageParams sendMessageParam,
                                             String message) throws IOException, URISyntaxException {
@@ -119,6 +125,7 @@ public class SessionSendMessageProcessor {
             sendMessageInfo = (SendMessageInfo) session.getAttribute(SessionProperties.SEND_MESSAGE_INFO);
         }
         if (isComplete(message)) {
+
             if (sendMessageInfo.getMessages().size() > 0) {
                 session.setAttribute(SessionProperties.SEND_MESSAGE_INFO, null);
 
@@ -146,16 +153,35 @@ public class SessionSendMessageProcessor {
             miyDimAppealInfo = (MiyDimAppealInfo) session.getAttribute(SessionProperties.MIY_DIM_APPEAL_INFO);
         }
         if (isComplete(message)) {
-            if (miyDimAppealInfo.getMessages().size() > 0) {
-                session.setAttribute(SessionProperties.MIY_DIM_APPEAL_INFO, null);
 
-                botExecutionData.addExecutionsForMessage(createSimpleMessageList(sendMessageParam, Messages.CREATING_APPEAL.getMessage()));
-                BotExecutionObject botExecution = new BotExecutionObject();
-                botExecution.setExecution(appealSendMessageProcessor.createAppeal(sendMessageParam, miyDimAppealInfo.formatMessages(), appealTypes));
-                botExecutionData.addExecutionsForMessage(botExecution);
+            String cookie = miyDimService.getCookie(sendMessageParam.getChatIdAsString());
+            if (hasText(cookie)) {
+//                AppealMiyDimProcessor arrearsMiyDim = new AppealMiyDimProcessor(cookie);
+//                if (!arrearsMiyDim.isLogin()) {
+//                    BotExecutionObject botExecutionObject = new BotExecutionObject();
+//                    String command = appealTypes == AppealTypes.URGENT ? URGENT_APPEAL.getCommand() : SIMPLE_APPEAL.getCommand();
+//                    botExecutionObject.setExecution(sendMessageBuilder.generateMiyDimNotLoginMessage(sendMessageParam, command));
+//                    botExecutionData.addExecutionsForMessage(botExecutionObject);
+//                } else {
+                if (miyDimAppealInfo.getMessages().size() > 0) {
+                    session.setAttribute(SessionProperties.MIY_DIM_APPEAL_INFO, null);
+
+                    botExecutionData.addExecutionsForMessage(createSimpleMessageList(sendMessageParam, Messages.CREATING_APPEAL.getMessage()));
+                    BotExecutionObject botExecution = new BotExecutionObject();
+                    botExecution.setExecution(appealSendMessageProcessor.createAppeal(sendMessageParam, miyDimAppealInfo.formatMessages(), appealTypes));
+                    botExecutionData.addExecutionsForMessage(botExecution);
+                } else {
+                    botExecutionData.addExecutionsForMessage(createSimpleMessageList(sendMessageParam, Messages.INSERT_APPEAL.getMessage()));
+                }
+//                }
             } else {
-                botExecutionData.addExecutionsForMessage(createSimpleMessageList(sendMessageParam, Messages.INSERT_APPEAL.getMessage()));
+                BotExecutionObject botExecutionObject = new BotExecutionObject();
+                String command = appealTypes == AppealTypes.URGENT ? URGENT_APPEAL.getCommand() : SIMPLE_APPEAL.getCommand();
+                botExecutionObject.setExecution(sendMessageBuilder.generateMiyDimNotLoginMessage(sendMessageParam, command));
+                botExecutionData.addExecutionsForMessage(botExecutionObject);
             }
+
+
             return botExecutionData;
         } else {
             miyDimAppealInfo.getMessages().add(message);

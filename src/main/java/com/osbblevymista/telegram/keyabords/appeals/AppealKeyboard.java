@@ -15,7 +15,6 @@ import com.osbblevymista.telegram.system.Actions;
 import com.osbblevymista.telegram.system.AppealTypes;
 import com.osbblevymista.telegram.system.Links;
 import com.osbblevymista.telegram.system.Messages;
-import org.apache.commons.lang3.StringUtils;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 
 import java.io.IOException;
@@ -23,11 +22,17 @@ import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.util.List;
 
+import static com.osbblevymista.telegram.system.Actions.BUTTON_APPEAL_REVIEW;
+import static com.osbblevymista.telegram.system.Commands.SIMPLE_APPEAL;
+import static com.osbblevymista.telegram.system.Commands.URGENT_APPEAL;
+import static com.osbblevymista.telegram.system.Messages.INSERT_SIMPLE_REQUEST_DATA_FOR_MYIDIM;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+
 public class AppealKeyboard extends OSBBKeyboard {
 
     private final OSBBKeyboardButton osbbKeyboardButtonCreateSimple = new OSBBKeyboardButton(Actions.BUTTON_APPEAL_SIMPLE_CREATE.getText());
     private final OSBBKeyboardButton osbbKeyboardButtonCreateUrgent = new OSBBKeyboardButton(Actions.BUTTON_APPEAL_URGENT_CREATE.getText());
-    private final OSBBKeyboardButton osbbKeyboardButtonGet = new OSBBKeyboardButton(Actions.BUTTON_APPEAL_REVIEW.getText());
+    private final OSBBKeyboardButton osbbKeyboardButtonGet = new OSBBKeyboardButton(BUTTON_APPEAL_REVIEW.getText());
 
     private final OSBBKeyboardButton osbbKeyboardButtonBarrier = new OSBBKeyboardButton(Actions.BUTTON_BARRIER.getText());
 
@@ -65,7 +70,8 @@ public class AppealKeyboard extends OSBBKeyboard {
                             keyboardParam.getClientIp(),
                             keyboardParam.getClientPort(),
                             keyboardParam.getChatId(),
-                            arrearsMiyDim.getErrorMessage()
+                            arrearsMiyDim.getErrorMessage(),
+                            BUTTON_APPEAL_REVIEW.getText()
                     );
                 }
 
@@ -73,7 +79,7 @@ public class AppealKeyboard extends OSBBKeyboard {
             }
         };
 
-        osbbKeyboardButtonGet.setId(Actions.BUTTON_APPEAL_REVIEW.getText());
+        osbbKeyboardButtonGet.setId(BUTTON_APPEAL_REVIEW.getText());
         osbbKeyboardButtonGet.messages.add(Messages.GET_REQUEST_DATA_FOR_MYIDIM.getMessage());
         osbbKeyboardButtonGet.setOnClickListener(osbbExecutorListenerGet);
         insertIntoFirstRow(osbbKeyboardButtonGet);
@@ -122,16 +128,19 @@ public class AppealKeyboard extends OSBBKeyboard {
             public ExecutorListenerResponse doExecute(KeyboardParam keyboardParam) throws UnsupportedEncodingException, URISyntaxException {
                 ExecutorListenerResponse executorListenerResponse = new ExecutorListenerResponse();
 
-                if (StringUtils.isEmpty(keyboardParam.getMiyDimCookie())) {
+                String command = appealTypes == AppealTypes.SIMPLE ? SIMPLE_APPEAL.getCommand() : URGENT_APPEAL.getCommand();
+
+                if (isEmpty(keyboardParam.getMiyDimCookie())) {
                     executorListenerResponse = ArrearsPage.notLoginResponse(
                             keyboardParam.getClientIp(),
                             keyboardParam.getClientPort(),
                             keyboardParam.getChatId().toString(),
-                            null
+                            null,
+                            command
                     );
                 } else {
                     if (appealTypes == AppealTypes.SIMPLE) {
-                        executorListenerResponse.messages.add(Messages.INSERT_SIMPLE_REQUEST_DATA_FOR_MYIDIM.getMessage());
+                        executorListenerResponse.messages.add(INSERT_SIMPLE_REQUEST_DATA_FOR_MYIDIM.getMessage());
                     } else if (appealTypes == AppealTypes.URGENT) {
                         executorListenerResponse.messages.add(Messages.INSERT_URGENT_REQUEST_DATA_FOR_MYIDIM.getMessage());
                     }

@@ -56,13 +56,18 @@ public class SendMessageBuilder {
     }
 
     public OSBBSendMessage generateMiyDimNotLoginMessage(SendMessageParams sendMessageParam) {
+        return generateMiyDimNotLoginMessage(sendMessageParam, "");
+    }
+
+    public OSBBSendMessage generateMiyDimNotLoginMessage(SendMessageParams sendMessageParam, String command) {
         OSBBSendMessage sendMessage = createBaseMessage(sendMessageParam.getChatId());
 
         List<InlineKeyboardButton> inlineKeyboardButtons = new ArrayList<>();
         inlineKeyboardButtons.add(SettingsKeyboard.generateLoginButton(
                 sendMessageParam.getClientIp(),
                 sendMessageParam.getClientPort(),
-                sendMessageParam.getChatId().toString()
+                sendMessageParam.getChatId().toString(),
+                command
         ));
 
         InlineKeyboardMarkup.InlineKeyboardMarkupBuilder inlineKeyboardMarkupBuilder = InlineKeyboardMarkup.builder();
