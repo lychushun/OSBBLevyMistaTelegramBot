@@ -49,4 +49,8 @@ public class OSBBKeyboardButton extends KeyboardButton {
         return Objects.nonNull(onClickListener);
     }
 
+    public void requestContact(boolean is){
+        super.setRequestContact(is);
+    }
+
 }

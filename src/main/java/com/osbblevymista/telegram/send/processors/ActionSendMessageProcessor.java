@@ -62,9 +62,7 @@ public class ActionSendMessageProcessor {
                                   @Override
                                   public List<OSBBSendMessage> apply(SendMessageParams sendMessageParams, OSBBKeyboardButton osbbKeyboardButton) {
                                       try {
-                                          List<OSBBSendMessage> list = new ArrayList<>();
-                                          list.add(createButtonMessage(sendMessageParams, osbbKeyboardButton));
-                                          return list;
+                                          return createButtonMessage(sendMessageParams, osbbKeyboardButton);
                                       } catch (UnsupportedEncodingException | URISyntaxException e) {
                                           e.printStackTrace();
                                           logger.error(e.getMessage(), e);
@@ -224,19 +222,19 @@ public class ActionSendMessageProcessor {
         }
     }
 
-    private OSBBSendMessage createButtonMessage(SendMessageParams sendMessageParams, OSBBKeyboardButton osbbKeyboardButton) throws
+    private List<OSBBSendMessage> createButtonMessage(SendMessageParams sendMessageParams, OSBBKeyboardButton osbbKeyboardButton) throws
             UnsupportedEncodingException, URISyntaxException {
 
-        OSBBSendMessage sendMessage = sendMessageBuilder.createBaseMessage(sendMessageParams.getChatId());
-        StringBuilder messageBuffer = new StringBuilder();
-
         if (osbbKeyboardButton.messages.size() > 0) {
-            messageBuffer.delete(0, messageBuffer.length());
-            messageBuffer.append(getMessage(osbbKeyboardButton.messages)).append("\n");
-            sendMessage.setText(messageBuffer.toString());
-            return sendMessage;
+            return osbbKeyboardButton.messages.stream().map(message -> {
+                OSBBSendMessage sendMessage = sendMessageBuilder.createBaseMessage(sendMessageParams.getChatId());
+                sendMessage.setText(message);
+                return sendMessage;
+            }).collect(Collectors.toList());
         } else {
-            return sendMessageBuilder.createEmptyMessage(sendMessageParams.getChatId());
+            List<OSBBSendMessage> list = new ArrayList<>();
+            list.add(sendMessageBuilder.createEmptyMessage(sendMessageParams.getChatId()));
+            return list;
         }
     }
 

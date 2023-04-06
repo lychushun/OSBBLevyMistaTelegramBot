@@ -70,8 +70,7 @@ public class AppealKeyboard extends OSBBKeyboard {
                             keyboardParam.getClientIp(),
                             keyboardParam.getClientPort(),
                             keyboardParam.getChatId(),
-                            arrearsMiyDim.getErrorMessage(),
-                            BUTTON_APPEAL_REVIEW.getText()
+                            arrearsMiyDim.getErrorMessage()
                     );
                 }
 

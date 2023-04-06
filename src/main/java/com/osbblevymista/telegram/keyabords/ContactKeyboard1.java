@@ -13,12 +13,8 @@ public class ContactKeyboard1 extends OSBBKeyboard {
     private final OSBBKeyboardButton osbbKeyboardButtonWorker = new OSBBKeyboardButton(Actions.BUTTON_WORKER.getText());
 
     private final OSBBKeyboardButton osbbKeyboardButtonWorkSecurity = new OSBBKeyboardButton(Actions.BUTTON_SECURITY.getText());
-    private final OSBBKeyboardButton osbbKeyboardButtonCityLift = new OSBBKeyboardButton(Actions.BUTTON_CITYLIFT.getText());
-    private final OSBBKeyboardButton osbbKeyboardButtonLvivoblenergo = new OSBBKeyboardButton(Actions.BUTTON_LVIVOBLENERGO.getText());
 
-    private final OSBBKeyboardButton osbbKeyboardButtonLvivGaz = new OSBBKeyboardButton(Actions.BUTTON_LVIVGAZ.getText());
-    private final OSBBKeyboardButton osbbKeyboardButtonRepaipofboilers = new OSBBKeyboardButton(Actions.BUTTON_REPAIROFBOILERS.getText());
-    private final OSBBKeyboardButton osbbKeyboardButtonDomofon = new OSBBKeyboardButton(Actions.BUTTON_DOMOFONSERVICE.getText());
+    private final OSBBKeyboardButton osbbKeyboardButtonBarrier = new OSBBKeyboardButton(Actions.BUTTON_BARRIER_PAGE.getText());
 
     {
         osbbKeyboardButtonHeadOfOsbb.setId(Actions.BUTTON_HEAD_OF_OSBB.getText());
@@ -37,14 +33,15 @@ public class ContactKeyboard1 extends OSBBKeyboard {
         osbbKeyboardButtonWorkSecurity.messages.add(Messages.CONTACT_BUTTON_SECURITY.getMessage());
         insertIntoSecondRow(osbbKeyboardButtonWorkSecurity);
 
-        osbbKeyboardButtonLvivoblenergo.setId(Actions.BUTTON_LVIVOBLENERGO.getText());
-        osbbKeyboardButtonLvivoblenergo.messages.add(Messages.CONTACT_BUTTON_LVIVOBLENERGO.getMessage());
-        insertIntoThirdRow(osbbKeyboardButtonLvivoblenergo);
+        osbbKeyboardButtonBarrier.setId(Actions.BUTTON_BARRIER_PAGE.getText());
+        osbbKeyboardButtonBarrier.messages.add(Messages.BUTTON_BARRIER1.getMessage());
+        osbbKeyboardButtonBarrier.messages.add(Messages.BUTTON_BARRIER5.getMessage());
+        osbbKeyboardButtonBarrier.messages.add(Messages.BUTTON_BARRIER2.getMessage());
+        osbbKeyboardButtonBarrier.messages.add(Messages.BUTTON_BARRIER3.getMessage());
+        osbbKeyboardButtonBarrier.messages.add(Messages.BUTTON_BARRIER4.getMessage());
+        osbbKeyboardButtonBarrier.messages.add(Messages.BUTTON_BARRIER6.getMessage());
 
-        osbbKeyboardButtonLvivGaz.setId(Actions.BUTTON_LVIVGAZ.getText());
-        osbbKeyboardButtonLvivGaz.messages.add(Messages.CONTACT_BUTTON_LVIVGAZ.getMessage());
-        insertIntoThirdRow(osbbKeyboardButtonLvivGaz);
-
+        insertIntoThirdRow(osbbKeyboardButtonBarrier);
     }
 
     public ContactKeyboard1(boolean isAdmin) {

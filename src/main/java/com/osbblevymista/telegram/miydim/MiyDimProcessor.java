@@ -10,6 +10,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 
+import static org.springframework.util.StringUtils.hasText;
+
 @Getter
 public class MiyDimProcessor {
 
@@ -28,31 +30,36 @@ public class MiyDimProcessor {
     private String errorMessage = "";
 
     public MiyDimProcessor(String cookie){
-        this.cookie = cookie;
-        createCookieDate();
+        if (hasText(cookie)) {
+            this.cookie = cookie;
+            createCookieDate();
 
-        webClient = new WebClient();
+            webClient = new WebClient();
 
-        CookieManager cookieMan = new CookieManager();
-        cookieMan = webClient.getCookieManager();
-        cookieMan.setCookiesEnabled(true);
-        cookieMan.addCookie(getCookie());
+            CookieManager cookieMan = new CookieManager();
+            cookieMan = webClient.getCookieManager();
+            cookieMan.setCookiesEnabled(true);
+            cookieMan.addCookie(getCookie());
 
-        webClient.setCookieManager(cookieMan);
+            webClient.setCookieManager(cookieMan);
 
-        webClient.getOptions().setThrowExceptionOnScriptError(false);
+            webClient.getOptions().setThrowExceptionOnScriptError(false);
 
-        try {
-            mainPage = webClient.getPage("https://miydimonline.com.ua/residents/currentaccountstatus");
-            currentPage = mainPage;
-        } catch (Exception e) {
-            e.printStackTrace();
-            logger.error(e.getMessage(),e);
+            try {
+                mainPage = webClient.getPage("https://miydimonline.com.ua/residents/currentaccountstatus");
+                currentPage = mainPage;
+            } catch (Exception e) {
+                e.printStackTrace();
+                logger.error(e.getMessage(), e);
+            }
         }
     }
 
     public boolean isLogin(){
         try {
+            if (!hasText(cookie)){
+                return false;
+            }
             HtmlPage page = webClient.getPage("https://miydimonline.com.ua/residents/currentaccountstatus");
             return mainPage != null
                     && !page.getUrl().toString().contains("login")

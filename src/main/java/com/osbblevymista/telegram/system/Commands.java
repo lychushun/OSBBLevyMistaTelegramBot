@@ -8,7 +8,8 @@ import lombok.RequiredArgsConstructor;
 public enum Commands {
 
     URGENT_APPEAL("/urgentAppeal"),
-    SIMPLE_APPEAL("/simpleAppeal");
+    SIMPLE_APPEAL("/simpleAppeal"),
+    REVIEW_APPEAL("/reviewAppeal");
 
     private final String command;
 

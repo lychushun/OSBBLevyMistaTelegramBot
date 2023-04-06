@@ -1,8 +1,10 @@
 1. sudo ssh -i /Users/yurii.luchyshyn/work/projects/TelegramBot/OSBBLevyMista.pem ec2-user@ec2-18-194-139-17.eu-central-1.compute.amazonaws.com
 
-2. sudo sftp -i /Users/yurii.luchyshyn/work/projects/TelegramBot/OSBBLevyMista.pem ec2-user@ec2-18-194-139-17.eu-central-1.compute.amazonaws.com /Users/yurii.luchyshyn/work/projects/TelegramBot/target/TelegramBot-1.0.jar
+2. sudo sftp -i /Volumes/Work/AWS_keys/OSBBTelegram1.pem ec2-user@ec2-16-170-216-246.eu-north-1.compute.amazonaws.com /Volumes/Work/projects/TelegramBot/target/TelegramBot-1.0-SNAPSHOT.jar
 
-3. put /Users/yurii.luchyshyn/work/projects/TelegramBot/target/TelegramBot-1.0.jar
+3. put /Volumes/Work/projects/TelegramBot/target/TelegramBot-1.0-SNAPSHOT.jar
+
+4. mv TelegramBot-1.0.jar OSBBLevyMista45/app/OSBBLevyMista.jar
 
 5. ps aux | grep java
 
@@ -13,3 +15,9 @@
 
 ./service-boot.sh start
 ./service-boot.sh stop
+
+
+
+install
+apt
+wget http://security.ubuntu.com/ubuntu/pool/main/a/apt/apt_2.5.3ubuntu0.1_i386.deb -O apt.deb

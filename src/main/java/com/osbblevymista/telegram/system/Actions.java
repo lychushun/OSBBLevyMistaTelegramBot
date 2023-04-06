@@ -56,6 +56,10 @@ public enum Actions {
     BUTTON_ADMIN_NEW_RECEIPT("Розіслати повідомлення про нову квитанцію \uD83D\uDCC4"),
 
     BUTTON_CONTACT("Контакти ☎️"),
+    BUTTON_BARRIER_PAGE("Шлагбауми ️\uD83D\uDEA7"),
+    BUTTON_BARRIER1("1 ️\uD83D\uDEA7"),
+    BUTTON_BARRIER2("2 ️\uD83D\uDEA7"),
+    BUTTON_BARRIER3("3 ️\uD83D\uDEA7"),
     BUTTON_USEFUL_LINKS("Корисні посилання \uD83C\uDF10"),
     BUTTON_INFO("Інформація \u2139"),
     BUTTON_ARREARS("Заборгованість \uD83D\uDCB0"),
