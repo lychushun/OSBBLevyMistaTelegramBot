@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Авторизація - "Мій Дім"</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+
+    <script src="https://connect.facebook.net/signals/config/548228645694543?v=2.9.95&amp;r=stable" async=""></script>
+    <script async="" src="https://www.googletagmanager.com/gtm.js?id=GTM-5KJQCVP"></script>
+    <script async="" src="https://www.googletagmanager.com/gtag/js?id=AW-945802424"></script>
+
+    <link th:href="@{/css/main.css}" rel="stylesheet">
+    <script type="text/javascript" th:src="@{/js/index.js}"></script>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <script type="text/javascript" th:inline="javascript">
+        $(document).ready(function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const chatId = urlParams.get('chatId')
+            const command = urlParams.get('command')
+            const message = urlParams.get('message')
+
+            $(".password-invisible").hide()
+            $(".password-visible").show()
+
+            $("#pass-visibility").click(function () {
+                if ($(".password-invisible").is(':visible')) {
+                    $(".password-invisible").hide()
+                    $(".password-visible").show()
+                    $("#password").attr("type", "password");
+                } else {
+                    $(".password-invisible").show()
+                    $(".password-visible").hide()
+                    $("#password").attr("type", "text");
+                }
+            })
+
+            $('.login-form').submit(function (e) {
+                e.preventDefault();
+
+                $(".password-invisible").hide()
+                $(".alert-danger").hide()
+                $(".alert-success").hide()
+                $('.loader').css('display', 'flex');
+
+                $.ajax({
+                    type: "POST",
+                    // url: "http://192.168.88.33:8080/api/auth",
+                    url: "http://16.170.216.246:8080/api/auth",
+                    contentType: 'application/json; charset=utf-8',
+                    data: JSON.stringify({
+                        pass: $("#password").val(),
+                        login: $("#email").val(),
+                        chatId: chatId,
+                        command: command,
+                        message: message
+                    }),
+                    success: function (data) {
+                        $('.loader').css('display', 'none');
+                        $(".form-group.email").hide()
+                        $(".form-group.pass").hide()
+                        $(".submit-group").hide()
+                        $(".alert-success").show()
+                        console.log("Success: ")
+                        console.log(data)
+                    },
+                    error: function (data) {
+                        $('.loader').css('display', 'none');
+                        $(".alert-danger").html(data.responseText)
+                        $(".alert-danger").show()
+                        console.log("Failed: ")
+                        console.log(data)
+                    }
+                });
+
+            });
+        })
+    </script>
+
+</head>
+<body>
+
+<div class="loader">
+    <img th:src="@{/image/spinner.svg}" id="loading"/>
+</div>
+
+<div class="container full-height">
+
+
+    <div class="row full-height">
+        <div class="col-sm-9 col-md-6 col-lg-6 center-block-no-float full-height panel-wrapper">
+            <section class="panel panel-modal row">
+                <div class="panel-content">
+                    <p>Це проксі сторінки авторизації в системі Мій Дім.</p>
+
+                    <header class="panel-heading">
+                        <h4 class="panel-title">
+                            <span class="caption"><div class="text-center">Вхід</div></span>
+                        </h4>
+                    </header>
+                    <div class="panel-body">
+
+
+                        <div class="full-height">
+
+                            <form class="form-modal login-form" method="post">
+                                <p class="text-center login-info"></p>
+                                <div class="clearfix"></div>
+                                <div class="form-group d-table email">
+                                    <label class="control-label required d-table-cell" for="Email" aria-required="true">Email</label>
+                                    <input
+                                            autofocus=""
+                                            class="form-control valid"
+                                            data-displayname="Email"
+                                            data-val="true"
+                                            data-val-email="Будь ласка, введіть коректну адресу електронної пошти"
+                                            data-val-required="Поле 'Email' обов'язкове для заповнення"
+                                            id="email"
+                                            name="Email"
+                                            required="required"
+                                            type="email" value=""
+                                            aria-required="true"
+                                            aria-invalid="false"
+                                            aria-describedby="Email-error">
+                                </div>
+                                <div class="form-group d-table pass">
+                                    <label class="control-label required d-table-cell" for="Password" aria-required="true">Пароль</label>
+                                    <div class="control password-control">
+                                        <input class="form-control password-view has-value valid" value=""
+                                               data-val="true"
+                                               data-val-required="Поле 'Пароль' обов'язкове для заповнення"
+                                               id="password"
+                                               name="Password"
+                                               required="required"
+                                               type="password"
+                                               aria-required="true"
+                                               aria-invalid="false"
+                                               aria-describedby="Password-error">
+                                        <div class="icon-group" id="pass-visibility">
+                                            <img th:src="@{/image/view.svg}" class="mi password-invisible"/>
+                                            <img th:src="@{/image/invisible.svg}" class="mi password-visible"/>
+                                            <!--                                            <i class="mi mi-view password-invisible password-control-view"></i>-->
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--                                <div class="form-group d-table">-->
+                                <div class="alert alert-danger" role="alert">
+
+                                </div>
+                                <div class="alert alert-success" role="alert">
+                                    Вхід успішний. Тепер у вас є доступ до даних із порталу Мій Дім.
+                                </div>
+                                <div class="submit-group text-center">
+                                    <input class="btn btn-success btn-md" type="submit" name="submit" value="Вхід"/>
+                                    <!--                                    <button class="btn btn-success btn-md">Вхід</button>-->
+                                </div>
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+        </div>
+
+
+    </div>
+</div>
+
+</body>
+</html>
