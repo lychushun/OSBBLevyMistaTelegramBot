@@ -66,8 +66,8 @@ public class ActionSendMessageProcessor {
                                       try {
                                           return createButtonMessage(sendMessageParams, osbbKeyboardButton);
                                       } catch (UnsupportedEncodingException | URISyntaxException e) {
-                                          e.printStackTrace();
                                           logger.error(e.getMessage(), e);
+                                          e.printStackTrace();
                                       }
                                       return null;
                                   }
@@ -86,8 +86,8 @@ public class ActionSendMessageProcessor {
                                               list.add(createPageMessage(sendMessageParams, osbbKeyboardButton));
                                               return list;
                                           } catch (UnsupportedEncodingException | URISyntaxException e) {
-                                              e.printStackTrace();
                                               logger.error(e.getMessage(), e);
+                                              e.printStackTrace();
                                           }
                                           return null;
                                       }
@@ -104,8 +104,8 @@ public class ActionSendMessageProcessor {
                                               list.add(createPageKeyboard(sendMessageParams, osbbKeyboardButton));
                                               return list;
                                           } catch (UnsupportedEncodingException | URISyntaxException e) {
-                                              e.printStackTrace();
                                               logger.error(e.getMessage(), e);
+                                              e.printStackTrace();
                                           }
                                           return null;
                                       }
@@ -122,8 +122,8 @@ public class ActionSendMessageProcessor {
                                               list.add(createPageExecution(sendMessageParams, osbbKeyboardButton));
                                               return list;
                                           } catch (UnsupportedEncodingException | URISyntaxException e) {
-                                              e.printStackTrace();
                                               logger.error(e.getMessage(), e);
+                                              e.printStackTrace();
                                           }
                                           return null;
                                       }
@@ -141,8 +141,8 @@ public class ActionSendMessageProcessor {
                                           list.add(createButtonExecution(sendMessageParams, osbbKeyboardButton));
                                           return list;
                                       } catch (URISyntaxException | IOException e) {
-                                          e.printStackTrace();
                                           logger.error(e.getMessage(), e);
+                                          e.printStackTrace();
                                       }
                                       return null;
                                   }
@@ -170,8 +170,8 @@ public class ActionSendMessageProcessor {
                 try {
                     return sendMessageBuilder.createSimpleMessage(sendMessageParam, text);
                 } catch (UnsupportedEncodingException | URISyntaxException e) {
-                    e.printStackTrace();
                     logger.error(e.getMessage(), e);
+                    e.printStackTrace();
                 }
                 return null;
             }

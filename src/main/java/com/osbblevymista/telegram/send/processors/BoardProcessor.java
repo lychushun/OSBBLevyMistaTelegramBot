@@ -50,8 +50,8 @@ public class BoardProcessor {
 
                     return sendMessageBuilder.createSimpleMessage(sendMessageParamsBoarNotification, stringBuilder.toString());
                 } catch (UnsupportedEncodingException | URISyntaxException e) {
-                    e.printStackTrace();
                     logger.error(e.getMessage(), e);
+                    e.printStackTrace();
                 }
                 return null;
             }

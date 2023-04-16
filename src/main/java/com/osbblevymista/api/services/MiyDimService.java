@@ -66,8 +66,8 @@ public class MiyDimService {
 //            chanelMessengerService.sendCommandByChatIdAsBot(getCommand(authRequest.getCommand()), authRequest.getChatId());
             return Optional.empty();
         } catch (Exception e) {
-            e.printStackTrace();
             logger.warn("Can not login. Message - " + e.getMessage());
+            e.printStackTrace();
             return Optional.of(Messages.MIY_DIM_AUTH_ERROR.getMessage());
         }
     }
@@ -77,6 +77,7 @@ public class MiyDimService {
             adminInfoService.addRow(adminMapper.adminInfoResponseToAdminInfo(adminInfoRequest));
             return true;
         } catch (CsvRequiredFieldEmptyException | CsvValidationException | CsvDataTypeMismatchException | IOException e) {
+            logger.error("Can not add admin");
             e.printStackTrace();
             return false;
         }

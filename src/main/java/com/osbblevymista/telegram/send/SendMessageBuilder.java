@@ -2,15 +2,12 @@ package com.osbblevymista.telegram.send;
 
 import com.osbblevymista.telegram.keyabords.SettingsKeyboard;
 import com.osbblevymista.telegram.services.ChanelMessengerService;
-import com.osbblevymista.telegram.system.FileStorage;
 import com.osbblevymista.telegram.system.Messages;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
-import org.telegram.telegrambots.meta.api.objects.Document;
-import org.telegram.telegrambots.meta.api.objects.InputFile;
-import org.telegram.telegrambots.meta.api.objects.PhotoSize;
+import org.telegram.telegrambots.meta.api.objects.*;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
@@ -20,12 +17,13 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.String.valueOf;
+
 @Component
 @RequiredArgsConstructor
 public class SendMessageBuilder {
 
     private final ChanelMessengerService chanelMessengerService;
-    private final FileStorage fileStorage;
 
     @Value("${executionDelay}")
     private int injectedProperty;
@@ -39,32 +37,6 @@ public class SendMessageBuilder {
         return sendMessage;
     }
 
-    public OSBBPhotoMessage createPhotoMessage(SendMessageParams sendMessageParams, PhotoSize photoSize) throws
-            IOException, URISyntaxException {
-
-        OSBBPhotoMessage sendMessage = createBasePhotoMessage(sendMessageParams.getChatId());
-
-        InputFile file = new InputFile();
-        file.setMedia(chanelMessengerService.getFile(photoSize.getFileId()), photoSize.getFileUniqueId());
-
-        sendMessage.setPhoto(file);
-
-        return sendMessage;
-    }
-
-    public OSBBDocumentMessage createPhotoMessage(SendMessageParams sendMessageParams, Document document) throws
-            IOException, URISyntaxException {
-
-        OSBBDocumentMessage sendMessage = createBaseDocumentMessage(sendMessageParams.getChatId());
-
-        InputFile file = new InputFile();
-        file.setMedia(chanelMessengerService.getFile(document.getFileId()), document.getFileUniqueId());
-
-        sendMessage.setDocument(file);
-
-        return sendMessage;
-    }
-
     public OSBBStrMessage createMessageExecutingDelay(SendMessageParams sendMessageParams, String text) throws
             UnsupportedEncodingException, URISyntaxException {
 
@@ -75,29 +47,41 @@ public class SendMessageBuilder {
     }
 
     public OSBBPhotoMessage createMessageExecutingDelay(SendMessageParams sendMessageParams, PhotoSize photoSize) throws
-            UnsupportedEncodingException, URISyntaxException {
+            IOException, URISyntaxException {
         if (photoSize != null) {
-            try {
-                OSBBPhotoMessage sendMessage = createPhotoMessage(sendMessageParams, photoSize);
-                sendMessage.setExecutingDelay(injectedProperty);
-                return sendMessage;
-            } catch (URISyntaxException | IOException e) {
-                e.printStackTrace();
-            }
+            OSBBPhotoMessage sendMessage = createBasePhotoMessage(sendMessageParams.getChatId());
+            sendMessage.setPhoto(getInputFile(photoSize.getFileId(), photoSize.getFileUniqueId()));
+            return sendMessage;
+        }
+        return null;
+    }
+
+    public OSBBAudioMessage createMessageExecutingDelay(SendMessageParams sendMessageParams, Audio audio) throws
+            IOException, URISyntaxException {
+        if (audio != null) {
+            OSBBAudioMessage sendMessage = createBaseAudioMessage(sendMessageParams.getChatId());
+            sendMessage.setAudio(getInputFile(audio.getFileId(), audio.getFileName()));
+            return sendMessage;
         }
         return null;
     }
 
     public OSBBDocumentMessage createMessageExecutingDelay(SendMessageParams sendMessageParams, Document document) throws
-            UnsupportedEncodingException, URISyntaxException {
+            IOException, URISyntaxException {
         if (document != null) {
-            try {
-                OSBBDocumentMessage sendMessage = createPhotoMessage(sendMessageParams, document);
-                sendMessage.setExecutingDelay(injectedProperty);
-                return sendMessage;
-            } catch (URISyntaxException | IOException e) {
-                e.printStackTrace();
-            }
+            OSBBDocumentMessage sendMessage = createBaseDocumentMessage(sendMessageParams.getChatId());
+            sendMessage.setDocument(getInputFile(document.getFileId(), document.getFileName()));
+            return sendMessage;
+        }
+        return null;
+    }
+
+    public OSBBVideoMessage createMessageExecutingDelay(SendMessageParams sendMessageParams, Video video) throws
+            IOException {
+        if (video != null) {
+            OSBBVideoMessage sendMessage = createBaseVideoMessage(sendMessageParams.getChatId());
+            sendMessage.setVideo(getInputFile(video.getFileId(), video.getFileName()));
+            return sendMessage;
         }
         return null;
     }
@@ -105,7 +89,7 @@ public class SendMessageBuilder {
     public OSBBStrMessage createBaseMessage(Long chatId) {
         OSBBStrMessage sendMessage = new OSBBStrMessage();
         sendMessage.enableMarkdown(true);
-        sendMessage.setChatId(String.valueOf(chatId));
+        sendMessage.setChatId(valueOf(chatId));
         sendMessage.setParseMode(ParseMode.HTML);
 
         return sendMessage;
@@ -115,6 +99,25 @@ public class SendMessageBuilder {
         OSBBPhotoMessage sendMessage = new OSBBPhotoMessage();
         sendMessage.setChatId(String.valueOf(chatId));
         sendMessage.setParseMode(ParseMode.HTML);
+        sendMessage.setExecutingDelay(injectedProperty);
+
+        return sendMessage;
+    }
+
+    public OSBBAudioMessage createBaseAudioMessage(Long chatId) {
+        OSBBAudioMessage sendMessage = new OSBBAudioMessage();
+        sendMessage.setChatId(String.valueOf(chatId));
+        sendMessage.setParseMode(ParseMode.HTML);
+        sendMessage.setExecutingDelay(injectedProperty);
+
+        return sendMessage;
+    }
+
+    public OSBBVideoMessage createBaseVideoMessage(Long chatId) {
+        OSBBVideoMessage sendMessage = new OSBBVideoMessage();
+        sendMessage.setChatId(String.valueOf(chatId));
+        sendMessage.setParseMode(ParseMode.HTML);
+        sendMessage.setExecutingDelay(injectedProperty);
 
         return sendMessage;
     }
@@ -123,6 +126,7 @@ public class SendMessageBuilder {
         OSBBDocumentMessage sendMessage = new OSBBDocumentMessage();
         sendMessage.setChatId(String.valueOf(chatId));
         sendMessage.setParseMode(ParseMode.HTML);
+        sendMessage.setExecutingDelay(injectedProperty);
 
         return sendMessage;
     }
@@ -185,6 +189,12 @@ public class SendMessageBuilder {
                 .build());
         sendMessage.setText(message);
         return sendMessage;
+    }
+
+    private InputFile getInputFile(String fileId, String fileName) throws IOException {
+        InputFile file = new InputFile();
+        file.setMedia(chanelMessengerService.getFile(fileId), fileName);
+        return file;
     }
 
 }

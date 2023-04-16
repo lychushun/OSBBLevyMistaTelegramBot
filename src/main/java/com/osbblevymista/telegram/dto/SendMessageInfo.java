@@ -18,15 +18,22 @@ public class SendMessageInfo {
 
     private PhotoSize photoSize;
     private Document document;
+    private Video video;
+    private Audio audio;
+
     private String command = "";
     private Message message;
     private Update update;
 
     public boolean isNotEmpty() {
-        return photoSize != null || !isEmpty(command) || document != null;
+        return photoSize != null
+                || !isEmpty(command)
+                || document != null
+                || video != null
+                || audio != null;
     }
 
-    public boolean hasPhoto(){
+    public boolean hasPhoto() {
         return photoSize != null;
     }
 
@@ -48,10 +55,21 @@ public class SendMessageInfo {
         return document != null;
     }
 
+    public boolean hasVideo() {
+        return video != null;
+    }
+
+    public boolean hasAudio() {
+        return audio != null;
+    }
+
 
     public static class SendMessageInfoBuilder {
         private PhotoSize photoSizeList;
         private Document document;
+        private Video video;
+        private Audio audio;
+
         private String command;
         private Message message;
         private Update update;
@@ -63,19 +81,19 @@ public class SendMessageInfo {
                 command = getCommand(update);
             }
 
-            if (message != null){
-                if ( message.getPhoto() != null) {
+            if (message != null) {
+                if (message.getPhoto() != null) {
                     photoSizeList = message.getPhoto()
                             .stream()
                             .max(comparing(PhotoSize::getFileSize)).get();
                 }
 
-                if (message.getDocument() != null){
-                    document = message.getDocument();
-                }
+                document = message.getDocument();
+                video = message.getVideo();
+                audio = message.getAudio();
             }
 
-            return new SendMessageInfo(photoSizeList, document, command, message, update);
+            return new SendMessageInfo(photoSizeList, document, video, audio, command, message, update);
         }
 
         public static <T> Predicate<T> distinctByKey(Function<? super T, Object> keyExtractor) {

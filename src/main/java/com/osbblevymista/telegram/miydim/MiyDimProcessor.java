@@ -49,8 +49,8 @@ public class MiyDimProcessor {
                 mainPage = webClient.getPage("https://miydimonline.com.ua/residents/currentaccountstatus");
                 currentPage = mainPage;
             } catch (Exception e) {
-                e.printStackTrace();
                 logger.error(e.getMessage(), e);
+                e.printStackTrace();
             }
         }
     }
@@ -65,8 +65,8 @@ public class MiyDimProcessor {
                     && !page.getUrl().toString().contains("login")
                     && expires.getTime() >= new Date().getTime();
         } catch (Exception e) {
-            e.printStackTrace();
             logger.error(e.getMessage(),e);
+            e.printStackTrace();
             return false;
         }
     }

@@ -7,10 +7,7 @@ import com.osbblevymista.botexecution.BotExecution;
 import com.osbblevymista.botexecution.BotExecutionObject;
 import com.osbblevymista.telegram.dto.MiyDimAppealInfo;
 import com.osbblevymista.telegram.dto.SendMessageInfo;
-import com.osbblevymista.telegram.dto.message.DocumentTelegramMessage;
-import com.osbblevymista.telegram.dto.message.PhotoTelegramMessage;
-import com.osbblevymista.telegram.dto.message.StrTelegramMessage;
-import com.osbblevymista.telegram.dto.message.TelegramMessage;
+import com.osbblevymista.telegram.dto.message.*;
 import com.osbblevymista.telegram.send.SendMessageBuilder;
 import com.osbblevymista.telegram.send.SendMessageParams;
 import com.osbblevymista.telegram.system.*;
@@ -40,9 +37,7 @@ public class SessionSendMessageProcessor {
 
     private final SendingMessageProcessor sendingMessageProcessor;
     private final AppealSendMessageProcessor appealSendMessageProcessor;
-    private final ActionSendMessageProcessor actionSendMessageProcessor;
     private final SendMessageBuilder sendMessageBuilder;
-    private final FileStorage fileStorage;
 
     public BotExecution processSession(SendMessageInfo sendMessageInfo, SendMessageParams sendMessageParam, Optional<Session> optional) throws IOException, URISyntaxException, CsvException {
 
@@ -101,7 +96,7 @@ public class SessionSendMessageProcessor {
 
     private BotExecution processSendMessage(Session session,
                                             SendMessageParams sendMessageParam,
-                                            SendMessageInfo sendMessageInfo) throws IOException, URISyntaxException {
+                                            SendMessageInfo sendMessageInfo) throws IOException {
 
         BotExecution botExecutionData = new BotExecution();
 
@@ -110,10 +105,8 @@ public class SessionSendMessageProcessor {
             messages = (List<TelegramMessage>) session.getAttribute(SessionProperties.SEND_MESSAGE_INFO);
         }
         if (isComplete(sendMessageInfo.getCommand())) {
-
             if (messages.size() > 0) {
                 session.setAttribute(SessionProperties.SEND_MESSAGE_INFO, null);
-
                 botExecutionData.addExecutionsForMessage(createSimpleMessageList(sendMessageParam, Messages.SENDING_MESSAGE.getMessage()));
                 botExecutionData.addExecutionsForMessage(sendingMessageProcessor.sendMessage(sendMessageParam, messages));
             } else {
@@ -133,6 +126,14 @@ public class SessionSendMessageProcessor {
                 messages.add(new DocumentTelegramMessage(sendMessageInfo.getDocument()));
             }
 
+            if (sendMessageInfo.hasVideo()){
+                messages.add(new VideoTelegramMessage(sendMessageInfo.getVideo()));
+            }
+
+            if (sendMessageInfo.hasAudio()){
+                messages.add(new AudioTelegramMessage(sendMessageInfo.getAudio()));
+            }
+
             session.setAttribute(SessionProperties.SEND_MESSAGE_INFO, messages);
         }
         return botExecutionData;
@@ -141,7 +142,7 @@ public class SessionSendMessageProcessor {
     private BotExecution processAppeal(Session session,
                                        SendMessageParams sendMessageParam,
                                        String message,
-                                       AppealTypes appealTypes) throws IOException, URISyntaxException {
+                                       AppealTypes appealTypes){
 
         BotExecution botExecutionData = new BotExecution();
         MiyDimAppealInfo miyDimAppealInfo = new MiyDimAppealInfo();

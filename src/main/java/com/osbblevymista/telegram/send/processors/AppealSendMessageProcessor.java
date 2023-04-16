@@ -53,10 +53,8 @@ public class AppealSendMessageProcessor {
                         } else {
                             osbbSendMessages.add(sendMessageBuilder.createSimpleMessage(sendMessageParam, Messages.RESPONSE_ERROR_REQUEST_DATA_FOR_MYIDIM.getMessage()));
                         }
-                    } catch (UnsupportedEncodingException | URISyntaxException e) {
-                        e.printStackTrace();
+                    } catch (URISyntaxException | IOException e) {
                         logger.error(e.getMessage(), e);
-                    } catch (IOException e) {
                         e.printStackTrace();
                     }
                 } else {

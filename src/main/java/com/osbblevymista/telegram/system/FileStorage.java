@@ -3,6 +3,7 @@ package com.osbblevymista.telegram.system;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -19,14 +20,17 @@ public class FileStorage {
 
     private Map<String, String> fileLocation;
 
+    @Value("${temp.dir}")
+    private String tempDir;
+
     {
         fileLocation = new HashMap<>();
 
     }
 
-    public String addFile(InputStream inputStream, String fileId, String fileExt) throws IOException {
+    public String addFile(InputStream inputStream, String fileId, String fileName, String fileExt) throws IOException {
 
-        final File tempFile = File.createTempFile(fileId, "."+fileExt);
+        final File tempFile = File.createTempFile(tempDir + fileName, "."+fileExt, new File(tempDir));
         tempFile.deleteOnExit();
         try (FileOutputStream out = new FileOutputStream(tempFile)) {
             IOUtils.copy(inputStream, out);
@@ -44,7 +48,9 @@ public class FileStorage {
 
     public void deleteFile(String fileId){
         File file = new File(fileLocation.get(fileId));
-        file.deleteOnExit();
+        if(file.exists()){
+            file.delete();
+        }
         fileLocation.remove(fileId);
     }
 

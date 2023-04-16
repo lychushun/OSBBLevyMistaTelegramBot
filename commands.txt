@@ -13,10 +13,13 @@
 5. tail -f ...
 
 
+
+
 ./service-boot.sh start
 ./service-boot.sh stop
 
 
+tempFile folder - OSBBLevyMista45/tempFile
 
 install
 apt

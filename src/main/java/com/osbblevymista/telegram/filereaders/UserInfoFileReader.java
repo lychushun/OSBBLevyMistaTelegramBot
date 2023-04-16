@@ -1,14 +1,12 @@
 package com.osbblevymista.telegram.filereaders;
 
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
-import com.opencsv.exceptions.CsvException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import com.opencsv.exceptions.CsvValidationException;
 import com.osbblevymista.telegram.models.UserInfo;
 import org.springframework.stereotype.Component;
 
-import java.io.*;
-import java.util.Date;
+import java.io.IOException;
 import java.util.List;
 
 @Component
@@ -24,6 +22,7 @@ public class UserInfoFileReader extends FileReader<UserInfo> {
             try {
                 super.writeToFile(userInfo);
             } catch (IOException | CsvRequiredFieldEmptyException | CsvDataTypeMismatchException | CsvValidationException e) {
+                logger.error("Can not add user.");
                 e.printStackTrace();
             }
         }

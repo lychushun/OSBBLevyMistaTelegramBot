@@ -31,8 +31,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
+import org.telegram.telegrambots.meta.api.methods.send.SendAudio;
 import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.meta.api.methods.send.SendVideo;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -205,8 +207,13 @@ public class OSBBLevyMistaTelegramLongPollingSessionBot extends TelegramLongPoll
                             execute((SendPhoto) el);
                         } else if (el instanceof SendDocument) {
                             execute((SendDocument) el);
+                        } else if (el instanceof SendVideo) {
+                            execute((SendVideo) el);
+                        } else if (el instanceof SendAudio) {
+                            execute((SendAudio) el);
                         }
                     } catch (TelegramApiException e) {
+                        logger.error("Can not execute command");
                         e.printStackTrace();
                     }
                 }

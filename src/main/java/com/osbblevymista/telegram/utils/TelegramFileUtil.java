@@ -2,6 +2,8 @@ package com.osbblevymista.telegram.utils;
 
 import com.osbblevymista.telegram.dto.TelegramFileResponse;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -13,6 +15,8 @@ import java.nio.file.Paths;
 @Component
 @RequiredArgsConstructor
 public class TelegramFileUtil {
+
+    final Logger logger = LoggerFactory.getLogger(TelegramFileUtil.class);
 
     @Value("${telegram.bot.token}")
     private String token;
@@ -31,6 +35,7 @@ public class TelegramFileUtil {
         try {
             Files.write(Paths.get("image.jpg"), imageBytes);
         } catch (IOException e) {
+            logger.error(e.getMessage());
             e.printStackTrace();
         }
     }

@@ -81,21 +81,6 @@ public class ChanelMessengerService {
         restTemplate.getForObject(url, String.class);
     }
 
-    public void sendPhotoToTereveni(String filePath) {
-        String url = generatePhotoUrl(token);
-
-        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-        body.add("photo", new FileSystemResource(filePath));
-        body.add("chat_id", terevenyChatId);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-
-        HttpEntity<MultiValueMap<String, Object>> requestEntity
-                = new HttpEntity<>(body, headers);
-        restTemplate.postForEntity(url, requestEntity, String.class);
-    }
-
     public void sendDocumentToTereveni(String filePath) {
         String url = generateSendDocumentUrl(token);
 

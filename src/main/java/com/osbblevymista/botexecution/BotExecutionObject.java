@@ -31,6 +31,17 @@ public class BotExecutionObject {
         };
     }
 
+    public BotExecutionObject(Function<Message, PartialBotApiMethod<Message>> ex){
+        setExecution(new Function<Message, List<PartialBotApiMethod<Message>>>() {
+            @Override
+            public List<PartialBotApiMethod<Message>> apply(Message message) {
+                List<PartialBotApiMethod<Message>> list = new ArrayList<>();
+                list.add(ex.apply(message));
+                return list;
+            }
+        });
+    }
+
     public void setExecution(Function<Message, List<PartialBotApiMethod<Message>>> ex) {
         this.execution = ex;
         this.biExecution = null;
