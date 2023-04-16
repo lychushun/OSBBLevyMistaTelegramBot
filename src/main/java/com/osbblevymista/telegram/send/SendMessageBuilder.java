@@ -1,44 +1,109 @@
 package com.osbblevymista.telegram.send;
 
 import com.osbblevymista.telegram.keyabords.SettingsKeyboard;
+import com.osbblevymista.telegram.services.ChanelMessengerService;
+import com.osbblevymista.telegram.system.FileStorage;
 import com.osbblevymista.telegram.system.Messages;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
+import org.telegram.telegrambots.meta.api.objects.Document;
+import org.telegram.telegrambots.meta.api.objects.InputFile;
+import org.telegram.telegrambots.meta.api.objects.PhotoSize;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
 @Component
+@RequiredArgsConstructor
 public class SendMessageBuilder {
+
+    private final ChanelMessengerService chanelMessengerService;
+    private final FileStorage fileStorage;
 
     @Value("${executionDelay}")
     private int injectedProperty;
 
-    public OSBBSendMessage createSimpleMessage(SendMessageParams sendMessageParams, String text) throws
+    public OSBBStrMessage createSimpleMessage(SendMessageParams sendMessageParams, String text) throws
             UnsupportedEncodingException, URISyntaxException {
 
-        OSBBSendMessage sendMessage = createBaseMessage(sendMessageParams.getChatId());
+        OSBBStrMessage sendMessage = createBaseMessage(sendMessageParams.getChatId());
 
         sendMessage.setText(text);
         return sendMessage;
     }
 
-    public OSBBSendMessage createMessageExecutingDelay(SendMessageParams sendMessageParams, String text) throws
+    public OSBBPhotoMessage createPhotoMessage(SendMessageParams sendMessageParams, PhotoSize photoSize) throws
+            IOException, URISyntaxException {
+
+        OSBBPhotoMessage sendMessage = createBasePhotoMessage(sendMessageParams.getChatId());
+
+        InputFile file = new InputFile();
+        file.setMedia(chanelMessengerService.getFile(photoSize.getFileId()), photoSize.getFileUniqueId());
+
+        sendMessage.setPhoto(file);
+
+        return sendMessage;
+    }
+
+    public OSBBDocumentMessage createPhotoMessage(SendMessageParams sendMessageParams, Document document) throws
+            IOException, URISyntaxException {
+
+        OSBBDocumentMessage sendMessage = createBaseDocumentMessage(sendMessageParams.getChatId());
+
+        InputFile file = new InputFile();
+        file.setMedia(chanelMessengerService.getFile(document.getFileId()), document.getFileUniqueId());
+
+        sendMessage.setDocument(file);
+
+        return sendMessage;
+    }
+
+    public OSBBStrMessage createMessageExecutingDelay(SendMessageParams sendMessageParams, String text) throws
             UnsupportedEncodingException, URISyntaxException {
 
-        OSBBSendMessage sendMessage = createSimpleMessage(sendMessageParams, text);
+        OSBBStrMessage sendMessage = createSimpleMessage(sendMessageParams, text);
         sendMessage.setExecutingDelay(injectedProperty);
 
         return sendMessage;
     }
 
-    public OSBBSendMessage createBaseMessage(Long chatId) {
-        OSBBSendMessage sendMessage = new OSBBSendMessage();
+    public OSBBPhotoMessage createMessageExecutingDelay(SendMessageParams sendMessageParams, PhotoSize photoSize) throws
+            UnsupportedEncodingException, URISyntaxException {
+        if (photoSize != null) {
+            try {
+                OSBBPhotoMessage sendMessage = createPhotoMessage(sendMessageParams, photoSize);
+                sendMessage.setExecutingDelay(injectedProperty);
+                return sendMessage;
+            } catch (URISyntaxException | IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    public OSBBDocumentMessage createMessageExecutingDelay(SendMessageParams sendMessageParams, Document document) throws
+            UnsupportedEncodingException, URISyntaxException {
+        if (document != null) {
+            try {
+                OSBBDocumentMessage sendMessage = createPhotoMessage(sendMessageParams, document);
+                sendMessage.setExecutingDelay(injectedProperty);
+                return sendMessage;
+            } catch (URISyntaxException | IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    public OSBBStrMessage createBaseMessage(Long chatId) {
+        OSBBStrMessage sendMessage = new OSBBStrMessage();
         sendMessage.enableMarkdown(true);
         sendMessage.setChatId(String.valueOf(chatId));
         sendMessage.setParseMode(ParseMode.HTML);
@@ -46,8 +111,24 @@ public class SendMessageBuilder {
         return sendMessage;
     }
 
-    public OSBBSendMessage createEmptyMessage(Long chatId) {
-        OSBBSendMessage sendMessage = createBaseMessage(chatId);
+    public OSBBPhotoMessage createBasePhotoMessage(Long chatId) {
+        OSBBPhotoMessage sendMessage = new OSBBPhotoMessage();
+        sendMessage.setChatId(String.valueOf(chatId));
+        sendMessage.setParseMode(ParseMode.HTML);
+
+        return sendMessage;
+    }
+
+    public OSBBDocumentMessage createBaseDocumentMessage(Long chatId) {
+        OSBBDocumentMessage sendMessage = new OSBBDocumentMessage();
+        sendMessage.setChatId(String.valueOf(chatId));
+        sendMessage.setParseMode(ParseMode.HTML);
+
+        return sendMessage;
+    }
+
+    public OSBBStrMessage createEmptyMessage(Long chatId) {
+        OSBBStrMessage sendMessage = createBaseMessage(chatId);
 
         sendMessage.setText(Messages.DEFAULT_ANSWER.getMessage());
         sendMessage.setParseMode(ParseMode.HTML);
@@ -55,12 +136,12 @@ public class SendMessageBuilder {
         return sendMessage;
     }
 
-    public OSBBSendMessage generateMiyDimNotLoginMessage(SendMessageParams sendMessageParam) {
+    public OSBBStrMessage generateMiyDimNotLoginMessage(SendMessageParams sendMessageParam) {
         return generateMiyDimNotLoginMessage(sendMessageParam, "");
     }
 
-    public OSBBSendMessage generateMiyDimNotLoginMessage(SendMessageParams sendMessageParam, String command) {
-        OSBBSendMessage sendMessage = createBaseMessage(sendMessageParam.getChatId());
+    public OSBBStrMessage generateMiyDimNotLoginMessage(SendMessageParams sendMessageParam, String command) {
+        OSBBStrMessage sendMessage = createBaseMessage(sendMessageParam.getChatId());
 
         List<InlineKeyboardButton> inlineKeyboardButtons = new ArrayList<>();
         inlineKeyboardButtons.add(SettingsKeyboard.generateLoginButton(
@@ -78,8 +159,8 @@ public class SendMessageBuilder {
         return sendMessage;
     }
 
-    public OSBBSendMessage generateMiyDimAppealMessage(SendMessageParams sendMessageParam, String link) {
-        OSBBSendMessage sendMessage = createBaseMessage(sendMessageParam.getChatId());
+    public OSBBStrMessage generateMiyDimAppealMessage(SendMessageParams sendMessageParam, String link) {
+        OSBBStrMessage sendMessage = createBaseMessage(sendMessageParam.getChatId());
 
         List<InlineKeyboardButton> inlineKeyboardButtons = new ArrayList<>();
         inlineKeyboardButtons.add(SettingsKeyboard.generateOrderButton(link));
@@ -92,8 +173,8 @@ public class SendMessageBuilder {
         return sendMessage;
     }
 
-    public OSBBSendMessage goHomeMessage(SendMessageParams sendMessageParam, String message) {
-        OSBBSendMessage sendMessage = createBaseMessage(sendMessageParam.getChatId());
+    public OSBBStrMessage goHomeMessage(SendMessageParams sendMessageParam, String message) {
+        OSBBStrMessage sendMessage = createBaseMessage(sendMessageParam.getChatId());
 
         List<InlineKeyboardButton> inlineKeyboardButtons = new ArrayList<>();
         inlineKeyboardButtons.add(SettingsKeyboard.generateHomeButton());

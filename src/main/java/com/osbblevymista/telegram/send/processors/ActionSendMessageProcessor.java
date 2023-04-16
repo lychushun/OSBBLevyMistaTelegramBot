@@ -8,6 +8,7 @@ import com.osbblevymista.telegram.keyabords.buttons.OSBBKeyboardButton;
 import com.osbblevymista.telegram.pages.BasePage;
 import com.osbblevymista.telegram.pages.PageParams;
 import com.osbblevymista.telegram.send.OSBBSendMessage;
+import com.osbblevymista.telegram.send.OSBBStrMessage;
 import com.osbblevymista.telegram.send.SendMessageBuilder;
 import com.osbblevymista.telegram.send.SendMessageParams;
 import com.osbblevymista.telegram.system.Messages;
@@ -15,6 +16,7 @@ import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
@@ -43,13 +45,13 @@ public class ActionSendMessageProcessor {
     private final MiyDimService miyDimService;
 
 
-    public List<BiFunction<SendMessageParams, OSBBKeyboardButton, List<OSBBSendMessage>>> createSendMessageList(OSBBKeyboardButton osbbKeyboardButton) throws UnsupportedEncodingException, URISyntaxException {
-        ArrayList<BiFunction<SendMessageParams, OSBBKeyboardButton, List<OSBBSendMessage>>> arrayList = new ArrayList<>();
+    public List<BiFunction<SendMessageParams, OSBBKeyboardButton, List<PartialBotApiMethod<Message>>>> createSendMessageList(OSBBKeyboardButton osbbKeyboardButton) throws UnsupportedEncodingException, URISyntaxException {
+        ArrayList<BiFunction<SendMessageParams, OSBBKeyboardButton, List<PartialBotApiMethod<Message>>>> arrayList = new ArrayList<>();
 
         if (Objects.isNull(osbbKeyboardButton)) {
-            arrayList.add(new BiFunction<SendMessageParams, OSBBKeyboardButton, List<OSBBSendMessage>>() {
+            arrayList.add(new BiFunction<SendMessageParams, OSBBKeyboardButton, List<PartialBotApiMethod<Message>>>() {
                               @Override
-                              public List<OSBBSendMessage> apply(SendMessageParams sendMessageParams, OSBBKeyboardButton osbbKeyboardButton) {
+                              public List<PartialBotApiMethod<Message>> apply(SendMessageParams sendMessageParams, OSBBKeyboardButton osbbKeyboardButton) {
                                   return createHomePageMessageList(sendMessageParams);
                               }
                           }
@@ -58,9 +60,9 @@ public class ActionSendMessageProcessor {
             BasePage page = getNextPage(osbbKeyboardButton);
 
             if (osbbKeyboardButton.messages.size() > 0) {
-                arrayList.add(new BiFunction<SendMessageParams, OSBBKeyboardButton, List<OSBBSendMessage>>() {
+                arrayList.add(new BiFunction<SendMessageParams, OSBBKeyboardButton, List<PartialBotApiMethod<Message>>>() {
                                   @Override
-                                  public List<OSBBSendMessage> apply(SendMessageParams sendMessageParams, OSBBKeyboardButton osbbKeyboardButton) {
+                                  public List<PartialBotApiMethod<Message>> apply(SendMessageParams sendMessageParams, OSBBKeyboardButton osbbKeyboardButton) {
                                       try {
                                           return createButtonMessage(sendMessageParams, osbbKeyboardButton);
                                       } catch (UnsupportedEncodingException | URISyntaxException e) {
@@ -76,11 +78,11 @@ public class ActionSendMessageProcessor {
             if (nonNull(page)) {
 
                 if (page.getMessages().size() > 0) {
-                    arrayList.add(new BiFunction<SendMessageParams, OSBBKeyboardButton, List<OSBBSendMessage>>() {
+                    arrayList.add(new BiFunction<SendMessageParams, OSBBKeyboardButton, List<PartialBotApiMethod<Message>>>() {
                                       @Override
-                                      public List<OSBBSendMessage> apply(SendMessageParams sendMessageParams, OSBBKeyboardButton osbbKeyboardButton) {
+                                      public List<PartialBotApiMethod<Message>> apply(SendMessageParams sendMessageParams, OSBBKeyboardButton osbbKeyboardButton) {
                                           try {
-                                              List<OSBBSendMessage> list = new ArrayList<>();
+                                              List<PartialBotApiMethod<Message>> list = new ArrayList<>();
                                               list.add(createPageMessage(sendMessageParams, osbbKeyboardButton));
                                               return list;
                                           } catch (UnsupportedEncodingException | URISyntaxException e) {
@@ -94,11 +96,11 @@ public class ActionSendMessageProcessor {
                 }
 
                 if (page.isOSBBKeyboard()) {
-                    arrayList.add(new BiFunction<SendMessageParams, OSBBKeyboardButton, List<OSBBSendMessage>>() {
+                    arrayList.add(new BiFunction<SendMessageParams, OSBBKeyboardButton, List<PartialBotApiMethod<Message>>>() {
                                       @Override
-                                      public List<OSBBSendMessage> apply(SendMessageParams sendMessageParams, OSBBKeyboardButton osbbKeyboardButton) {
+                                      public List<PartialBotApiMethod<Message>> apply(SendMessageParams sendMessageParams, OSBBKeyboardButton osbbKeyboardButton) {
                                           try {
-                                              List<OSBBSendMessage> list = new ArrayList<>();
+                                              List<PartialBotApiMethod<Message>> list = new ArrayList<>();
                                               list.add(createPageKeyboard(sendMessageParams, osbbKeyboardButton));
                                               return list;
                                           } catch (UnsupportedEncodingException | URISyntaxException e) {
@@ -112,11 +114,11 @@ public class ActionSendMessageProcessor {
                 }
 
                 if (page.canExecute()) {
-                    arrayList.add(new BiFunction<SendMessageParams, OSBBKeyboardButton, List<OSBBSendMessage>>() {
+                    arrayList.add(new BiFunction<SendMessageParams, OSBBKeyboardButton, List<PartialBotApiMethod<Message>>>() {
                                       @Override
-                                      public List<OSBBSendMessage> apply(SendMessageParams sendMessageParams, OSBBKeyboardButton osbbKeyboardButton) {
+                                      public List<PartialBotApiMethod<Message>> apply(SendMessageParams sendMessageParams, OSBBKeyboardButton osbbKeyboardButton) {
                                           try {
-                                              List<OSBBSendMessage> list = new ArrayList<>();
+                                              List<PartialBotApiMethod<Message>> list = new ArrayList<>();
                                               list.add(createPageExecution(sendMessageParams, osbbKeyboardButton));
                                               return list;
                                           } catch (UnsupportedEncodingException | URISyntaxException e) {
@@ -131,11 +133,11 @@ public class ActionSendMessageProcessor {
             }
 
             if (osbbKeyboardButton.canExecute()) {
-                arrayList.add(new BiFunction<SendMessageParams, OSBBKeyboardButton, List<OSBBSendMessage>>() {
+                arrayList.add(new BiFunction<SendMessageParams, OSBBKeyboardButton, List<PartialBotApiMethod<Message>>>() {
                                   @Override
-                                  public List<OSBBSendMessage> apply(SendMessageParams sendMessageParams, OSBBKeyboardButton osbbKeyboardButton) {
+                                  public List<PartialBotApiMethod<Message>> apply(SendMessageParams sendMessageParams, OSBBKeyboardButton osbbKeyboardButton) {
                                       try {
-                                          List<OSBBSendMessage> list = new ArrayList<>();
+                                          List<PartialBotApiMethod<Message>> list = new ArrayList<>();
                                           list.add(createButtonExecution(sendMessageParams, osbbKeyboardButton));
                                           return list;
                                       } catch (URISyntaxException | IOException e) {
@@ -150,9 +152,9 @@ public class ActionSendMessageProcessor {
         }
 
         if (arrayList.isEmpty()) {
-            arrayList.add(new BiFunction<SendMessageParams, OSBBKeyboardButton, List<OSBBSendMessage>>() {
+            arrayList.add(new BiFunction<SendMessageParams, OSBBKeyboardButton, List<PartialBotApiMethod<Message>>>() {
                               @Override
-                              public List<OSBBSendMessage> apply(SendMessageParams sendMessageParams, OSBBKeyboardButton osbbKeyboardButton) {
+                              public List<PartialBotApiMethod<Message>> apply(SendMessageParams sendMessageParams, OSBBKeyboardButton osbbKeyboardButton) {
                                   return createHomePageMessageList(sendMessageParams);
                               }
                           }
@@ -182,9 +184,9 @@ public class ActionSendMessageProcessor {
         return botExecutionObject;
     }
 
-    public List<OSBBSendMessage> createHomePageMessageList(SendMessageParams sendMessageParam) {
-        List<OSBBSendMessage> osbbSendMessages = new ArrayList<>();
-        OSBBSendMessage osbbSendMessage = sendMessageBuilder.goHomeMessage(sendMessageParam, Messages.UNRECOGNIZED_COMMAND.getMessage());
+    public List<PartialBotApiMethod<Message>> createHomePageMessageList(SendMessageParams sendMessageParam) {
+        List<PartialBotApiMethod<Message>> osbbSendMessages = new ArrayList<>();
+        OSBBStrMessage osbbSendMessage = sendMessageBuilder.goHomeMessage(sendMessageParam, Messages.UNRECOGNIZED_COMMAND.getMessage());
         osbbSendMessages.add(osbbSendMessage);
         return osbbSendMessages;
     }
@@ -204,12 +206,12 @@ public class ActionSendMessageProcessor {
         return page;
     }
 
-    private OSBBSendMessage createPageMessage(SendMessageParams sendMessageParams, OSBBKeyboardButton osbbKeyboardButton) throws
+    private OSBBStrMessage createPageMessage(SendMessageParams sendMessageParams, OSBBKeyboardButton osbbKeyboardButton) throws
             UnsupportedEncodingException, URISyntaxException {
 
         BasePage page = getNextPage(osbbKeyboardButton);
 
-        OSBBSendMessage sendMessage = sendMessageBuilder.createBaseMessage(sendMessageParams.getChatId());
+        OSBBStrMessage sendMessage = sendMessageBuilder.createBaseMessage(sendMessageParams.getChatId());
         StringBuilder messageBuffer = new StringBuilder();
 
         if (page.getMessages().size() > 0) {
@@ -222,27 +224,27 @@ public class ActionSendMessageProcessor {
         }
     }
 
-    private List<OSBBSendMessage> createButtonMessage(SendMessageParams sendMessageParams, OSBBKeyboardButton osbbKeyboardButton) throws
+    private List<PartialBotApiMethod<Message>> createButtonMessage(SendMessageParams sendMessageParams, OSBBKeyboardButton osbbKeyboardButton) throws
             UnsupportedEncodingException, URISyntaxException {
 
         if (osbbKeyboardButton.messages.size() > 0) {
             return osbbKeyboardButton.messages.stream().map(message -> {
-                OSBBSendMessage sendMessage = sendMessageBuilder.createBaseMessage(sendMessageParams.getChatId());
+                OSBBStrMessage sendMessage = sendMessageBuilder.createBaseMessage(sendMessageParams.getChatId());
                 sendMessage.setText(message);
                 return sendMessage;
             }).collect(Collectors.toList());
         } else {
-            List<OSBBSendMessage> list = new ArrayList<>();
+            List<PartialBotApiMethod<Message>> list = new ArrayList<>();
             list.add(sendMessageBuilder.createEmptyMessage(sendMessageParams.getChatId()));
             return list;
         }
     }
 
-    private OSBBSendMessage createPageKeyboard(SendMessageParams sendMessageParams, OSBBKeyboardButton osbbKeyboardButton) throws
+    private OSBBStrMessage createPageKeyboard(SendMessageParams sendMessageParams, OSBBKeyboardButton osbbKeyboardButton) throws
             UnsupportedEncodingException, URISyntaxException {
 
         BasePage page = getNextPage(osbbKeyboardButton);
-        OSBBSendMessage sendMessage = sendMessageBuilder.createBaseMessage(sendMessageParams.getChatId());
+        OSBBStrMessage sendMessage = sendMessageBuilder.createBaseMessage(sendMessageParams.getChatId());
         StringBuilder messageBuffer = new StringBuilder();
 
         if (nonNull(page) && page.isOSBBKeyboard()) {
@@ -258,10 +260,10 @@ public class ActionSendMessageProcessor {
         }
     }
 
-    private OSBBSendMessage createButtonExecution(SendMessageParams sendMessageParams, OSBBKeyboardButton osbbKeyboardButton) throws
+    private OSBBStrMessage createButtonExecution(SendMessageParams sendMessageParams, OSBBKeyboardButton osbbKeyboardButton) throws
             IOException, URISyntaxException {
 
-        AtomicReference<OSBBSendMessage> sendMessage = new AtomicReference<>(sendMessageBuilder.createBaseMessage(sendMessageParams.getChatId()));
+        AtomicReference<OSBBStrMessage> sendMessage = new AtomicReference<>(sendMessageBuilder.createBaseMessage(sendMessageParams.getChatId()));
 
         boolean initSendMessage = false;
 
@@ -287,10 +289,10 @@ public class ActionSendMessageProcessor {
         return sendMessage.get();
     }
 
-    private OSBBSendMessage createPageExecution(SendMessageParams sendMessageParams, OSBBKeyboardButton osbbKeyboardButton) throws
+    private OSBBStrMessage createPageExecution(SendMessageParams sendMessageParams, OSBBKeyboardButton osbbKeyboardButton) throws
             UnsupportedEncodingException, URISyntaxException {
 
-        AtomicReference<OSBBSendMessage> sendMessage = new AtomicReference<>(sendMessageBuilder.createBaseMessage(sendMessageParams.getChatId()));
+        AtomicReference<OSBBStrMessage> sendMessage = new AtomicReference<>(sendMessageBuilder.createBaseMessage(sendMessageParams.getChatId()));
 
         BasePage page = getNextPage(osbbKeyboardButton);
         boolean initSendMessage = false;
@@ -317,10 +319,10 @@ public class ActionSendMessageProcessor {
         return sendMessage.get();
     }
 
-    private OSBBSendMessage createExecution(SendMessageParams sendMessageParams, ExecutorListenerResponse o) {
+    private OSBBStrMessage createExecution(SendMessageParams sendMessageParams, ExecutorListenerResponse o) {
 
         StringBuilder messageBuffer = new StringBuilder();
-        OSBBSendMessage sendMessage = sendMessageBuilder.createBaseMessage(sendMessageParams.getChatId());
+        OSBBStrMessage sendMessage = sendMessageBuilder.createBaseMessage(sendMessageParams.getChatId());
         List<List<InlineKeyboardButton>> keyboardButtons = o.getInlineKeyboardButtons();
 
         messageBuffer.append(o.getTitle()).append("\n");

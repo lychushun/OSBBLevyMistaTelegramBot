@@ -2,7 +2,7 @@ package com.osbblevymista.telegram.send.processors;
 
 import com.osbblevymista.api.services.MiyDimService;
 import com.osbblevymista.telegram.miydim.AppealMiyDimProcessor;
-import com.osbblevymista.telegram.send.OSBBSendMessage;
+import com.osbblevymista.telegram.send.OSBBStrMessage;
 import com.osbblevymista.telegram.send.SendMessageBuilder;
 import com.osbblevymista.telegram.send.SendMessageParams;
 import com.osbblevymista.telegram.services.ChanelMessengerService;
@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.io.IOException;
@@ -32,19 +33,19 @@ public class AppealSendMessageProcessor {
     private final MiyDimService miyDimService;
     private final ChanelMessengerService chanelMessengerService;
 
-    public Function<Message, List<OSBBSendMessage>> createAppeal(SendMessageParams sendMessageParam, String messageStr, AppealTypes appealTypes) {
-        return new Function<Message, List<OSBBSendMessage>>() {
+    public Function<Message, List<PartialBotApiMethod<Message>>> createAppeal(SendMessageParams sendMessageParam, String messageStr, AppealTypes appealTypes) {
+        return new Function<Message, List<PartialBotApiMethod<Message>>>() {
             @Override
-            public List<OSBBSendMessage> apply(Message message) {
+            public List<PartialBotApiMethod<Message>> apply(Message message) {
                 AppealMiyDimProcessor arrearsMiyDim = new AppealMiyDimProcessor(miyDimService.getCookie(sendMessageParam.getChatIdAsString()));
-                List<OSBBSendMessage> osbbSendMessages = new ArrayList<>();
+                List<PartialBotApiMethod<Message>> osbbSendMessages = new ArrayList<>();
                 if (arrearsMiyDim.isLogin()) {
                     try {
 
                         chanelMessengerService.sendMessageAppealToBord(sendMessageParam, messageStr, appealTypes);
                         Optional<String> link = arrearsMiyDim.createAppeal(generateStrMessage(messageStr, appealTypes));
                         if (link.isPresent()) {
-                            OSBBSendMessage osbbSendMessage = generateAppealBotMessage(sendMessageParam, appealTypes);
+                            OSBBStrMessage osbbSendMessage = generateAppealBotMessage(sendMessageParam, appealTypes);
                             osbbSendMessages.add(osbbSendMessage);
 
                             osbbSendMessage = sendMessageBuilder.generateMiyDimAppealMessage(sendMessageParam, link.get());
@@ -73,7 +74,7 @@ public class AppealSendMessageProcessor {
         return message;
     }
 
-    private OSBBSendMessage generateAppealBotMessage(SendMessageParams sendMessageParam, AppealTypes appealTypes) throws UnsupportedEncodingException, URISyntaxException {
+    private OSBBStrMessage generateAppealBotMessage(SendMessageParams sendMessageParam, AppealTypes appealTypes) throws UnsupportedEncodingException, URISyntaxException {
         if (appealTypes == AppealTypes.URGENT) {
             return sendMessageBuilder.createSimpleMessage(sendMessageParam, Messages.RESPONSE_URGENT_REQUEST_DATA_FOR_MYIDIM.getMessage());
         }

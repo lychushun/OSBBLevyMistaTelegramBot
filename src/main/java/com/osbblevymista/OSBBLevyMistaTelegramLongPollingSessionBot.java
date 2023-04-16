@@ -4,6 +4,7 @@ import com.opencsv.exceptions.CsvException;
 import com.osbblevymista.api.services.MiyDimService;
 import com.osbblevymista.botexecution.BotExecution;
 import com.osbblevymista.telegram.ApplicationConfig;
+import com.osbblevymista.telegram.dto.SendMessageInfo;
 import com.osbblevymista.telegram.keyabords.*;
 import com.osbblevymista.telegram.keyabords.appeals.AppealKeyboard;
 import com.osbblevymista.telegram.keyabords.appeals.SubmitSimpleAppealKeyboard;
@@ -14,7 +15,7 @@ import com.osbblevymista.telegram.pages.*;
 import com.osbblevymista.telegram.pages.appeals.AppealPage;
 import com.osbblevymista.telegram.pages.appeals.SubmitSimpleAppealPage;
 import com.osbblevymista.telegram.pages.appeals.SubmitUrgentAppealPage;
-import com.osbblevymista.telegram.send.OSBBSendMessage;
+import com.osbblevymista.telegram.send.OSBBStrMessage;
 import com.osbblevymista.telegram.send.SendMessageBuilder;
 import com.osbblevymista.telegram.send.SendMessageParams;
 import com.osbblevymista.telegram.send.processors.ActionSendMessageProcessor;
@@ -28,12 +29,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
+import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
+import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
+import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.api.objects.PhotoSize;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.session.TelegramLongPollingSessionBot;
+import org.thymeleaf.util.ListUtils;
 
 import java.io.IOException;
 import java.util.List;
@@ -71,37 +76,32 @@ public class OSBBLevyMistaTelegramLongPollingSessionBot extends TelegramLongPoll
     public void onUpdateReceived(Update update, Optional<Session> optional) {
 
         try {
-            Message message = getMessage(update);
-            if (message != null) {
-                logger.info("REQUEST FROM USER ID: " + message.getFrom().getId() +
-                        "; FIRST NAME: " + message.getFrom().getFirstName() +
-                        "; LAST NAME: " + message.getFrom().getLastName() +
-                        "; USER NAME: " + message.getFrom().getUserName() +
-                        "; CHAT ID: " + message.getChatId() +
-                        "; MESSAGE: " + message.getText());
 
-                Long chatId = message.getChatId();
+            SendMessageInfo sendMessageInfo = getSendMessageInfo(update);
+
+            if (sendMessageInfo.isNotEmpty()) {
+                logger.info(sendMessageInfo.toString());
+
+                Message message = sendMessageInfo.getMessage();
+                Long chatId = sendMessageInfo.getChatId();
 
                 BotExecution botExecutionData = new BotExecution();
 
                 SendMessageParams.SendMessageParamsBuilder sendMessageParamsBuilder = getSendMessageParamsBuilder(message, chatId);
 
-                String command = getCommand(update);
-                List<PhotoSize> photoSizes = message.getPhoto();
+                if (sendMessageInfo.isNotEmpty()) {
+                    String command = sendMessageInfo.getCommand();
 
-//                        if (strMessage != null || photoSizes != null) {
-                if (command != null) {
-
-                    if (command.equals("/start")) {
+                    if (isNotEmpty(command) && command.equals("/start")) {
                         botExecutionData = botExecutionDataService.generateStartPage(sendMessageParamsBuilder.build(), getPageInfrastructure(
                                 adminInfoService.isAdmin(message.getFrom().getId())
                         ));
-                    } else if (command.equals("/main")) {
+                    } else if (isNotEmpty(command) && command.equals("/main")) {
                         botExecutionData = botExecutionDataService.generateMainPage(sendMessageParamsBuilder.build(),
                                 getPageInfrastructure(
                                         adminInfoService.isAdmin(message.getChatId())
                                 ));
-                    } else if (command.equals("/loginSuccess")) {
+                    } else if (isNotEmpty(command) && command.equals("/loginSuccess")) {
                         botExecutionData = botExecutionDataService.generateSuccessLogin(sendMessageParamsBuilder.build(), getPageInfrastructure(
                                 adminInfoService.isAdmin(message.getFrom().getId())
                         ));
@@ -110,18 +110,18 @@ public class OSBBLevyMistaTelegramLongPollingSessionBot extends TelegramLongPoll
                         userInfoService.addRow(userInfo);
 
                         if (update.hasCallbackQuery()) {
-                            Function<CallbackQuery, OSBBSendMessage> newMessage = processCallBack();
+                            Function<CallbackQuery, OSBBStrMessage> newMessage = processCallBack();
                             execute(newMessage.apply(update.getCallbackQuery()));
                         }
 
-                        if (update.hasMessage()) {
+                        if (update.hasMessage() || !ListUtils.isEmpty(message.getPhoto())) {
                             sendMessageParamsBuilder
                                     .clientPort(clientPort)
                                     .clientIp(clientIp)
                                     .chatId(chatId)
                                     .build();
 
-                            botExecutionData = sessionSendMessageProcessor.processSession(message, sendMessageParamsBuilder.build(), optional);
+                            botExecutionData = sessionSendMessageProcessor.processSession(sendMessageInfo, sendMessageParamsBuilder.build(), optional);
 
                             if (botExecutionData == null) {
                                 OSBBKeyboardButton osbbKeyboardButton = getOSBBKeyboardButton(message);
@@ -143,27 +143,14 @@ public class OSBBLevyMistaTelegramLongPollingSessionBot extends TelegramLongPoll
         }
     }
 
-    private String getCommand(Update update) {
-        Message message = update.getMessage();
-        if (message != null && isNotEmpty(message.getText())) {
-            return message.getText();
-        } else {
-            CallbackQuery callbackQuery = update.getCallbackQuery();
-            return callbackQuery.getData();
-        }
-    }
 
-    private Message getMessage(Update update) {
-        Message message = update.getMessage();
-        if (message != null) {
-            return message;
-        } else {
-            CallbackQuery callbackQuery = update.getCallbackQuery();
-            if (callbackQuery != null) {
-                return update.getCallbackQuery().getMessage();
-            }
-        }
-        return null;
+    private SendMessageInfo getSendMessageInfo(Update update) {
+
+        return SendMessageInfo
+                .builder()
+                .update(update)
+                .build();
+
     }
 
     @Override
@@ -196,12 +183,12 @@ public class OSBBLevyMistaTelegramLongPollingSessionBot extends TelegramLongPoll
         return userInfo;
     }
 
-    public Function<CallbackQuery, OSBBSendMessage> processCallBack() {
-        return new Function<CallbackQuery, OSBBSendMessage>() {
+    public Function<CallbackQuery, OSBBStrMessage> processCallBack() {
+        return new Function<CallbackQuery, OSBBStrMessage>() {
             @Override
-            public OSBBSendMessage apply(CallbackQuery callbackQuery) {
+            public OSBBStrMessage apply(CallbackQuery callbackQuery) {
                 Message sendMessage = callbackQuery.getMessage();
-                OSBBSendMessage newMessage = sendMessageBuilder.createEmptyMessage(sendMessage.getChatId());
+                OSBBStrMessage newMessage = sendMessageBuilder.createEmptyMessage(sendMessage.getChatId());
                 newMessage.setText(callbackQuery.getData());
                 return newMessage;
             }
@@ -210,9 +197,15 @@ public class OSBBLevyMistaTelegramLongPollingSessionBot extends TelegramLongPoll
     }
 
     private void processMultiMessages(BotExecution botExecutionData, Message message) {
-        botExecutionData.execute(message, (OSBBSendMessage el) -> {
+        botExecutionData.execute(message, (PartialBotApiMethod<Message> el) -> {
                     try {
-                        execute(el);
+                        if (el instanceof BotApiMethod<Message>) {
+                            execute((BotApiMethod<Message>) el);
+                        } else if (el instanceof SendPhoto) {
+                            execute((SendPhoto) el);
+                        } else if (el instanceof SendDocument) {
+                            execute((SendDocument) el);
+                        }
                     } catch (TelegramApiException e) {
                         e.printStackTrace();
                     }

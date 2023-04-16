@@ -1,6 +1,7 @@
 package com.osbblevymista.botexecution;
 
 import com.osbblevymista.telegram.send.OSBBSendMessage;
+import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.util.ArrayList;
@@ -28,15 +29,18 @@ public class BotExecution {
         botExecutionObjects.addAll(botExecutionObject);
     }
 
-    public void execute(Message message, Consumer<OSBBSendMessage> closure) {
+    public void execute(Message message, Consumer<PartialBotApiMethod<Message>> closure) {
         botExecutionObjects.forEach(executionObject -> {
 
-            List<OSBBSendMessage> list = executionObject.execute(message);
+            List<PartialBotApiMethod<Message>> list = executionObject.execute(message);
 
             list.forEach(it -> {
-                if (it.getExecutingDelay() > 0) {
+
+                OSBBSendMessage osbbSendMessage = (OSBBSendMessage)it;
+
+                if (osbbSendMessage.getExecutingDelay() > 0) {
                     Date startDate = new Date();
-                    while (startDate.getTime() + it.getExecutingDelay() >= new Date().getTime()) {
+                    while (startDate.getTime() + osbbSendMessage.getExecutingDelay() >= new Date().getTime()) {
                     }
                 }
                 closure.accept(it);

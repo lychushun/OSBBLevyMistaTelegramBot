@@ -29,6 +29,7 @@ public enum Actions {
     BUTTON_APPEAL_URGENT_APPROVE("Підтвердити \u2705"),
 
     BUTTON_SEND_MESSAGE_APPROVE("Підтвердити \u2705"),
+    BUTTON_SEND_MESSAGE_CANCEL("Скасувати ❌"),
 
     BUTTON_CHAT_PUBLIC("Теревені"),
     BUTTON_CHAT_ANNOUNCEMENT("Оголошення"),

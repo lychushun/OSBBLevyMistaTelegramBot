@@ -4,13 +4,14 @@ import com.osbblevymista.botexecution.BotExecution;
 import com.osbblevymista.botexecution.BotExecutionObject;
 import com.osbblevymista.telegram.keyabords.buttons.OSBBKeyboardButton;
 import com.osbblevymista.telegram.pages.MainPage;
-import com.osbblevymista.telegram.send.OSBBSendMessage;
 import com.osbblevymista.telegram.send.SendMessageParams;
 import com.osbblevymista.telegram.send.processors.ActionSendMessageProcessor;
 import com.osbblevymista.telegram.system.InvisibleCharacters;
 import com.osbblevymista.telegram.system.Messages;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
+import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -57,9 +58,9 @@ public class BotExecutionDataService {
 
     private List<BotExecutionObject> processMessage(SendMessageParams sendMessageParam, OSBBKeyboardButton osbbKeyboardButton) throws UnsupportedEncodingException, URISyntaxException {
 
-        List<BiFunction<SendMessageParams, OSBBKeyboardButton, List<OSBBSendMessage>>> biFunctionList = actionSendMessageProcessor.createSendMessageList(osbbKeyboardButton);
+        List<BiFunction<SendMessageParams, OSBBKeyboardButton, List<PartialBotApiMethod<Message>>>> biFunctionList = actionSendMessageProcessor.createSendMessageList(osbbKeyboardButton);
 
-        return biFunctionList.stream().map( el -> {
+        return biFunctionList.stream().map(el -> {
             BotExecutionObject botExecutionObject = new BotExecutionObject();
             botExecutionObject.setExecution(sendMessageParam, osbbKeyboardButton, el);
             return botExecutionObject;
