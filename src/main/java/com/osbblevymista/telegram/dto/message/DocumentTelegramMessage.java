@@ -7,6 +7,7 @@ import org.telegram.telegrambots.meta.api.objects.Document;
 public class DocumentTelegramMessage extends TelegramMessage<Document> {
 
     public static final String TYPE = "DocumentTelegramMessage";
+    public static final String SHORT_TYPE = "DOCUMENT";
 
     private final Document file;
 
@@ -18,5 +19,10 @@ public class DocumentTelegramMessage extends TelegramMessage<Document> {
     @Override
     public String getType() {
         return TYPE;
+    }
+
+    @Override
+    public String getTypeShort() {
+        return SHORT_TYPE;
     }
 }

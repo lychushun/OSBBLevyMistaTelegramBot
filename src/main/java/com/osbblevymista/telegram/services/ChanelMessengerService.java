@@ -1,10 +1,14 @@
 package com.osbblevymista.telegram.services;
 
+import com.osbblevymista.telegram.dto.message.*;
 import com.osbblevymista.telegram.miydim.MiyDimProcessor;
 import com.osbblevymista.telegram.send.SendMessageParams;
 import com.osbblevymista.telegram.system.AppealTypes;
+import com.osbblevymista.telegram.system.FileStorage;
 import com.osbblevymista.telegram.system.Messages;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,9 +22,18 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import org.telegram.telegrambots.meta.api.objects.Audio;
+import org.telegram.telegrambots.meta.api.objects.Document;
+import org.telegram.telegrambots.meta.api.objects.PhotoSize;
+import org.telegram.telegrambots.meta.api.objects.Video;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import static com.google.common.io.Files.getNameWithoutExtension;
 
 @Component
 @RequiredArgsConstructor
@@ -44,49 +57,24 @@ public class ChanelMessengerService {
     private String name;
 
     private final RestTemplate restTemplate;
-
-    public void sendMessageToBord(SendMessageParams sendMessageParams, String messageStr) {
-
-        String stringBuilder = Messages.NEW_MESSAGE_NOTIFICATION_BOARD.getMessage() +
-                "\n" +
-                sendMessageParams.getFirstName() +
-                " " +
-                sendMessageParams.getLastName() +
-                ":" +
-                sendMessageParams.getUserName() +
-                "\n" +
-                messageStr;
-
-        String url = generateHTMLMessageUrl(token, bordChatId, stringBuilder);
-        restTemplate.getForObject(url, String.class);
-    }
-
-    public void sendMessageByChatIdAsMessenger(String messageStr, String chatId) {
-        String url = generateHTMLMessageUrl(token, chatId, messageStr);
-        restTemplate.getForObject(url, String.class);
-    }
+    private final FileStorage fileStorage;
 
     public void sendMessageByChatIdAsBot(String messageStr, String chatId) {
         String url = generateHTMLMessageUrl(bot, chatId, messageStr);
         restTemplate.getForObject(url, String.class);
     }
 
-    public void sendCommandByChatIdAsBot(String messageStr, String chatId) {
-        String url = generateSingleMessageUrl(bot, chatId, messageStr);
+    public void sendMessageToChatId(String messageStr, String chatId) {
+        String url = generateHTMLMessageUrl(token, chatId, messageStr);
         restTemplate.getForObject(url, String.class);
     }
 
-    public void sendMessageToTereveni(String messageStr) {
-        String url = generateHTMLMessageUrl(token, terevenyChatId, messageStr);
-        restTemplate.getForObject(url, String.class);
-    }
-
-    public void sendDocumentToTereveni(String filePath) {
+    public void sendFileToChatId(String filePath, String chatId) {
         String url = generateSendDocumentUrl(token);
 
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
         body.add("document", new FileSystemResource(filePath));
-        body.add("chat_id", terevenyChatId);
+        body.add("chat_id", chatId);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
@@ -135,9 +123,53 @@ public class ChanelMessengerService {
         return "https://api.telegram.org/bot" + bot + "/sendMessage?chat_id=" + chatId + "&text=" + command;
     }
 
-    public void sendMessageAppealToBord(SendMessageParams sendMessageParam, String messageStr, AppealTypes appealTypes) {
+    public void sendMessageToTereveni(String messages) {
+        sendMessageToChatId(messages, terevenyChatId);
+    }
 
-        String stringBuilder = Messages.NEW_MESSAGE_NOTIFICATION_BOARD.getMessage() +
+    public void sendMessageToTereveni(List<TelegramMessage> messages) {
+        messages.forEach(ms -> {
+            try {
+                if (Objects.equals(ms.getType(), StrTelegramMessage.TYPE)) {
+                    sendMessageToChatId((String) ms.getContent(), terevenyChatId);
+                }
+                sendPhotoToChatId(ms, terevenyChatId);
+                sendDocumentToChatId(ms, terevenyChatId);
+                sendVideoToChatId(ms, terevenyChatId);
+                sendAudioToChatId(ms, terevenyChatId);
+
+            } catch (IOException e) {
+                logger.error(e.getMessage(), "Can not send file to tereveny");
+                e.printStackTrace();
+            }
+        });
+    }
+
+    public void sendMessageAppealToBord(SendMessageParams sendMessageParam, List<TelegramMessage> messages, AppealTypes appealTypes) {
+        Map<String, Long> counted = messages.stream()
+                .collect(Collectors.groupingBy(TelegramMessage::getTypeShort, Collectors.counting()));
+
+        sendMessageToChatId(appealBoardHeader(sendMessageParam, appealTypes, counted), bordChatId);
+
+        messages.forEach(ms -> {
+            try {
+                if (Objects.equals(ms.getType(), StrTelegramMessage.TYPE)) {
+                    sendMessageToChatId((String) ms.getContent(), bordChatId);
+                }
+                sendPhotoToChatId(ms, bordChatId);
+                sendDocumentToChatId(ms, bordChatId);
+                sendVideoToChatId(ms, bordChatId);
+                sendAudioToChatId(ms, bordChatId);
+
+            } catch (IOException e) {
+                logger.error(e.getMessage(), "Can not send file to tereveny");
+                e.printStackTrace();
+            }
+        });
+    }
+
+    public String appealBoardHeader(SendMessageParams sendMessageParam, AppealTypes appealTypes, Map<String, Long> counters) {
+        return Messages.NEW_MESSAGE_NOTIFICATION_BOARD.getMessage() +
                 "\n" +
                 (appealTypes == AppealTypes.URGENT ? "<b>ТЕРМІНОВО!!!</b>" : "") +
                 "\n" +
@@ -146,10 +178,86 @@ public class ChanelMessengerService {
                 sendMessageParam.getLastName() +
                 ":" +
                 sendMessageParam.getUserName() +
-                "\n" +
-                messageStr;
+                "\nПрикріплені файли: \n" +
+                counters
+                        .entrySet()
+                        .stream()
+                        .map(el -> el.getKey() + ": " + el.getValue())
+                        .collect(Collectors.joining("\n"));
+    }
 
-        String url = generateHTMLMessageUrl(token, bordChatId, stringBuilder);
-        restTemplate.getForObject(url, String.class);
+    private void sendVideoToChatId(TelegramMessage<Video> message, String chatid) throws IOException {
+        if (Objects.equals(message.getType(), VideoTelegramMessage.TYPE)) {
+            Video video = message.getContent();
+
+            if (video != null) {
+                sendFileToChatId(video.getFileId(), video.getFileUniqueId(), video.getFileName(), chatid);
+            }
+        }
+    }
+
+    private void sendAudioToChatId(TelegramMessage<Audio> message, String chatid) throws IOException {
+        if (Objects.equals(message.getType(), AudioTelegramMessage.TYPE)) {
+            Audio audio = message.getContent();
+
+            if (audio != null) {
+                sendFileToChatId(audio.getFileId(), audio.getFileUniqueId(), audio.getFileName(), chatid);
+            }
+        }
+    }
+
+    private void sendPhotoToChatId(TelegramMessage<PhotoSize> message, String chatid) throws IOException {
+        if (Objects.equals(message.getType(), PhotoTelegramMessage.TYPE)) {
+            PhotoSize photoSize = message.getContent();
+
+            if (photoSize != null) {
+                sendFileToChatId(photoSize.getFileId(), photoSize.getFileUniqueId(), null, chatid);
+            }
+        }
+    }
+
+    private void sendDocumentToChatId(TelegramMessage<Document> message, String chatId) throws IOException {
+        if (Objects.equals(message.getType(), DocumentTelegramMessage.TYPE)) {
+            Document documentTelegramMessage = message.getContent();
+
+            if (documentTelegramMessage != null) {
+                sendFileToChatId(documentTelegramMessage.getFileId(),
+                        documentTelegramMessage.getFileUniqueId(),
+                        documentTelegramMessage.getFileName(),
+                        chatId
+                );
+            }
+        }
+    }
+
+    private void sendFileToChatId(String fileId, String uniqueId, String fileName, String chatId) throws IOException {
+        JSONObject jsonObject = getFileInfo(fileId);
+        String filePath = jsonObject.getString("file_path");
+        InputStream inputStream = getFileFromFilePath(filePath);
+
+        String fileExtension = getExtensionByStringHandling(filePath);
+        if (StringUtils.isEmpty(fileName)) {
+            fileName = FilenameUtils.getName(filePath);
+        }
+        String tempFilePath = fileStorage.addFile(
+                inputStream,
+                uniqueId,
+                getNameWithoutExtension(fileName),
+                fileExtension
+        );
+        sendFileToChatId(tempFilePath, chatId);
+        fileStorage.deleteFile(uniqueId);
+    }
+
+    private static String getExtensionByStringHandling(String filename) {
+        return Optional.ofNullable(filename)
+                .filter(f -> f.contains("."))
+                .map(f -> f.substring(filename.lastIndexOf(".") + 1))
+                .get();
+    }
+
+    private static String getNameWithoutExtension(String file) {
+        int dotIndex = file.lastIndexOf('.');
+        return (dotIndex == -1) ? file : file.substring(0, dotIndex);
     }
 }

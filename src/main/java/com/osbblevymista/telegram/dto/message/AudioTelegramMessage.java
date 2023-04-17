@@ -7,6 +7,7 @@ import org.telegram.telegrambots.meta.api.objects.Audio;
 public class AudioTelegramMessage extends TelegramMessage<Audio> {
 
     public static final String TYPE = "AudioTelegramMessage";
+    public static final String SHORT_TYPE = "AUDIO";
 
     private final Audio file;
 
@@ -18,5 +19,10 @@ public class AudioTelegramMessage extends TelegramMessage<Audio> {
     @Override
     public String getType() {
         return TYPE;
+    }
+
+    @Override
+    public String getTypeShort() {
+        return SHORT_TYPE;
     }
 }

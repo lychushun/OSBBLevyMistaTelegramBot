@@ -7,6 +7,7 @@ import org.telegram.telegrambots.meta.api.objects.PhotoSize;
 public class PhotoTelegramMessage extends TelegramMessage<PhotoSize> {
 
     public static final String TYPE = "PhotoTelegramMessage";
+    public static final String SHORT_TYPE = "PHOTO";
 
     private final PhotoSize file;
 
@@ -18,5 +19,10 @@ public class PhotoTelegramMessage extends TelegramMessage<PhotoSize> {
     @Override
     public String getType() {
         return TYPE;
+    }
+
+    @Override
+    public String getTypeShort() {
+        return SHORT_TYPE;
     }
 }

@@ -1,6 +1,8 @@
 package com.osbblevymista.telegram.send.processors;
 
 import com.osbblevymista.api.services.MiyDimService;
+import com.osbblevymista.telegram.dto.message.StrTelegramMessage;
+import com.osbblevymista.telegram.dto.message.TelegramMessage;
 import com.osbblevymista.telegram.miydim.AppealMiyDimProcessor;
 import com.osbblevymista.telegram.send.OSBBStrMessage;
 import com.osbblevymista.telegram.send.SendMessageBuilder;
@@ -22,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -33,7 +36,7 @@ public class AppealSendMessageProcessor {
     private final MiyDimService miyDimService;
     private final ChanelMessengerService chanelMessengerService;
 
-    public Function<Message, List<PartialBotApiMethod<Message>>> createAppeal(SendMessageParams sendMessageParam, String messageStr, AppealTypes appealTypes) {
+    public Function<Message, List<PartialBotApiMethod<Message>>> createAppeal(SendMessageParams sendMessageParam, List<TelegramMessage> messages, AppealTypes appealTypes) {
         return new Function<Message, List<PartialBotApiMethod<Message>>>() {
             @Override
             public List<PartialBotApiMethod<Message>> apply(Message message) {
@@ -41,9 +44,9 @@ public class AppealSendMessageProcessor {
                 List<PartialBotApiMethod<Message>> osbbSendMessages = new ArrayList<>();
                 if (arrearsMiyDim.isLogin()) {
                     try {
+                        chanelMessengerService.sendMessageAppealToBord(sendMessageParam, messages, appealTypes);
 
-                        chanelMessengerService.sendMessageAppealToBord(sendMessageParam, messageStr, appealTypes);
-                        Optional<String> link = arrearsMiyDim.createAppeal(generateStrMessage(messageStr, appealTypes));
+                        Optional<String> link = arrearsMiyDim.createAppeal(generateAppealStrMessage(messages, appealTypes));
                         if (link.isPresent()) {
                             OSBBStrMessage osbbSendMessage = generateAppealBotMessage(sendMessageParam, appealTypes);
                             osbbSendMessages.add(osbbSendMessage);
@@ -65,7 +68,13 @@ public class AppealSendMessageProcessor {
         };
     }
 
-    private String generateStrMessage(String message, AppealTypes appealTypes) {
+    private String generateAppealStrMessage(List<TelegramMessage> messages, AppealTypes appealTypes) {
+        String message = messages
+                .stream()
+                .filter(el -> el.getType().equals(StrTelegramMessage.TYPE))
+                .map(el -> (String)el.getContent())
+                .collect(Collectors.joining("\n"));
+
         if (appealTypes == AppealTypes.URGENT) {
             message = "ТЕРМІНОВО!!!\n" + message;
         }

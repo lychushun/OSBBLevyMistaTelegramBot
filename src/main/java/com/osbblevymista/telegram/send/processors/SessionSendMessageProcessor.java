@@ -5,7 +5,6 @@ import com.osbblevymista.OSBBLevyMista45;
 import com.osbblevymista.api.services.MiyDimService;
 import com.osbblevymista.botexecution.BotExecution;
 import com.osbblevymista.botexecution.BotExecutionObject;
-import com.osbblevymista.telegram.dto.MiyDimAppealInfo;
 import com.osbblevymista.telegram.dto.SendMessageInfo;
 import com.osbblevymista.telegram.dto.message.*;
 import com.osbblevymista.telegram.send.SendMessageBuilder;
@@ -81,10 +80,10 @@ public class SessionSendMessageProcessor {
         } else {
             if (session.getAttribute("reading") == SessionProperties.CREATING_SIMPLE_APPEAL
             ) {
-                return processAppeal(session, sendMessageParam, sendMessageInfo.getCommand(), AppealTypes.SIMPLE);
+                return processAppeal(session, sendMessageParam, sendMessageInfo, AppealTypes.SIMPLE);
             } else if (session.getAttribute("reading") == SessionProperties.CREATING_URGENT_APPEAL
             ) {
-                return processAppeal(session, sendMessageParam, sendMessageInfo.getCommand(), AppealTypes.URGENT);
+                return processAppeal(session, sendMessageParam, sendMessageInfo, AppealTypes.URGENT);
             } else if (session.getAttribute("reading") == SessionProperties.SENDING_MESSAGE_TO_ALL) {
                 return processSendMessage(session, sendMessageParam, sendMessageInfo);
             }
@@ -114,26 +113,7 @@ public class SessionSendMessageProcessor {
             }
             return botExecutionData;
         } else {
-            if (isNotEmpty(sendMessageInfo.getCommand())){
-                messages.add(new StrTelegramMessage(sendMessageInfo.getCommand()));
-            }
-
-            if (sendMessageInfo.hasPhoto()){
-                messages.add(new PhotoTelegramMessage(sendMessageInfo.getPhotoSize()));
-            }
-
-            if (sendMessageInfo.hasDocument()){
-                messages.add(new DocumentTelegramMessage(sendMessageInfo.getDocument()));
-            }
-
-            if (sendMessageInfo.hasVideo()){
-                messages.add(new VideoTelegramMessage(sendMessageInfo.getVideo()));
-            }
-
-            if (sendMessageInfo.hasAudio()){
-                messages.add(new AudioTelegramMessage(sendMessageInfo.getAudio()));
-            }
-
+            messages.addAll(getMessage(sendMessageInfo));
             session.setAttribute(SessionProperties.SEND_MESSAGE_INFO, messages);
         }
         return botExecutionData;
@@ -141,24 +121,25 @@ public class SessionSendMessageProcessor {
 
     private BotExecution processAppeal(Session session,
                                        SendMessageParams sendMessageParam,
-                                       String message,
+                                       SendMessageInfo sendMessageInfo,
                                        AppealTypes appealTypes){
 
         BotExecution botExecutionData = new BotExecution();
-        MiyDimAppealInfo miyDimAppealInfo = new MiyDimAppealInfo();
-        if (session.getAttribute(SessionProperties.MIY_DIM_APPEAL_INFO) != null) {
-            miyDimAppealInfo = (MiyDimAppealInfo) session.getAttribute(SessionProperties.MIY_DIM_APPEAL_INFO);
-        }
-        if (isComplete(message)) {
+        List<TelegramMessage> messages = new ArrayList<>();
 
+        if (session.getAttribute(SessionProperties.MIY_DIM_APPEAL_INFO) != null) {
+            messages = (List<TelegramMessage>) session.getAttribute(SessionProperties.MIY_DIM_APPEAL_INFO);
+        }
+        if (isComplete(sendMessageInfo.getCommand())) {
             String cookie = miyDimService.getCookie(sendMessageParam.getChatIdAsString());
             if (hasText(cookie)) {
-                if (miyDimAppealInfo.getMessages().size() > 0) {
+                if (messages.size() > 0) {
                     session.setAttribute(SessionProperties.MIY_DIM_APPEAL_INFO, null);
 
                     botExecutionData.addExecutionsForMessage(createSimpleMessageList(sendMessageParam, Messages.CREATING_APPEAL.getMessage()));
                     BotExecutionObject botExecution = new BotExecutionObject();
-                    botExecution.setExecution(appealSendMessageProcessor.createAppeal(sendMessageParam, miyDimAppealInfo.formatMessages(), appealTypes));
+
+                    botExecution.setExecution(appealSendMessageProcessor.createAppeal(sendMessageParam, messages, appealTypes));
                     botExecutionData.addExecutionsForMessage(botExecution);
                 } else {
                     botExecutionData.addExecutionsForMessage(createSimpleMessageList(sendMessageParam, Messages.INSERT_APPEAL.getMessage()));
@@ -173,8 +154,8 @@ public class SessionSendMessageProcessor {
 
             return botExecutionData;
         } else {
-            miyDimAppealInfo.getMessages().add(message);
-            session.setAttribute(SessionProperties.MIY_DIM_APPEAL_INFO, miyDimAppealInfo);
+            messages.addAll(getMessage(sendMessageInfo));
+            session.setAttribute(SessionProperties.MIY_DIM_APPEAL_INFO, messages);
         }
         return BotExecution.empty();
     }
@@ -210,5 +191,30 @@ public class SessionSendMessageProcessor {
         return Objects.equals(message, Actions.BUTTON_APPEAL_SIMPLE_APPROVE.getText())
                 || Objects.equals(message, Actions.BUTTON_APPEAL_URGENT_APPROVE.getText())
                 || Objects.equals(message, Actions.BUTTON_SEND_MESSAGE_APPROVE.getText());
+    }
+
+    private List<TelegramMessage> getMessage(SendMessageInfo sendMessageInfo){
+        List<TelegramMessage> messages = new ArrayList<>();
+
+        if (isNotEmpty(sendMessageInfo.getCommand())){
+            messages.add(new StrTelegramMessage(sendMessageInfo.getCommand()));
+        }
+
+        if (sendMessageInfo.hasPhoto()){
+            messages.add(new PhotoTelegramMessage(sendMessageInfo.getPhotoSize()));
+        }
+
+        if (sendMessageInfo.hasDocument()){
+            messages.add(new DocumentTelegramMessage(sendMessageInfo.getDocument()));
+        }
+
+        if (sendMessageInfo.hasVideo()){
+            messages.add(new VideoTelegramMessage(sendMessageInfo.getVideo()));
+        }
+
+        if (sendMessageInfo.hasAudio()){
+            messages.add(new AudioTelegramMessage(sendMessageInfo.getAudio()));
+        }
+        return messages;
     }
 }

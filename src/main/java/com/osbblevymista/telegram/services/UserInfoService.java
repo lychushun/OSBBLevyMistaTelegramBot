@@ -40,7 +40,7 @@ public class UserInfoService extends FileService<UserInfo, String>{
     public void addRow(UserInfo userInfo){
         if (userInfoMap.containsKey(userInfo.getChatId())){
             UserInfo userInfo1 = userInfoMap.get(userInfo.getChatId());
-            userInfo = marge(userInfo, userInfo1);
+            userInfo = marge(userInfo1, userInfo);
         }
         userInfoMap.put(userInfo.getChatId(), userInfo);
     }
