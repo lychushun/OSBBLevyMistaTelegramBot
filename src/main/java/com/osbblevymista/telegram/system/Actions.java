@@ -46,7 +46,7 @@ public enum Actions {
     BUTTON_MIYDIM_LINK("Система Мій Дім."),
     BUTTON_WEB_LINK("WEB сайт."),
 
-    BUTTON_RULES_OF_LEAVING("Правила проживання."),
+    BUTTON_RULES_OF_LEAVING("Правила проживання"),
     BUTTON_MEETING_RELUSLT01022022("Підсумки загальних зборів від 1.02.2022."),
     BUTTON_PRESENTATION2023("Презентація ОСББ 'Леви Міста' 2023"),
     BUTTON_DEBTORS("Боржники"),

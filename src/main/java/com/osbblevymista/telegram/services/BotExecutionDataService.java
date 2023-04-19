@@ -1,10 +1,10 @@
 package com.osbblevymista.telegram.services;
 
-import com.osbblevymista.botexecution.BotExecution;
-import com.osbblevymista.botexecution.BotExecutionObject;
-import com.osbblevymista.telegram.keyabords.buttons.OSBBKeyboardButton;
-import com.osbblevymista.telegram.pages.MainPage;
-import com.osbblevymista.telegram.send.SendMessageParams;
+import com.osbblevymista.telegram.botexecution.BotExecution;
+import com.osbblevymista.telegram.botexecution.BotExecutionObject;
+import com.osbblevymista.telegram.view.keyabords.buttons.OSBBKeyboardButton;
+import com.osbblevymista.telegram.view.pages.MainPage;
+import com.osbblevymista.telegram.send.messages.SendMessageParams;
 import com.osbblevymista.telegram.send.processors.ActionSendMessageProcessor;
 import com.osbblevymista.telegram.system.InvisibleCharacters;
 import com.osbblevymista.telegram.system.Messages;

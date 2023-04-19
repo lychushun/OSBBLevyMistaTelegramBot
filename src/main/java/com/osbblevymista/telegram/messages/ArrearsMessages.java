@@ -1,6 +1,6 @@
 package com.osbblevymista.telegram.messages;
 
-import com.osbblevymista.telegram.miydim.ArrearsMiyDimProcessor;
+import com.osbblevymista.miydim.ArrearsMiyDimProcessor;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

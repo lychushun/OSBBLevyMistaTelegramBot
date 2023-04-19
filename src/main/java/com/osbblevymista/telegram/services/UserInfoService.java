@@ -1,7 +1,7 @@
 package com.osbblevymista.telegram.services;
 
 import com.osbblevymista.OSBBLevyMista45;
-import com.osbblevymista.telegram.filereaders.UserInfoFileReader;
+import com.osbblevymista.filereaders.UserInfoFileReader;
 import com.osbblevymista.telegram.models.UserInfo;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;

@@ -1,8 +1,8 @@
 package com.osbblevymista.telegram.services;
 
-import com.osbblevymista.telegram.dto.message.*;
-import com.osbblevymista.telegram.miydim.MiyDimProcessor;
-import com.osbblevymista.telegram.send.SendMessageParams;
+import com.osbblevymista.telegram.dto.telegrammessage.*;
+import com.osbblevymista.miydim.MiyDimProcessor;
+import com.osbblevymista.telegram.send.messages.SendMessageParams;
 import com.osbblevymista.telegram.system.AppealTypes;
 import com.osbblevymista.telegram.system.FileStorage;
 import com.osbblevymista.telegram.system.Messages;
@@ -30,10 +30,7 @@ import org.telegram.telegrambots.meta.api.objects.Video;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import static com.google.common.io.Files.getNameWithoutExtension;
 
 @Component
 @RequiredArgsConstructor
@@ -147,6 +144,7 @@ public class ChanelMessengerService {
 
     public void sendMessageAppealToBord(SendMessageParams sendMessageParam, List<TelegramMessage> messages, AppealTypes appealTypes) {
         Map<String, Long> counted = messages.stream()
+                .filter(el -> !Objects.equals(el.getTypeShort(), StrTelegramMessage.SHORT_TYPE))
                 .collect(Collectors.groupingBy(TelegramMessage::getTypeShort, Collectors.counting()));
 
         sendMessageToChatId(appealBoardHeader(sendMessageParam, appealTypes, counted), bordChatId);

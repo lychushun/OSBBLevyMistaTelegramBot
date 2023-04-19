@@ -3,7 +3,7 @@ package com.osbblevymista.api.controllers;
 
 import com.osbblevymista.api.dto.request.AdminInfoRequest;
 import com.osbblevymista.api.dto.response.AdminInfoResponse;
-import com.osbblevymista.api.services.MiyDimService;
+import com.osbblevymista.miydim.services.MiyDimService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

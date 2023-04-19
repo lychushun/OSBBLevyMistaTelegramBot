@@ -3,11 +3,10 @@ package com.osbblevymista.telegram.services;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import com.opencsv.exceptions.CsvValidationException;
-import com.osbblevymista.telegram.filereaders.AdminFileReader;
+import com.osbblevymista.filereaders.AdminFileReader;
 import com.osbblevymista.telegram.models.AdminInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;

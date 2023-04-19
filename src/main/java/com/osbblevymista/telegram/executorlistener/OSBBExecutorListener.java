@@ -1,6 +1,6 @@
 package com.osbblevymista.telegram.executorlistener;
 
-import com.osbblevymista.telegram.keyabords.KeyboardParam;
+import com.osbblevymista.telegram.view.keyabords.KeyboardParam;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

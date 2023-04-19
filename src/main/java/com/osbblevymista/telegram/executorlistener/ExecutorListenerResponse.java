@@ -1,6 +1,6 @@
 package com.osbblevymista.telegram.executorlistener;
 
-import com.osbblevymista.telegram.keyabords.buttons.OSBBInlineKeyboardButton;
+import com.osbblevymista.telegram.view.keyabords.buttons.OSBBInlineKeyboardButton;
 import lombok.Getter;
 import lombok.Setter;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;

@@ -1,20 +1,19 @@
 package com.osbblevymista.telegram.send.processors;
 
-import com.osbblevymista.api.services.MiyDimService;
-import com.osbblevymista.botexecution.BotExecutionObject;
+import com.osbblevymista.miydim.services.MiyDimService;
+import com.osbblevymista.telegram.botexecution.BotExecutionObject;
 import com.osbblevymista.telegram.executorlistener.ExecutorListenerResponse;
-import com.osbblevymista.telegram.keyabords.KeyboardParam;
-import com.osbblevymista.telegram.keyabords.buttons.OSBBKeyboardButton;
-import com.osbblevymista.telegram.pages.BasePage;
-import com.osbblevymista.telegram.pages.PageParams;
-import com.osbblevymista.telegram.send.OSBBSendMessage;
-import com.osbblevymista.telegram.send.OSBBStrMessage;
-import com.osbblevymista.telegram.send.SendMessageBuilder;
-import com.osbblevymista.telegram.send.SendMessageParams;
+import com.osbblevymista.telegram.send.messages.OSBBStrMessage;
+import com.osbblevymista.telegram.send.messages.SendMessageBuilder;
+import com.osbblevymista.telegram.send.messages.SendMessageParams;
 import com.osbblevymista.telegram.system.Messages;
-import lombok.AllArgsConstructor;
+import com.osbblevymista.telegram.view.keyabords.KeyboardParam;
+import com.osbblevymista.telegram.view.keyabords.buttons.OSBBKeyboardButton;
+import com.osbblevymista.telegram.view.pages.BasePage;
+import com.osbblevymista.telegram.view.pages.PageParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -30,20 +29,20 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.nonNull;
 
-@AllArgsConstructor
 @Component
-public class ActionSendMessageProcessor {
+public class ActionSendMessageProcessor extends MessageProcessor {
 
     private final Logger logger = LoggerFactory.getLogger(ActionSendMessageProcessor.class);
 
-    private final SendMessageBuilder sendMessageBuilder;
-    private final MiyDimService miyDimService;
+    @Autowired
+    private SendMessageBuilder sendMessageBuilder;
 
+    @Autowired
+    private MiyDimService miyDimService;
 
     public List<BiFunction<SendMessageParams, OSBBKeyboardButton, List<PartialBotApiMethod<Message>>>> createSendMessageList(OSBBKeyboardButton osbbKeyboardButton) throws UnsupportedEncodingException, URISyntaxException {
         ArrayList<BiFunction<SendMessageParams, OSBBKeyboardButton, List<PartialBotApiMethod<Message>>>> arrayList = new ArrayList<>();
@@ -163,25 +162,8 @@ public class ActionSendMessageProcessor {
         return arrayList;
     }
 
-    public Function<Message, OSBBSendMessage> createSimpleMessage(SendMessageParams sendMessageParam, String text) {
-        return new Function<Message, OSBBSendMessage>() {
-            @Override
-            public OSBBSendMessage apply(Message message) {
-                try {
-                    return sendMessageBuilder.createSimpleMessage(sendMessageParam, text);
-                } catch (UnsupportedEncodingException | URISyntaxException e) {
-                    logger.error(e.getMessage(), e);
-                    e.printStackTrace();
-                }
-                return null;
-            }
-        };
-    }
-
     public BotExecutionObject createHomePageMessage(SendMessageParams sendMessageParam) {
-        BotExecutionObject botExecutionObject = new BotExecutionObject();
-        botExecutionObject.setExecution(sendMessageBuilder.goHomeMessage(sendMessageParam, Messages.UNRECOGNIZED_COMMAND.getMessage()));
-        return botExecutionObject;
+        return createBotExecutionObject(sendMessageBuilder.goHomeMessage(sendMessageParam, Messages.UNRECOGNIZED_COMMAND.getMessage()));
     }
 
     public List<PartialBotApiMethod<Message>> createHomePageMessageList(SendMessageParams sendMessageParam) {

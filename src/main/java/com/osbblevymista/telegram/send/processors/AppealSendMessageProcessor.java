@@ -1,18 +1,19 @@
 package com.osbblevymista.telegram.send.processors;
 
-import com.osbblevymista.api.services.MiyDimService;
-import com.osbblevymista.telegram.dto.message.StrTelegramMessage;
-import com.osbblevymista.telegram.dto.message.TelegramMessage;
-import com.osbblevymista.telegram.miydim.AppealMiyDimProcessor;
-import com.osbblevymista.telegram.send.OSBBStrMessage;
-import com.osbblevymista.telegram.send.SendMessageBuilder;
-import com.osbblevymista.telegram.send.SendMessageParams;
+import com.osbblevymista.miydim.services.MiyDimService;
+import com.osbblevymista.telegram.dto.telegrammessage.StrTelegramMessage;
+import com.osbblevymista.telegram.dto.telegrammessage.TelegramMessage;
+import com.osbblevymista.miydim.AppealMiyDimProcessor;
+import com.osbblevymista.telegram.send.messages.OSBBStrMessage;
+import com.osbblevymista.telegram.send.messages.SendMessageBuilder;
+import com.osbblevymista.telegram.send.messages.SendMessageParams;
 import com.osbblevymista.telegram.services.ChanelMessengerService;
 import com.osbblevymista.telegram.system.AppealTypes;
 import com.osbblevymista.telegram.system.Messages;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -27,14 +28,18 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Component
-@RequiredArgsConstructor
-public class AppealSendMessageProcessor {
+public class AppealSendMessageProcessor extends MessageProcessor {
 
     private final Logger logger = LoggerFactory.getLogger(AppealSendMessageProcessor.class);
 
-    private final SendMessageBuilder sendMessageBuilder;
-    private final MiyDimService miyDimService;
-    private final ChanelMessengerService chanelMessengerService;
+    @Autowired
+    private SendMessageBuilder sendMessageBuilder;
+
+    @Autowired
+    private MiyDimService miyDimService;
+
+    @Autowired
+    private ChanelMessengerService chanelMessengerService;
 
     public Function<Message, List<PartialBotApiMethod<Message>>> createAppeal(SendMessageParams sendMessageParam, List<TelegramMessage> messages, AppealTypes appealTypes) {
         return new Function<Message, List<PartialBotApiMethod<Message>>>() {
